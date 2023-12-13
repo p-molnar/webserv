@@ -1,0 +1,59 @@
+When making a HTTP server, it needs to listen for incoming connections.
+We do this by making a Socket.
+
+A socket is the mechanism that most popular operating systems provide to give programs access to the network. 
+It allows messages to be sent and received between applications (unrelated processes) on different networked machines.
+
+Programming with TCP/IP sockets
+There are a few steps involved in using sockets:
+
+- Create the socket
+- Identify the socket
+- On the server, wait for an incoming connection
+- Send and receive messages
+- Close the socket
+
+We call this: "Socket Programming" it is a way of connecting two nodes on a network to communicate with each other.
+
+=============================================================================
+
+Creating a Socket:
+
+In the constructor ServerSocket::ServerSocket(), you create a TCP socket using socket(AF_INET, SOCK_STREAM, 0). This is the first step in setting up a server.
+Binding to a Port:
+
+The method ServerSocket::bindPort(int port) binds the created socket to a specified port number on your server's host. Binding is necessary for the server to specify on which port it will listen for incoming connections.
+Listening for Connections:
+
+The method ServerSocket::listenPort(int backlog) sets the socket to listen for incoming connections. The backlog parameter defines the maximum length for the queue of pending connections.
+Accepting Connections:
+
+ServerSocket::acceptConnection() waits for an incoming client connection. Upon a successful connection, it returns a ClientSocket object that represents the connection with the client. This is important for interacting with the connected client.
+How It Creates a Server
+To use this class to create a server, you would:
+
+Instantiate a ServerSocket object.
+Call bindPort with the desired port number.
+Call listenPort with a suitable backlog size.
+Continuously call acceptConnection in a loop to accept incoming client connections.
+
+
+====== main.cpp ======
+#include "ServerSocket.hpp"
+
+int main() {
+    ServerSocket server;        // Create the server socket
+    server.bindPort(8080);      // Bind to port 8080
+    server.listenPort(10);      // Listen for connections with a backlog of 10
+
+    while (true) {
+        ClientSocket client = server.acceptConnection(); // Accept a new client
+        // Interact with the connected client
+    }
+
+    return 0;
+}
+=====================
+
+In this example, the server will listen on port 8080 and accept incoming connections, 
+creating a new ClientSocket instance for each connection  with acceptConnection().
