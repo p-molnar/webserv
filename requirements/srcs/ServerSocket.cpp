@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 10:36:57 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/06 14:06:09 by tklouwer      ########   odam.nl         */
+/*   Updated: 2023/12/14 11:06:50 by bprovoos      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ int     ServerSocket::bindPort(int port)
 
 int     ServerSocket::listenPort(int backlog)
 {
+	(void) backlog;
     if (listen(sockfd, 10) < 0) {
         std::cerr << "Failed to listen on socket" << std::endl;
         close(sockfd);

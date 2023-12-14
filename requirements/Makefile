@@ -14,6 +14,8 @@ INC_FLAGS	:= 		-I$(INC_DIR)
 #=== Sources ===#
 SRCS		:=		ServerSocket.cpp \
 					ClientSocket.cpp \
+					Config.cpp \
+					Parcer.cpp \
 					main.cpp \
 
 OBJ			:= 		$(addprefix $(OBJDIR)/,$(SRCS:.cpp=.o))
