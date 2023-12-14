@@ -6,7 +6,7 @@
 /*   By: bprovoos <bprovoos@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/14 14:07:34 by bprovoos      #+#    #+#                 */
-/*   Updated: 2023/12/14 15:51:52 by bprovoos      ########   odam.nl         */
+/*   Updated: 2023/12/14 16:29:04 by bprovoos      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,16 @@ char*	ServerBlock::getServerName()
 
 HttpBlock::HttpBlock()
 {
+	LocationBlock	location;
+	ServerBlock		server;
+	char*			str = nullptr;
+	
+	location.setPath(str);
+	location.setRoot(str);
+	server.addLocation(location);
+	server.setListenPort(8080);
+	server.setServerName(str);
+	addServer(server);
 }
 
 HttpBlock::~HttpBlock()
