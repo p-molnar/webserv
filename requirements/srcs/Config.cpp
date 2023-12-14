@@ -6,7 +6,7 @@
 /*   By: bprovoos <bprovoos@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/14 14:07:34 by bprovoos      #+#    #+#                 */
-/*   Updated: 2023/12/14 16:29:04 by bprovoos      ########   odam.nl         */
+/*   Updated: 2023/12/14 16:49:04 by bprovoos      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,11 @@ void	LocationBlock::setPath(char* path)
 	this->_path = path;
 }
 
+void	LocationBlock::setIndex(char* index)
+{
+	this->_index = index;
+}
+
 char*	LocationBlock::getRoot()
 {
 	return (this->_root);
@@ -39,6 +44,12 @@ char*	LocationBlock::getPath()
 {
 	return (this->_path);
 }
+
+char*	LocationBlock::getIndex()
+{
+	return (this->_index);
+}
+
 
 ServerBlock::ServerBlock()
 {
@@ -78,6 +89,7 @@ HttpBlock::HttpBlock()
 	LocationBlock	location;
 	ServerBlock		server;
 	char*			str = nullptr;
+	
 	
 	location.setPath(str);
 	location.setRoot(str);

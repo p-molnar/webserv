@@ -6,7 +6,7 @@
 /*   By: bprovoos <bprovoos@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/14 14:07:51 by bprovoos      #+#    #+#                 */
-/*   Updated: 2023/12/14 16:29:36 by bprovoos      ########   odam.nl         */
+/*   Updated: 2023/12/14 16:47:25 by bprovoos      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,9 @@
 class LocationBlock
 {
 private:
-	char*						_root;
 	char*						_path;
+	char*						_root;
+	char*						_index;
 	std::vector<LocationBlock>	_locations;
 
 public:
@@ -32,9 +33,11 @@ public:
 
 	void	setRoot(char* root);
 	void	setPath(char* path);
+	void	setIndex(char* index);
 
 	char*	getRoot();
 	char*	getPath();
+	char*	getIndex();
 };
 
 class ServerBlock
