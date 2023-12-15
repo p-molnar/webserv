@@ -1,3 +1,5 @@
+The Hypertext Transfer Protocol (HTTP) is an application-level protocol for distributed, collaborative, hypermedia information systems.
+
 Methods Supported: 
 - GET:
     Requests data from specified resource. Used for retrieving web pages, images and other data.
@@ -36,4 +38,3 @@ KEY FEATURES OF HTTP/1.1:
 
 3 - Compress/Decompression (Content Encoding):
     A capability that can be built into web servers and web clients to improve transfer speed and bandwidth utilization.
-

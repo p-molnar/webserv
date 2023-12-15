@@ -6,15 +6,19 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 11:31:26 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/06 13:50:43 by tklouwer      ########   odam.nl         */
+/*   Updated: 2023/12/15 14:00:38 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 #include <iostream>
+#include <vector>
+#include <poll.h>
 
-int main() {
+int main() 
+{
     ServerSocket serverSocket;
+    std::vector<ClientSocket> clientSockets;
 
     if (serverSocket.bindPort(8080) != EXIT_SUCCESS) {
         std::cerr << "Failed to bind to port" << std::endl;
@@ -27,9 +31,13 @@ int main() {
     }
 
     std::cout << "Server is listening on port 8080..." << std::endl;
-
-    ClientSocket clientSocket = serverSocket.acceptConnection();
-    std::cout << "Connection accepted" << std::endl;
+    while (1)
+    {
+        ClientSocket clientSocket = serverSocket.acceptConnection();
+        std::cout << "Connection accepted" << std::endl;
+        clientSockets.push_back(clientSocket);
+    
+    }
 
     return 0;
 }

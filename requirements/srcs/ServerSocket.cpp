@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 10:36:57 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/06 14:06:09 by tklouwer      ########   odam.nl         */
+/*   Updated: 2023/12/15 13:29:14 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 ServerSocket::ServerSocket()
 {
     this->sockfd = socket(AF_INET, SOCK_STREAM, 0); // AF_INET Specifies IPv4 A
+    fcntl(this->sockfd, F_SETFL, O_NONBLOCK); // Set NON-Blocking
     if (sockfd == -1)
     {
         std::cerr << "Failed to create socket ..." << std::endl;

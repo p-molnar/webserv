@@ -42,13 +42,13 @@ Continuously call acceptConnection in a loop to accept incoming client connectio
 #include "ServerSocket.hpp"
 
 int main() {
-    ServerSocket server;        // Create the server socket
-    server.bindPort(8080);      // Bind to port 8080
-    server.listenPort(10);      // Listen for connections with a backlog of 10
+    ServerSocket server;        Create the server socket
+    server.bindPort(8080);      Bind to port 8080
+    server.listenPort(10);      Listen for connections with a backlog of 10
 
     while (true) {
-        ClientSocket client = server.acceptConnection(); // Accept a new client
-        // Interact with the connected client
+        ClientSocket client = server.acceptConnection(); Accept a new client
+        Interact with the connected client
     }
 
     return 0;

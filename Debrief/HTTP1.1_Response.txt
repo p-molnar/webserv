@@ -1,0 +1,80 @@
+6 Response
+After receiving and interpreting a request message, a server responds with an HTTP response message.
+       Response      = Status-Line             
+                       *(( general-header        
+                        | response-header       
+                        | entity-header ) CRLF)
+                       CRLF
+                       [ message-body ]          
+
+HTTP status codes are standardized responses used by web servers to indicate the result of a client's request.
+The first digit of the Status-Code defines the class of response. The last two digits do not have any categorization role. There are 5 values for the first digit:
+    - 1xx: Informational - Request received, continuing process
+    - 2xx: Success - The action was successfully received,
+    understood, and accepted
+    - 3xx: Redirection - Further action must be taken in order to
+    complete the request
+    - 4xx: Client Error - The request contains bad syntax or cannot
+    be fulfilled
+    - 5xx: Server Error - The server failed to fulfill an apparently
+    valid request
+
+
+- 1xx INFORMATIONAL
+
+    - 100 Continue:
+        The client SHOULD continue with its request. The server MUST send a final response. 
+
+- 2xx SUCCES
+
+    - 200 OK:
+        The request has succeeded. The information returned with the response is dependent on the method used:
+            GET an entity corresponding to the requested resource is sent in the response;
+            HEAD the entity-header fields corresponding to the requested resource are sent in the response without any message-body;
+            POST an entity describing or containing the result of the action;
+            TRACE an entity containing the request message as received by the end server.
+
+    - 201 Created:
+        The request has been fulfilled and resulted in a new resource being created.
+    
+    - 204 No Content:
+        The request was succesfull, but there is no content to send for this request.
+
+- 3xx REDIRECTION:
+
+    - 301 Moved Permanently: 
+        the requested resource has been permanently moved to a new URL provided in the response.
+    
+    - 302 Found:
+        The requested resource is temporarely under a different URL.
+    
+    - 304 Not Modified:
+        Indicates that the resource has not been modified since the last request. Often used for caching.
+
+- 4xx CLIENT ORDER:
+    - 400 Bad Request:
+        The server could not understand the request due to invalid syntax.
+
+    - 401 Unauthorized: 
+        Authentication is required, and the client has failed or not yet provided valid Authentication
+    
+    - 404 Not Found:
+        The server could not find the requested resource. 
+    
+    - 405 Method not allowed:
+        The request method is known by the server but has been disabled and cannot be used for requested resource.
+
+- 5xx Server Error:
+
+    - 500 Internal Server Error:
+        A generic error message indicating that the server encountered an unexpected condition.
+    
+    - 501 Not Implemented:
+        The server either does not recognize the request method or lacks the ability to fulfill the request.
+
+    - 503 Service Unavailable: 
+        The server is not ready to handle the request, usually due to temporary overloading or maintenance.
+
+
+
+
