@@ -6,30 +6,30 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 11:31:26 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/06 13:50:43 by tklouwer      ########   odam.nl         */
+/*   Updated: 2023/12/18 10:38:53 by pmolnar       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "webserv.hpp"
 #include <iostream>
 
-int main() {
-    ServerSocket serverSocket;
+int main()
+{
+    try
+    {
+        ServerSocket serverSocket;
 
-    if (serverSocket.bindPort(8080) != EXIT_SUCCESS) {
-        std::cerr << "Failed to bind to port" << std::endl;
-        return 1;
+        serverSocket.bindPort(8080);
+        serverSocket.listenPort(10);
+        std::cout << "Server is listening on port 8080..." << std::endl;
+        ClientSocket clientSocket = serverSocket.acceptConnection();
+        std::cout << "Connection accepted" << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+        return EXIT_FAILURE;
     }
 
-    if (serverSocket.listenPort(10) != EXIT_SUCCESS) {
-        std::cerr << "Failed to listen on socket" << std::endl;
-        return 1;
-    }
-
-    std::cout << "Server is listening on port 8080..." << std::endl;
-
-    ClientSocket clientSocket = serverSocket.acceptConnection();
-    std::cout << "Connection accepted" << std::endl;
-
-    return 0;
+    return EXIT_SUCCESS;
 }
