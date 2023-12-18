@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 09:00:06 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/18 09:14:25 by dickklouwer   ########   odam.nl         */
+/*   Updated: 2023/12/18 13:18:58 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include <sys/select.h>
-#include <poll.h>
 #include "ServerSocket.hpp"
 #include "ClientSocket.hpp"
 #include <vector>
@@ -35,8 +34,11 @@ class WebServer
         PollManager _pollManager;
 
     public:
-        WebServer();
-        ~WebServer();
+        WebServer() {};
+        ~WebServer() {} ;
+
+        void    addFdToPollManager(int fd, short events);
+        void    pollClients();
 };
 
 #endif

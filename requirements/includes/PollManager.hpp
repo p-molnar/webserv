@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/15 14:35:38 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/18 09:18:05 by dickklouwer   ########   odam.nl         */
+/*   Updated: 2023/12/18 12:58:11 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #define POLLMANAGER_HPP
 
 #include <vector>
+#include <poll.h>  
+#include <algorithm>
 
 /* 
     #define POLLIN 0x001  There is data to read.  
@@ -30,6 +32,10 @@ class PollManager
         PollManager();
         ~PollManager();
 
+        void    addFd(int fd, short events);
+        void    removeFd(int fd);
+
+        std::vector<struct pollfd> getPollFds(void);
 };
 
 #endif

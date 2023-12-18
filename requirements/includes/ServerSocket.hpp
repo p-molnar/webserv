@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 09:48:15 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/18 08:52:26 by dickklouwer   ########   odam.nl         */
+/*   Updated: 2023/12/18 11:03:54 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ class ServerSocket {
         int     bindPort(int port);
         int     listenPort(int backlog);
         ClientSocket  acceptConnection();
+        
+        int getServerFd() {return this->sockfd;};
 
 };
 #endif

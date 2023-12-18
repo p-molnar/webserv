@@ -15,6 +15,7 @@ INC_FLAGS	:= 		-I$(INC_DIR)
 SRCS		:=		ServerSocket.cpp \
 					ClientSocket.cpp \
 					PollManager.cpp \
+					Webserver.cpp \
 					main.cpp \
 
 OBJ			:= 		$(addprefix $(OBJDIR)/,$(SRCS:.cpp=.o))

@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 11:53:18 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/18 08:53:05 by dickklouwer   ########   odam.nl         */
+/*   Updated: 2023/12/18 12:52:03 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,26 +18,16 @@
 class ClientSocket 
 {
     private:
-        int     _serverfd;
+        int     _clientfd;
 
     public:
         ClientSocket(int newsockfd);
         ~ClientSocket();
 
-        ssize_t recv(char *buffer, size_t length)
-        {
-            return ::recv(_serverfd, buffer, length, 0);
-        }
-
-        ssize_t send(const char *buffer, size_t length)
-        {
-            return ::send(_serverfd, buffer, length, 0);
-        }
-
-        void close()
-        {
-            ::close(_serverfd);
-        }
+        int getClientFd() { return this->_clientfd; };
+        ssize_t pullMessage(char *buffer, size_t length);
+        ssize_t sendMessage(const char *buffer, size_t length);
+        void closeFd();
 };
 
 #endif
