@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 10:36:57 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/18 11:25:53 by pmolnar       ########   odam.nl         */
+/*   Updated: 2023/12/18 12:59:12 by pmolnar       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,14 @@
  */
 ServerSocket::ServerSocket()
 {
+    struct addrinfo hints, *res;
+
     this->sockfd = socket(AF_INET, SOCK_STREAM, 0); // AF_INET Specifies IPv4 A
-    fcntl(this->sockfd, F_SETFL, O_NONBLOCK); // Set NON-Blocking
+    fcntl(this->sockfd, F_SETFL, O_NONBLOCK);       // Set NON-Blocking
     if (sockfd == -1)
     {
-        std::runtime_error(strerror(errno));
+        std::string err = strerror(errno);
+        std::runtime_error("server socket: " + err);
     }
 }
 
@@ -64,7 +67,8 @@ void ServerSocket::bindPort(int port)
     if (bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
         close(sockfd);
-        throw std::runtime_error(strerror(errno));
+        std::string err = strerror(errno);
+        throw std::runtime_error("bind port: " + err);
     }
 }
 
@@ -74,7 +78,8 @@ void ServerSocket::listenPort(int backlog)
     if (listen(sockfd, 10) < 0)
     {
         close(sockfd);
-        throw std::runtime_error(strerror(errno));
+        std::string err = strerror(errno);
+        throw std::runtime_error("listen port: " + err);
     }
 }
 
@@ -87,7 +92,8 @@ ClientSocket ServerSocket::acceptConnection()
     if (newsockfd < 0)
     {
         close(sockfd);
-        throw std::runtime_error(strerror(errno));
+        std::string err = strerror(errno);
+        throw std::runtime_error("accept connection: " + err);
     }
     return ClientSocket(newsockfd);
 }
