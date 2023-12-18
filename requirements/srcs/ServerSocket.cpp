@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 10:36:57 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/15 13:29:14 by tklouwer      ########   odam.nl         */
+/*   Updated: 2023/12/18 09:03:51 by dickklouwer   ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,8 @@ int     ServerSocket::bindPort(int port)
 
 int     ServerSocket::listenPort(int backlog)
 {
-    if (listen(sockfd, 10) < 0) {
+    if (listen(sockfd, backlog) < 0) 
+    {
         std::cerr << "Failed to listen on socket" << std::endl;
         close(sockfd);
         exit(EXIT_FAILURE);
@@ -89,9 +90,13 @@ ClientSocket  ServerSocket::acceptConnection()
     int newsockfd = accept(sockfd, (struct sockaddr *)&client_addr, &clilen) ;
     if (newsockfd < 0)
     {
-        std::cerr << "Error on accept" << std::endl;
-        close(sockfd);
-        exit(EXIT_FAILURE);
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
+            return ClientSocket(-1);
+        else 
+        {
+            std::cerr << "Error on accept" << std::endl;
+            return ClientSocket(-1);
+        }
     }
     return ClientSocket(newsockfd);
 }

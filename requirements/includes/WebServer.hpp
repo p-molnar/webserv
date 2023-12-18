@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 09:00:06 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/15 14:38:17 by tklouwer      ########   odam.nl         */
+/*   Updated: 2023/12/18 09:14:25 by dickklouwer   ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,16 @@
 #include "ServerSocket.hpp"
 #include "ClientSocket.hpp"
 #include <vector>
+#include "PollManager.hpp"
 
-class WebServer {
+class WebServer 
+{
     private:
         PollManager _pollManager;
 
     public:
-        
+        WebServer();
+        ~WebServer();
 };
 
 #endif
