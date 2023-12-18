@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 09:48:15 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/18 11:03:54 by tklouwer      ########   odam.nl         */
+/*   Updated: 2023/12/18 13:26:15 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,16 @@
 #include <unistd.h>     // Provides access to the POSIX operating system API
 #include <cstring>      // For memset
 #include <iostream>     // For basic I/O
+#include <stdexcept>    // For error handling, and to throw exceptions
+#include <cerrno>       // Defines a set of string errors
 #include "ClientSocket.hpp"
 
 class ClientSocket;
 
-class ServerSocket {
-    private:
-        int     sockfd;
+class ServerSocket
+{
+private:
+    int sockfd;
 
     public:
         ServerSocket();
@@ -36,6 +39,6 @@ class ServerSocket {
         ClientSocket  acceptConnection();
         
         int getServerFd() {return this->sockfd;};
-
 };
+
 #endif

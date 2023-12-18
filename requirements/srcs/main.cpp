@@ -3,14 +3,22 @@
 #include <vector>
 #include <sys/socket.h>
 
-int main() 
+int main()
 {
-    ServerSocket serverSocket;
-    WebServer server;
+    try
+    {
+        ServerSocket serverSocket;
 
-    if (serverSocket.bindPort(8080) != EXIT_SUCCESS) {
-        std::cerr << "Failed to bind to port" << std::endl;
-        return 1;
+        serverSocket.bindPort(8080);
+        serverSocket.listenPort(10);
+        std::cout << "Server is listening on port 8080..." << std::endl;
+        ClientSocket clientSocket = serverSocket.acceptConnection();
+        std::cout << "Connection accepted" << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+        return EXIT_FAILURE;
     }
     if (serverSocket.listenPort(10) != EXIT_SUCCESS) {
         std::cerr << "Failed to listen on socket" << std::endl;
@@ -18,7 +26,7 @@ int main()
     }
     std::cout << "Server is listening on port 8080..." << std::endl;
     
-    server.addFdToPollManager(serverSocket.getServerFd(), POLLIN);
+    serverSocket.addFdToPollManager(serverSocket.getServerFd(), POLLIN);
     while (true)
     {
         try {
