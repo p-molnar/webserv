@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-=======
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   ServerSocket.cpp                                   :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2023/12/06 10:36:57 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/18 12:59:12 by pmolnar       ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
->>>>>>> 3fa3271104b7ad7c96ee06a960f222030dadf0b8
 #include "ServerSocket.hpp"
 
 /* How It Creates a Server:
@@ -32,8 +17,6 @@
  */
 ServerSocket::ServerSocket()
 {
-    struct addrinfo hints, *res;
-
     this->sockfd = socket(AF_INET, SOCK_STREAM, 0); // AF_INET Specifies IPv4 A
     fcntl(this->sockfd, F_SETFL, O_NONBLOCK);       // Set NON-Blocking
     if (sockfd == -1)
@@ -58,7 +41,7 @@ ServerSocket::~ServerSocket()
 
     - struct sockaddr_in: specifies an endpoint address to which bound / communicate.
  */
-void ServerSocket::bindPort(int port)
+int ServerSocket::bindPort(int port)
 {
     struct sockaddr_in addr;
 
@@ -73,9 +56,10 @@ void ServerSocket::bindPort(int port)
         std::string err = strerror(errno);
         throw std::runtime_error("bind port: " + err);
     }
+    return (0);
 }
 
-void ServerSocket::listenPort(int backlog)
+int ServerSocket::listenPort(int backlog)
 {
     (void)backlog;
     if (listen(sockfd, 10) < 0)
@@ -84,6 +68,7 @@ void ServerSocket::listenPort(int backlog)
         std::string err = strerror(errno);
         throw std::runtime_error("listen port: " + err);
     }
+    return 0;
 }
 
 ClientSocket ServerSocket::acceptConnection()

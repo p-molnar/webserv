@@ -5,10 +5,10 @@
 
 int main()
 {
+    ServerSocket serverSocket;
+    WebServer server;
     try
     {
-        ServerSocket serverSocket;
-
         serverSocket.bindPort(8080);
         serverSocket.listenPort(10);
         std::cout << "Server is listening on port 8080..." << std::endl;
@@ -26,7 +26,7 @@ int main()
     }
     std::cout << "Server is listening on port 8080..." << std::endl;
     
-    serverSocket.addFdToPollManager(serverSocket.getServerFd(), POLLIN);
+    server.addFdToPollManager(serverSocket.getServerFd(), POLLIN);
     while (true)
     {
         try {
