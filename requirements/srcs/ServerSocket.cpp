@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 10:36:57 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/18 12:33:43 by pmolnar       ########   odam.nl         */
+/*   Updated: 2023/12/18 11:25:53 by pmolnar       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@
  */
 ServerSocket::ServerSocket()
 {
-    this->sockfd = socket(AF_INET, SOCK_STREAM, getprotobyname("tcp")->p_proto); // AF_INET Specifies IPv4 A
-    fcntl(this->sockfd, F_SETFL, O_NONBLOCK);                                    // Set NON-Blocking
+    this->sockfd = socket(AF_INET, SOCK_STREAM, 0); // AF_INET Specifies IPv4 A
+    fcntl(this->sockfd, F_SETFL, O_NONBLOCK); // Set NON-Blocking
     if (sockfd == -1)
     {
         std::runtime_error(strerror(errno));
