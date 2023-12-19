@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 09:00:06 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/18 14:12:21 by tklouwer      ########   odam.nl         */
+/*   Updated: 2023/12/18 22:36:46 by pmolnar       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,19 @@
 #include <map>
 #include <memory>
 
-class WebServer 
+class WebServer
 {
-    private:
-        PollManager _pollManager;
-        std::map    <int, std::shared_ptr<ServerSocket>> _activeServer;
-        std::map    <int, std::shared_ptr<ClientSocket>> _activeClients;
+private:
+    PollManager _pollManager;
+    std::map<int, std::shared_ptr<ServerSocket> > _activeServer;
+    std::map<int, std::shared_ptr<ClientSocket> > _activeClients;
 
-    public:
-        WebServer() {};
-        ~WebServer() {} ;
+public:
+    WebServer(){};
+    ~WebServer(){};
 
-        void    addFdToPollManager(int fd, short events);
-        void    pollClients();
+    void addFdToPollManager(int fd, short events);
+    void pollClients();
 };
 
 #endif

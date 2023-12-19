@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 09:48:15 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/18 14:06:15 by tklouwer      ########   odam.nl         */
+/*   Updated: 2023/12/19 14:54:26 by pmolnar       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,15 +30,15 @@ class ServerSocket
 private:
     int sockfd;
 
-    public:
-        ServerSocket();
-        ~ServerSocket();
+public:
+    ServerSocket();
+    ~ServerSocket();
 
-        int     bindPort(int port);
-        int     listenPort(int backlog);
-        ClientSocket  acceptConnection();
-        
-        int getServerFd() {return this->sockfd;};
+    void bindPort(int port);
+    void listenPort(int backlog);
+    ClientSocket acceptConnection();
+
+    int getServerFd() { return this->sockfd; };
 };
 
 #endif

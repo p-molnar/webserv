@@ -18,7 +18,7 @@
 ServerSocket::ServerSocket()
 {
     this->sockfd = socket(AF_INET, SOCK_STREAM, 0); // AF_INET Specifies IPv4 A
-    fcntl(this->sockfd, F_SETFL, O_NONBLOCK);       // Set NON-Blocking
+    // fcntl(this->sockfd, F_SETFL, O_NONBLOCK);       // Set NON-Blocking
     if (sockfd == -1)
     {
         std::string err = strerror(errno);
@@ -41,7 +41,7 @@ ServerSocket::~ServerSocket()
 
     - struct sockaddr_in: specifies an endpoint address to which bound / communicate.
  */
-int ServerSocket::bindPort(int port)
+void ServerSocket::bindPort(int port)
 {
     struct sockaddr_in addr;
 
@@ -56,19 +56,16 @@ int ServerSocket::bindPort(int port)
         std::string err = strerror(errno);
         throw std::runtime_error("bind port: " + err);
     }
-    return (0);
 }
 
-int ServerSocket::listenPort(int backlog)
+void ServerSocket::listenPort(int backlog)
 {
-    (void)backlog;
-    if (listen(sockfd, 10) < 0)
+    if (listen(sockfd, backlog) < 0)
     {
         close(sockfd);
         std::string err = strerror(errno);
         throw std::runtime_error("listen port: " + err);
     }
-    return 0;
 }
 
 ClientSocket ServerSocket::acceptConnection()
