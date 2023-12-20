@@ -16,7 +16,7 @@ class ClientSocket;
 class ServerSocket
 {
 private:
-    int sockfd;
+    int fd;
 
 public:
     ServerSocket();
@@ -26,7 +26,7 @@ public:
     void listenPort(int backlog);
     ClientSocket acceptConnection();
 
-    int getServerFd() { return this->sockfd; };
+    int getFd() { return fd; };
 };
 
 #endif

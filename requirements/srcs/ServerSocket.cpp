@@ -17,21 +17,28 @@
  */
 ServerSocket::ServerSocket()
 {
-    this->sockfd = socket(AF_INET, SOCK_STREAM, 0); // AF_INET Specifies IPv4 A
+    int yes = 1;
+
+    fd = socket(PF_INET, SOCK_STREAM, 0); // AF_INET Specifies IPv4 A
     // fcntl(this->sockfd, F_SETFL, O_NONBLOCK);       // Set NON-Blocking
-    if (sockfd == -1)
+    if (fd == -1)
     {
         std::string err = strerror(errno);
         std::runtime_error("server socket: " + err);
     }
+
+    // setting the socket options as below will prevent the app from experiencing
+    // "Address already in use" errors if it is killed and restarted within a short
+    // period of time.
+    setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&yes, sizeof(yes));
 }
 
 /* Simple destructor to close the socket.
  */
 ServerSocket::~ServerSocket()
 {
-    if (sockfd >= 0)
-        close(sockfd);
+    if (fd >= 0)
+        close(fd);
 }
 
 /* This function binds the Socket ('sockfd') to the specified port.
@@ -50,9 +57,9 @@ void ServerSocket::bindPort(int port)
     addr.sin_addr.s_addr = INADDR_ANY; // Set the port number
     addr.sin_port = htons(port);       // Bind to all interfaces
 
-    if (bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
+    if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
-        close(sockfd);
+        close(fd);
         std::string err = strerror(errno);
         throw std::runtime_error("bind port: " + err);
     }
@@ -60,9 +67,9 @@ void ServerSocket::bindPort(int port)
 
 void ServerSocket::listenPort(int backlog)
 {
-    if (listen(sockfd, backlog) < 0)
+    if (listen(fd, backlog) < 0)
     {
-        close(sockfd);
+        close(fd);
         std::string err = strerror(errno);
         throw std::runtime_error("listen port: " + err);
     }
@@ -74,10 +81,10 @@ ClientSocket ServerSocket::acceptConnection()
     struct sockaddr_in client_addr;
     socklen_t clilen = sizeof(client_addr);
 
-    int newsockfd = accept(sockfd, (struct sockaddr *)&client_addr, &clilen);
+    int newsockfd = accept(fd, (struct sockaddr *)&client_addr, &clilen);
     if (newsockfd < 0)
     {
-        close(sockfd);
+        close(fd);
         std::string err = strerror(errno);
         throw std::runtime_error("accept connection: " + err);
     }

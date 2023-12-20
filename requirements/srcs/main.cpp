@@ -7,13 +7,10 @@ int main()
 {
     try
     {
-        ServerSocket serverSocket;
         WebServer server;
-        serverSocket.bindPort(8080);
-        serverSocket.listenPort(10);
-        ClientSocket clientSocket = serverSocket.acceptConnection();
-        server.addFdToPollManager(serverSocket.getServerFd(), POLLIN);
-        server.pollClients();
+
+        // server.loadConfig();
+        server.startService();
     }
     catch (const std::exception &e)
     {

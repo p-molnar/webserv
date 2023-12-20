@@ -14,16 +14,18 @@
 class PollManager
 {
 private:
-    std::vector<struct pollfd> fds;
+    std::vector<struct pollfd> pfds;
 
 public:
     PollManager();
     ~PollManager();
 
-    void addFd(int fd, short events);
-    void removeFd(int fd);
+    void startService();
 
-    std::vector<struct pollfd> getPollFds(void);
+    // void addFd(int fd, short events);
+    // void removeFd(int fd);
+
+    // std::vector<struct pollfd> getPollFds(void);
 };
 
 #endif

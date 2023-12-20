@@ -9,18 +9,24 @@
 #include <map>
 #include <memory>
 
-class WebServer
+class WebServer : public ServerSocket, public PollManager
 {
+
 private:
-    PollManager _pollManager;
-    std::map<int, std::shared_ptr<ServerSocket> > _activeServer;
-    std::map<int, std::shared_ptr<ClientSocket> > _activeClients;
+    // Config config;
+    ServerSocket server_socket;
+    std::vector<struct pollfd> pfds;
 
 public:
-    WebServer(){};
-    ~WebServer(){};
+    WebServer();
 
-    void addFdToPollManager(int fd, short events);
+    void loadConfig();
+    void startService();
+
+    ~WebServer();
+
+    void addPfd(int fd, short events);
+    void removePfd(int fd);
     void pollClients();
 };
 
