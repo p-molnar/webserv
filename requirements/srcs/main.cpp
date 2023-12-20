@@ -3,8 +3,9 @@
 #include <vector>
 #include <sys/socket.h>
 
-int main()
+int main(int argc, char* argv[])
 {
+	Config config(argc, argv);
     try
     {
         ServerSocket serverSocket;
@@ -13,7 +14,7 @@ int main()
         serverSocket.listenPort(10);
         ClientSocket clientSocket = serverSocket.acceptConnection();
         server.addFdToPollManager(serverSocket.getServerFd(), POLLIN);
-        server.pollClients();
+        // server.pollClients(); // disabled because the function does not exist
     }
     catch (const std::exception &e)
     {

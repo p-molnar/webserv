@@ -1,23 +1,13 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   Config.cpp                                         :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: bprovoos <bprovoos@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2023/12/14 14:07:34 by bprovoos      #+#    #+#                 */
-/*   Updated: 2023/12/15 09:34:39 by bprovoos      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Config.hpp"
 
 LocationBlock::LocationBlock()
 {
+	
 }
 
 LocationBlock::~LocationBlock()
 {
+
 }
 
 void	LocationBlock::setRoot(char* root)
@@ -53,12 +43,12 @@ char*	LocationBlock::getIndex()
 
 ServerBlock::ServerBlock()
 {
-	setListenIpAddress("127.0.0.1");
-	setListenPort(8080);
+
 }
 
 ServerBlock::~ServerBlock()
 {
+
 }
 
 void	ServerBlock::addLocation(const LocationBlock& location)
@@ -96,33 +86,46 @@ char*	ServerBlock::getServerName()
 	return (this->_serverName);
 }
 
-HttpBlock::HttpBlock()
+Config::Config(): _file_path(DEFAULT_CONFIG_PATH)
 {
+	this->parseFile();
 }
 
-HttpBlock::~HttpBlock()
+Config::Config(const char* file_path): _file_path(file_path)
 {
+	this->parseFile();
 }
 
-void	HttpBlock::addServer(const ServerBlock& server)
+Config::Config(int argc, char* argv[])
 {
-	this->_servers.push_back(server);
+	if (argc > 1 && argv[1] != NULL)
+		_file_path = argv[1];
+	else
+		_file_path = DEFAULT_CONFIG_PATH;
+	parseFile();
 }
 
-Config::Config()
+Config::~Config() {}
+
+void	Config::openFile()
 {
+	if (_file_path == NULL)
+		_file_path = DEFAULT_CONFIG_PATH;
+	_config_file.open(_file_path);
+	if (!_config_file.is_open())
+	{
+		std::cout << "Error: Can not read file '" << _file_path << "'" << std::endl;
+		exit(1);
+	}
 }
 
-Config::~Config()
+void	Config::readFile()
 {
+
 }
 
-void		Config::setHttpBlock(HttpBlock http)
+void	Config::parseFile()
 {
-	this->_http = http;
-}
-
-HttpBlock	Config::getHttpBlock()
-{
-	return (this->_http);
+	openFile();
+	readFile();
 }

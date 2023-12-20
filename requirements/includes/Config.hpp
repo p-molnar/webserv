@@ -1,23 +1,15 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   Config.hpp                                         :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: bprovoos <bprovoos@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2023/12/14 14:07:51 by bprovoos      #+#    #+#                 */
-/*   Updated: 2023/12/15 10:02:13 by bprovoos      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <iostream>
 #include <cstring>
-#include <string>
+#include <fstream>
+// #include <string>
 #include <vector>
 #include <map>
+
+#define	DEFAULT_CONFIG_PATH "../default.conf"
 
 class LocationBlock
 {
@@ -66,9 +58,25 @@ public:
 	char*	getServerName();
 };
 
+class Config
+{
+private:
+	const char*					_file_path;
+	std::ifstream				_config_file;
+	std::string					_content;
+	std::vector<ServerBlock>	_servers;
 
+	void	openFile();
+	void	readFile();
+	void	parseFile();
 
+public:
+	Config();
+	Config(const char* file_path);
+	Config(int argc, char* argv[]);
+	~Config();
 
-
+	void	addServer(const ServerBlock& server);
+};
 
 #endif
