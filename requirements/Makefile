@@ -16,6 +16,8 @@ SRCS		:=		ServerSocket.cpp \
 					ClientSocket.cpp \
 					Config.cpp \
 					Parcer.cpp \
+					PollManager.cpp \
+					Webserver.cpp \
 					main.cpp \
 
 OBJ			:= 		$(addprefix $(OBJDIR)/,$(SRCS:.cpp=.o))
