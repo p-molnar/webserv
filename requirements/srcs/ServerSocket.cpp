@@ -66,6 +66,7 @@ void ServerSocket::listenPort(int backlog)
         std::string err = strerror(errno);
         throw std::runtime_error("listen port: " + err);
     }
+    std::cout << "Server is listening on port 8080..." << std::endl;
 }
 
 ClientSocket ServerSocket::acceptConnection()
@@ -80,5 +81,6 @@ ClientSocket ServerSocket::acceptConnection()
         std::string err = strerror(errno);
         throw std::runtime_error("accept connection: " + err);
     }
+    std::cout << "Connection accepted" << std::endl;
     return ClientSocket(newsockfd);
 }
