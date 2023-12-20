@@ -6,7 +6,7 @@
 /*   By: bprovoos <bprovoos@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/14 14:07:51 by bprovoos      #+#    #+#                 */
-/*   Updated: 2023/12/15 10:02:13 by bprovoos      ########   odam.nl         */
+/*   Updated: 2023/12/15 09:32:04 by bprovoos      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ private:
 	char*						_listenIpAddress;
 	int							_listenPort;
 	char*						_serverName;
-	
 	std::vector<LocationBlock>	_locations;
 
 public:
@@ -66,9 +65,31 @@ public:
 	char*	getServerName();
 };
 
+class HttpBlock
+{
+private:
+	std::vector<ServerBlock>	_servers;
 
+public:
+	HttpBlock();
+	~HttpBlock();
 
+	void	addServer(const ServerBlock& server);
+};
 
+class Config
+{
+private:
+	HttpBlock	_http;
+	
+public:
+	Config();
+	~Config();
+
+	void		setHttpBlock(HttpBlock http);
+	
+	HttpBlock	getHttpBlock();
+};
 
 
 #endif
