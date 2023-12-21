@@ -6,6 +6,9 @@
 int main(int argc, char* argv[])
 {
 	Config config(argc, argv);
+	config.display();
+
+	return (0); // temp for testing config
     try
     {
         ServerSocket serverSocket;
