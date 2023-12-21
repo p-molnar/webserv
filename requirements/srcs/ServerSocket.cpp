@@ -66,6 +66,7 @@ void ServerSocket::listenPort(int backlog)
         std::string err = strerror(errno);
         throw std::runtime_error("listen port: " + err);
     }
+	// todo: print port that is used
     std::cout << "Server is listening on port 8080..." << std::endl;
 }
 

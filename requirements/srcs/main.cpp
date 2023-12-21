@@ -6,14 +6,14 @@
 int main(int argc, char* argv[])
 {
 	Config config(argc, argv);
-	config.display();
+	config.display();	// temp for testing
 
-	return (0); // temp for testing config
     try
     {
         ServerSocket serverSocket;
         WebServer server;
-        serverSocket.bindPort(8080);
+        // serverSocket.bindPort(8080); // old
+		serverSocket.bindPort(config.serverBlock.getListenPort());
         serverSocket.listenPort(10);
         ClientSocket clientSocket = serverSocket.acceptConnection();
         server.addFdToPollManager(serverSocket.getServerFd(), POLLIN);
