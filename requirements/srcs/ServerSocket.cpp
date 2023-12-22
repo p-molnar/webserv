@@ -20,7 +20,7 @@ ServerSocket::ServerSocket()
     int yes = 1;
 
     fd = socket(PF_INET, SOCK_STREAM, 0); // AF_INET Specifies IPv4 A
-    // fcntl(this->sockfd, F_SETFL, O_NONBLOCK);       // Set NON-Blocking
+    fcntl(fd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);       // Set NON-Blocking
     if (fd == -1)
     {
         std::string err = strerror(errno);
