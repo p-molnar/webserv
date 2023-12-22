@@ -41,7 +41,7 @@ void WebServer::removePfd(int fd)
 void WebServer::pollClients()
 {
     int client_fd;
-    char buff[1024];
+    char buff[256];
 
     while (true)
     {
@@ -106,8 +106,8 @@ void WebServer::pollClients()
                         {
                             throw std::runtime_error("accept: " + std::string(strerror(errno)));
                         }
-                        close(pfds[i].fd);
-                        WebServer::removePfd(pfds[i].fd);
+                        // close(pfds[i].fd);
+                        // WebServer::removePfd(pfds[i].fd);
                     }
                 }
             }
