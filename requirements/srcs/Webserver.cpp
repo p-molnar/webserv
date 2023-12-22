@@ -1,6 +1,7 @@
 #include "WebServer.hpp"
 #include <stdexcept>
 #include "ServerSocket.hpp"
+#include "httpRequest.hpp"
 
 WebServer::WebServer(){};
 
@@ -80,6 +81,9 @@ void WebServer::pollClients()
                     std::cout << "event on already accepted client (" << pfds[i].fd << ") \n";
                     int bytes_received = recv(pfds[i].fd, buff, sizeof(buff), 0);
                     buff[bytes_received] = '\0';
+                    httpRequest requestParser(buff);
+                    std::string host = requestParser.getHeader("Host");
+                    std::cout << "\n\n HOST :: " << host << std::endl;
                     std::cout << "bytes received: " << bytes_received << '\n';
                     if (bytes_received <= 0)
                     {
