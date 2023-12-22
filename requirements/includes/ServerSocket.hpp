@@ -10,14 +10,13 @@
 #include <stdexcept>    // For error handling, and to throw exceptions
 #include <cerrno>       // Defines a set of string errors
 #include "ClientSocket.hpp"
+#include "ASocket.hpp"
+#include <fcntl.h>
 
 class ClientSocket;
 
-class ServerSocket
+class ServerSocket : public ASocket
 {
-private:
-    int fd;
-
 public:
     ServerSocket();
     ~ServerSocket();

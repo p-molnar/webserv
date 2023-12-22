@@ -1,25 +1,19 @@
 #include "ClientSocket.hpp"
 
-ClientSocket::ClientSocket(int socketfd) : _clientfd(socketfd)
+ClientSocket::ClientSocket(int fd)
 {
+    this->fd = fd;
 }
 
 ClientSocket::~ClientSocket()
 {
-    ::close(this->_clientfd);
+    ::close(fd);
 }
 
-ssize_t ClientSocket::pullMessage(char *buffer, size_t length)
+void ClientSocket::close()
 {
-    return recv(_clientfd, buffer, length, 0);
-}
-
-ssize_t ClientSocket::sendMessage(const char *buffer, size_t length)
-{
-    return send(_clientfd, buffer, length, 0);
-}
-
-void ClientSocket::closeFd()
-{
-    close(_clientfd);
+    if (::close(fd) == -1)
+    {
+        throw std::runtime_error("ClientSocket::close " + std::string(strerror(errno)));
+    }
 }
