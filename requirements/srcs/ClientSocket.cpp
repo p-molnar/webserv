@@ -1,8 +1,7 @@
 #include "ClientSocket.hpp"
 
-ClientSocket::ClientSocket(int fd)
+ClientSocket::ClientSocket(int fd) : Socket(fd, CLIENT)
 {
-    this->fd = fd;
 }
 
 ClientSocket::~ClientSocket()

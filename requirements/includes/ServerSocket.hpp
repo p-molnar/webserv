@@ -9,13 +9,10 @@
 #include <iostream>     // For basic I/O
 #include <stdexcept>    // For error handling, and to throw exceptions
 #include <cerrno>       // Defines a set of string errors
-#include "ClientSocket.hpp"
-#include "ASocket.hpp"
+#include "Socket.hpp"
 #include <fcntl.h>
 
-class ClientSocket;
-
-class ServerSocket : public ASocket
+class ServerSocket : public Socket
 {
 public:
     ServerSocket();
@@ -23,9 +20,7 @@ public:
 
     void bindPort(int port);
     void listenPort(int backlog);
-    ClientSocket acceptConnection();
-
-    int getFd() { return fd; };
+    // ClientSocket acceptConnection();
 };
 
 #endif

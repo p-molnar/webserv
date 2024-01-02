@@ -15,7 +15,7 @@
     - 0: Automatically choses the appropriate protocol.
     If socket creation fails (sockfd == -1), it prints an error message and exits.
  */
-ServerSocket::ServerSocket()
+ServerSocket::ServerSocket() : Socket(-1, SERVER)
 {
     int yes = 1;
 
@@ -76,18 +76,18 @@ void ServerSocket::listenPort(int backlog)
     std::cout << "Server is listening on port 8080..." << std::endl;
 }
 
-ClientSocket ServerSocket::acceptConnection()
-{
-    struct sockaddr_in client_addr;
-    socklen_t clilen = sizeof(client_addr);
+// ClientSocket ServerSocket::acceptConnection()
+// {
+//     struct sockaddr_in client_addr;
+//     socklen_t clilen = sizeof(client_addr);
 
-    int newsockfd = accept(fd, (struct sockaddr *)&client_addr, &clilen);
-    if (newsockfd < 0)
-    {
-        close(fd);
-        std::string err = strerror(errno);
-        throw std::runtime_error("accept connection: " + err);
-    }
-    std::cout << "Connection accepted" << std::endl;
-    return ClientSocket(newsockfd);
-}
+//     int newsockfd = accept(fd, (struct sockaddr *)&client_addr, &clilen);
+//     if (newsockfd < 0)
+//     {
+//         close(fd);
+//         std::string err = strerror(errno);
+//         throw std::runtime_error("accept connection: " + err);
+//     }
+//     std::cout << "Connection accepted" << std::endl;
+//     return ClientSocket(newsockfd);
+// }

@@ -12,11 +12,12 @@ INC_DIR		:= 		includes
 INC_FLAGS	:= 		-I$(INC_DIR)
 
 #=== Sources ===#
-SRCS		:=		ServerSocket.cpp \
-					ClientSocket.cpp \
-					PollManager.cpp \
-					Webserver.cpp \
-					main.cpp \
+SRCS		:=		ServerSocket.cpp					\
+					ClientSocket.cpp 					\
+					PollManager.cpp 					\
+					Webserver.cpp 						\
+					Socket.cpp							\
+					main.cpp							\
 
 OBJ			:= 		$(addprefix $(OBJDIR)/,$(SRCS:.cpp=.o))
 

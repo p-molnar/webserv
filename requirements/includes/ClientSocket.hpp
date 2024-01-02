@@ -5,17 +5,18 @@
 #include <sys/select.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
-#include "ASocket.hpp"
 #include <stdexcept>
 #include <cerrno>
 #include <string>
+#include "Socket.hpp"
 
-class ClientSocket : public ASocket
+class ClientSocket : public Socket
 {
 public:
     ClientSocket(int fd);
     ~ClientSocket(void);
 
+public:
     void close(void);
 };
 

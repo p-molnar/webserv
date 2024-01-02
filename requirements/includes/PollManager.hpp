@@ -14,18 +14,19 @@
 class PollManager
 {
 private:
+    int server_fd;
     std::vector<struct pollfd> pfds;
 
 public:
     PollManager();
     ~PollManager();
 
-    void startService();
-
-    // void addFd(int fd, short events);
-    // void removeFd(int fd);
-
-    // std::vector<struct pollfd> getPollFds(void);
+public:
+    void addServerFd(int fd);
+    void addSocket(int fd, int events);
+    void removeSocket(int fd);
+    void pollRequests();
+    void acceptConnection(int socket_fd);
 };
 
 #endif
