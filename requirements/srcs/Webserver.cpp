@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include "ServerSocket.hpp"
 
-WebServer::WebServer(){};
+WebServer::WebServer() : srv_socket(new ServerSocket){};
 
 void WebServer::loadConfig(){
     // load parsed configuration file;
@@ -10,11 +10,13 @@ void WebServer::loadConfig(){
 
 void WebServer::startService()
 {
-    server_socket.bindPort(8080);
-    server_socket.listenPort(10);
-    std::cout << "server socket: " << server_socket.getFd() << '\n';
-    poll_manager.addServerFd(server_socket.getFd());
+    srv_socket->bindPort(8080);
+    srv_socket->listenPort(10);
+    poll_manager.addSocket(srv_socket);
     poll_manager.pollRequests();
 }
 
-WebServer::~WebServer() {}
+WebServer::~WebServer()
+{
+    delete srv_socket;
+}

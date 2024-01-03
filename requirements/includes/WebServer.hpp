@@ -14,9 +14,8 @@ class WebServer : public ServerSocket, public PollManager
 
 private:
     // Config config;
-    ServerSocket server_socket;
+    ServerSocket *srv_socket;
     PollManager poll_manager;
-    std::vector<struct pollfd> pfds;
 
     // constructor & destructor
 public:

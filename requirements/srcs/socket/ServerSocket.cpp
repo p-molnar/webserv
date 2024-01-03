@@ -15,17 +15,19 @@
     - 0: Automatically choses the appropriate protocol.
     If socket creation fails (sockfd == -1), it prints an error message and exits.
  */
-ServerSocket::ServerSocket() : Socket(-1, SERVER)
+ServerSocket::ServerSocket()
 {
     int yes = 1;
 
-    fd = socket(PF_INET, SOCK_STREAM, 0);       // AF_INET Specifies IPv4 A
+    int fd = socket(PF_INET, SOCK_STREAM, 0);   // AF_INET Specifies IPv4 A
     fcntl(fd, F_SETFL, O_NONBLOCK, FD_CLOEXEC); // Set NON-Blocking
     if (fd == -1)
     {
-        std::string err = strerror(errno);
-        std::runtime_error("server socket: " + err);
+        std::runtime_error("server socket: " + STRERR);
     }
+
+    this->setFd(fd);
+    this->setPfd((t_pollfd){fd, POLLIN, 0});
 
     // setting the socket options as below will prevent the app from experiencing
     // "Address already in use" errors if it is killed and restarted within a short
@@ -33,12 +35,17 @@ ServerSocket::ServerSocket() : Socket(-1, SERVER)
     setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&yes, sizeof(yes));
 }
 
+ServerSocket::ServerSocket(const ASocket &obj)
+{
+    this->setFd(obj.getFd());
+}
+
 /* Simple destructor to close the socket.
  */
 ServerSocket::~ServerSocket()
 {
     if (fd >= 0)
-        close(fd);
+        ::close(fd);
 }
 
 /* This function binds the Socket ('sockfd') to the specified port.
@@ -59,22 +66,24 @@ void ServerSocket::bindPort(int port)
 
     if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
-        close(fd);
-        std::string err = strerror(errno);
-        throw std::runtime_error("bind port: " + err);
+        ::close(fd);
+        throw std::runtime_error("bind port: " + STRERR);
     }
+    Log::logMsg("fd " + std::to_string(fd) + " is bound to port " + std::to_string(port));
 }
 
 void ServerSocket::listenPort(int backlog)
 {
     if (listen(fd, backlog) < 0)
     {
-        close(fd);
-        std::string err = strerror(errno);
-        throw std::runtime_error("listen port: " + err);
+        ::close(fd);
+        throw std::runtime_error("listen port: " + STRERR);
     }
-    std::cout << "Server is listening on port 8080..." << std::endl;
+    Log::logMsg("Server is listening on port 8080");
 }
+
+void ServerSocket::recvRequest() {}
+void ServerSocket::sendResponse() {}
 
 // ClientSocket ServerSocket::acceptConnection()
 // {
@@ -91,3 +100,5 @@ void ServerSocket::listenPort(int backlog)
 //     std::cout << "Connection accepted" << std::endl;
 //     return ClientSocket(newsockfd);
 // }
+
+t_socketType ServerSocket::getType() const { return SERVER; }

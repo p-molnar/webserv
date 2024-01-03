@@ -12,12 +12,13 @@ INC_DIR		:= 		includes
 INC_FLAGS	:= 		-I$(INC_DIR)
 
 #=== Sources ===#
-SRCS		:=		ServerSocket.cpp					\
-					ClientSocket.cpp 					\
-					PollManager.cpp 					\
-					Webserver.cpp 						\
-					Socket.cpp							\
-					main.cpp							\
+SRCS		:=		socket/ASocket.cpp							\
+					socket/ServerSocket.cpp						\
+					socket/ClientSocket.cpp 					\
+					PollManager.cpp 							\
+					Webserver.cpp 								\
+					Log.cpp										\
+					main.cpp									\
 
 OBJ			:= 		$(addprefix $(OBJDIR)/,$(SRCS:.cpp=.o))
 
@@ -34,8 +35,10 @@ all: $(NAME)
 $(NAME): $(OBJDIR) $(OBJ)
 	@echo "$(GREEN)Building $(NAME) ...$(RESET)"
 	@c++ $(CPP_FLAGS) $(OBJ) -o $(NAME)
+	@echo "$(GREEN)Building completed$(RESET)"
 
 $(OBJDIR)/%.o: $(SRCSDIR)/%.cpp
+	@mkdir -p $(dir $@)
 	@c++ $(CPP_FLAGS) $(INC_FLAGS) -c $< -o $@
 
 

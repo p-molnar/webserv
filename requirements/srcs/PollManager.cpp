@@ -1,11 +1,4 @@
 #include "PollManager.hpp"
-#include <string>
-#include <iostream>
-#include <unistd.h>
-#include <sys/select.h>
-#include <sys/wait.h>
-#include <sys/socket.h>
-#include "errors.hpp"
 
 PollManager::PollManager()
 {
@@ -15,111 +8,109 @@ PollManager::~PollManager()
 {
 }
 
-void PollManager::addServerFd(int fd)
+void PollManager::addSocket(ASocket *socket)
 {
-	server_fd = fd;
-	struct pollfd pfd = {server_fd, POLLIN, 0};
-
-	pfds.push_back(pfd);
-}
-
-void PollManager::addSocket(int fd, int events)
-{
-	struct pollfd pfd = {fd, events, 0};
-	pfds.push_back(pfd);
+	pfds.push_back(socket->getPfd());
+	sockets[socket->getFd()] = socket;
 }
 
 void PollManager::removeSocket(int fd)
 {
-	std::vector<struct pollfd>::iterator it = pfds.begin();
-	std::vector<struct pollfd>::iterator ite = pfds.end();
-	while (it != ite)
+	std::vector<t_pollfd>::iterator v_it = pfds.begin();
+	std::vector<t_pollfd>::iterator v_ite = pfds.end();
+	while (v_it != v_ite)
 	{
-		if (it->fd == fd)
+		if (v_it->fd == fd)
 		{
-			pfds.erase(it);
+			pfds.erase(v_it);
 			break;
 		}
-		it++;
+		v_ite++;
 	}
+
+	std::map<int, ASocket *>::iterator m_it = sockets.find(fd);
+	delete m_it->second;
+	sockets.erase(m_it);
 }
 
-void PollManager::acceptConnection(int socket_fd)
+t_pollFds PollManager::getPfds()
+{
+	t_pollFds pfds;
+	std::map<int, ASocket *>::iterator it = sockets.begin();
+
+	pfds.size = sockets.size();
+	pfds.arr = new struct pollfd[pfds.size];
+
+	for (int i = 0; i < pfds.size; i++)
+	{
+		pfds.arr[i] = it->second->getPfd();
+		it++;
+	}
+	return pfds;
+}
+
+void PollManager::acceptConnection(int srv_fd)
 {
 	struct sockaddr_storage remoteaddr;
 	socklen_t addrlen = sizeof(remoteaddr);
 
-	int client_fd = accept(socket_fd, (struct sockaddr *)&remoteaddr, &addrlen);
+	int cli_fd = accept(srv_fd, (struct sockaddr *)&remoteaddr, &addrlen);
 
-	if (client_fd == -1)
+	if (cli_fd == -1)
 	{
 		throw std::runtime_error("accept: " + STRERR);
 	}
 	else
 	{
-		this->addSocket(client_fd, POLLIN);
-		std::cout << "new connection on fd: " << client_fd << '\n';
+		this->addSocket(new ClientSocket(cli_fd));
+		Log::logMsg("Client accepted on fd " + std::to_string(cli_fd));
 	}
 }
 
 void PollManager::pollRequests()
 {
-	char buff[1024];
-
 	while (true)
 	{
-		int active_events = poll(pfds.data(), pfds.size(), 5000); // timeout to be replaced with val from config
+
+		int active_events = poll(pfds.data(), pfds.size(), 1000);
 
 		if (active_events < 0)
-		{
 			throw std::runtime_error("poll: " + STRERR);
-		}
 
-		for (int i = 0, polled_events = 0, pfds_size = pfds.size(); polled_events < active_events && i < pfds_size; i++)
+		std::vector<t_pollfd>::iterator it = pfds.begin();
+		std::vector<t_pollfd>::iterator ite = pfds.end();
+		int polled_events = 0;
+		while (it != ite && polled_events < active_events)
 		{
-			if (pfds[i].revents & POLLIN)
+			std::vector<t_pollfd>::iterator curr_pfd = it;
+			int fd = curr_pfd->fd;
+			ASocket *curr_socket = sockets[fd];
+
+			if (curr_pfd->revents & POLLIN)
 			{
 				polled_events++;
-				if (pfds[i].fd == server_fd)
+				if (curr_socket->getType() == SERVER)
 				{
-					this->acceptConnection(server_fd);
+					this->acceptConnection(fd);
 				}
 				else
 				{
-					std::cout << "active event on client_fd=" << pfds[i].fd << "\n";
-					int bytes_received = recv(pfds[i].fd, buff, sizeof(buff), 0);
-					buff[bytes_received] = '\0';
-					std::cout << "bytes received: " << bytes_received << '\n';
-					if (bytes_received <= 0)
+					Log::logMsg("Event caught on fd " + std::to_string(fd));
+					try
 					{
-						if (bytes_received == 0)
-						{
-							std::cout << "client " << pfds[i].fd << " hung up\n";
-						}
-						else
-						{
-							throw std::runtime_error("recv: " + STRERR);
-						}
-						close(pfds[i].fd);
-						this->removeSocket(pfds[i].fd);
+						curr_socket->recvRequest();
+						// process request
+						curr_socket->sendResponse();
 					}
-					else
+					catch (const std::exception &e)
 					{
-						std::cout << "\nREQUEST:\n"
-								  << buff
-								  << "REQUEST END\n";
-						std::string response = "HTTP/1.1 200 OK\r\n\r\nwe got your request\n" + std::string(buff);
-						int bytes_sent = send(pfds[i].fd, response.c_str(), response.size(), 0);
-						std::cout << "bytes sent: " << bytes_sent << '\n';
-						if (bytes_sent < 0)
-						{
-							close(pfds[i].fd);
-							this->removeSocket(pfds[i].fd);
-							throw std::runtime_error("accept: " + STRERR);
-						}
+						close(fd);
+						PollManager::removeSocket(fd);
+						Log::logMsg(e.what());
 					}
 				}
 			}
+			it++;
 		}
 	}
 }

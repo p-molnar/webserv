@@ -14,7 +14,7 @@ int main()
     }
     catch (const std::exception &e)
     {
-        std::cerr << e.what() << '\n';
+        Log::logMsg(e.what());
         return EXIT_FAILURE;
     }
 
