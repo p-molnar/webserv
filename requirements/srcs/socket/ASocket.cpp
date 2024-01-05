@@ -33,14 +33,3 @@ void ASocket::setPfd(t_pollfd pfd)
 {
 	this->pfd = pfd;
 }
-
-void ASocket::recvRequest() {}
-void ASocket::sendResponse() {}
-
-void ASocket::close() const
-{
-	if (fd < 0)
-		throw std::runtime_error("close: attempt of closing negative fd");
-
-	::close(fd);
-}

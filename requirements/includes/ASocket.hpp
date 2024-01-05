@@ -34,13 +34,6 @@ public:
 	void setPfd(t_pollfd pfd);
 
 public:
-	virtual void recvRequest();
-	virtual void sendResponse();
-
-public:
-	void close() const;
-
-public:
 	virtual t_socketType getType() const = 0;
 };
 

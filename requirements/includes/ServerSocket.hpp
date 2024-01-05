@@ -13,6 +13,7 @@
 #include "ASocket.hpp"
 #include <fcntl.h>
 #include "Log.hpp"
+#include "ClientSocket.hpp"
 
 class ServerSocket : public ASocket
 {
@@ -29,7 +30,7 @@ public:
     void listenPort(int backlog);
     void recvRequest();
     void sendResponse();
-    // ClientSocket acceptConnection();
+    ClientSocket *acceptConnection();
 };
 
 #endif

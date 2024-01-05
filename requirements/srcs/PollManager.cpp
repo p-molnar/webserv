@@ -49,24 +49,6 @@ t_pollFds PollManager::getPfds()
 	return pfds;
 }
 
-void PollManager::acceptConnection(int srv_fd)
-{
-	struct sockaddr_storage remoteaddr;
-	socklen_t addrlen = sizeof(remoteaddr);
-
-	int cli_fd = accept(srv_fd, (struct sockaddr *)&remoteaddr, &addrlen);
-
-	if (cli_fd == -1)
-	{
-		throw std::runtime_error("accept: " + STRERR);
-	}
-	else
-	{
-		this->addSocket(new ClientSocket(cli_fd));
-		Log::logMsg("Client accepted on fd " + std::to_string(cli_fd));
-	}
-}
-
 void PollManager::pollRequests()
 {
 	while (true)
@@ -89,26 +71,27 @@ void PollManager::pollRequests()
 			if (curr_pfd->revents & POLLIN)
 			{
 				polled_events++;
-				if (curr_socket->getType() == SERVER)
+				if (ServerSocket *server_socket = dynamic_cast<ServerSocket *>(curr_socket))
 				{
-					this->acceptConnection(fd);
+					ClientSocket *new_client = server_socket->acceptConnection();
+					PollManager::addSocket(new_client);
 				}
-				else
+				if (ClientSocket *client_socket = dynamic_cast<ClientSocket *>(curr_socket))
 				{
 					try
 					{
-						curr_socket->recvRequest();
+						client_socket->recvRequest();
 						// process request
-						curr_socket->sendResponse();
+						client_socket->sendResponse();
 					}
 					catch (const ClientSocket::HungUpException &e)
 					{
-						Log::logMsg(e.what());
+						PollManager::removeSocket(client_socket->getFd());
 					}
 					catch (const std::exception &e)
 					{
-						close(fd);
-						PollManager::removeSocket(fd);
+						PollManager::removeSocket(client_socket->getFd());
+						Log::logMsg(e.what());
 					}
 				}
 			}

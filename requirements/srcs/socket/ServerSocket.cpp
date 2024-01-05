@@ -69,7 +69,7 @@ void ServerSocket::bindPort(int port)
         ::close(fd);
         throw std::runtime_error("bind port: " + STRERR);
     }
-    Log::logMsg("fd " + std::to_string(fd) + " is bound to port " + std::to_string(port));
+    Log::logMsg(fd, "file descriptor is bound to port " + std::to_string(port));
 }
 
 void ServerSocket::listenPort(int backlog)
@@ -79,26 +79,26 @@ void ServerSocket::listenPort(int backlog)
         ::close(fd);
         throw std::runtime_error("listen port: " + STRERR);
     }
-    Log::logMsg("Server is listening on port 8080");
+    Log::logMsg(fd, "server is listening on port 8080");
 }
 
-void ServerSocket::recvRequest() {}
-void ServerSocket::sendResponse() {}
+ClientSocket *ServerSocket::acceptConnection()
+{
+    struct sockaddr_storage remoteaddr;
+    socklen_t addrlen = sizeof(remoteaddr);
 
-// ClientSocket ServerSocket::acceptConnection()
-// {
-//     struct sockaddr_in client_addr;
-//     socklen_t clilen = sizeof(client_addr);
+    int cli_fd = accept(fd, (struct sockaddr *)&remoteaddr, &addrlen);
 
-//     int newsockfd = accept(fd, (struct sockaddr *)&client_addr, &clilen);
-//     if (newsockfd < 0)
-//     {
-//         close(fd);
-//         std::string err = strerror(errno);
-//         throw std::runtime_error("accept connection: " + err);
-//     }
-//     std::cout << "Connection accepted" << std::endl;
-//     return ClientSocket(newsockfd);
-// }
+    if (cli_fd == -1)
+    {
+        throw std::runtime_error("accept: " + STRERR);
+    }
+    else
+    {
+        Log::logMsg(fd, "new connection accepted: " + std::to_string(cli_fd));
+    }
+
+    return new ClientSocket(cli_fd);
+}
 
 t_socketType ServerSocket::getType() const { return SERVER; }

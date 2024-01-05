@@ -15,14 +15,13 @@ class ClientSocket : public ASocket
 public:
     class HungUpException : public std::exception
     {
-    public:
-        HungUpException(){};
-    };
+        std::string exc;
 
-    class OtherErrException : public std::exception
-    {
     public:
-        OtherErrException(){};
+        HungUpException() : exc(""){};
+        HungUpException(std::string what_arg) : exc(what_arg){};
+        const char *what() const throw() { return exc.c_str(); };
+        ~HungUpException() throw(){};
     };
 
 private:
