@@ -16,7 +16,7 @@ SRCS		:=		socket/ASocket.cpp							\
 					socket/ServerSocket.cpp						\
 					socket/ClientSocket.cpp 					\
 					PollManager.cpp 							\
-					Webserver.cpp 								\
+					WebServer.cpp 								\
 					Log.cpp										\
 					main.cpp									\
 
@@ -46,8 +46,9 @@ $(OBJDIR):
 	@mkdir -p $(OBJDIR)
 
 clean:
-	@rm -rf $(OBJDIR)
 	@echo "$(RED)Cleaning ...$(RESET)"
+	@rm -rf $(OBJDIR)
+	@echo "$(RED)Cleaning completed$(RESET)"
 
 fclean: clean
 	@rm -rf $(NAME) $(OBJDIR)
