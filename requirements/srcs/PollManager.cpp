@@ -25,7 +25,7 @@ void PollManager::removeSocket(int fd)
 			pfds.erase(v_it);
 			break;
 		}
-		v_ite++;
+		v_it++;
 	}
 
 	std::map<int, ASocket *>::iterator m_it = sockets.find(fd);
@@ -95,18 +95,20 @@ void PollManager::pollRequests()
 				}
 				else
 				{
-					Log::logMsg("Event caught on fd " + std::to_string(fd));
 					try
 					{
 						curr_socket->recvRequest();
 						// process request
 						curr_socket->sendResponse();
 					}
+					catch (const ClientSocket::HungUpException &e)
+					{
+						Log::logMsg(e.what());
+					}
 					catch (const std::exception &e)
 					{
 						close(fd);
 						PollManager::removeSocket(fd);
-						Log::logMsg(e.what());
 					}
 				}
 			}
