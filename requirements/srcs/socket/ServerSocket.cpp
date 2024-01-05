@@ -15,7 +15,9 @@
     - 0: Automatically choses the appropriate protocol.
     If socket creation fails (sockfd == -1), it prints an error message and exits.
  */
-ServerSocket::ServerSocket()
+ServerSocket::ServerSocket(){};
+
+void ServerSocket::createSocket()
 {
     int yes = 1;
 
@@ -32,6 +34,7 @@ ServerSocket::ServerSocket()
     // setting the socket options as below will prevent the app from experiencing
     // "Address already in use" errors if it is killed and restarted within a short
     // period of time.
+    Log::logMsg("file descriptor reserved for server: " + std::to_string(fd));
     setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&yes, sizeof(yes));
 }
 

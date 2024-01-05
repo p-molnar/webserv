@@ -5,6 +5,8 @@
 #include <stdexcept>
 #include <unistd.h>
 
+#include "errors.hpp"
+
 typedef enum e_SocketType
 {
 	SERVER = 1,

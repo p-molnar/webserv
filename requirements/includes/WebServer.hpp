@@ -7,14 +7,15 @@
 
 #include <vector>
 #include <map>
-#include <memory>
 
 class WebServer : public ServerSocket, public PollManager
 {
 
 private:
-    // Config config;
-    ServerSocket *srv_socket;
+    // temporary solution for server configuration
+    std::map<int, int> server_configs;
+
+    std::vector<ServerSocket *> server_sockets;
     PollManager poll_manager;
 
     // constructor & destructor

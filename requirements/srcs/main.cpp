@@ -1,7 +1,4 @@
 #include "WebServer.hpp"
-#include <iostream>
-#include <vector>
-#include <sys/socket.h>
 
 int main()
 {
@@ -9,7 +6,7 @@ int main()
     {
         WebServer server;
 
-        // server.loadConfig();
+        server.loadConfig();
         server.startService();
     }
     catch (const std::exception &e)
