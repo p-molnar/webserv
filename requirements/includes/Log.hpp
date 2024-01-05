@@ -7,8 +7,12 @@
 
 class Log
 {
+private:
+	static const std::string getTime();
+
 public:
-	static void logMsg(std::string);
+	static void logMsg(std::string msg);
+	static void logMsg(int fd, std::string msg);
 };
 
 #endif
