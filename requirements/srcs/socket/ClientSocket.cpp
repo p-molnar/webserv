@@ -1,4 +1,5 @@
 #include "ClientSocket.hpp"
+#include "consts.hpp"
 
 ClientSocket::ClientSocket(int fd)
 {
@@ -26,7 +27,7 @@ void ClientSocket::recvRequest()
         }
         else
         {
-            throw std::runtime_error("recv: " + STRERR);
+            throw std::runtime_error(STRERR);
         }
     }
     Log::logMsg("Request received for client with fd " + std::to_string(fd));
@@ -34,14 +35,17 @@ void ClientSocket::recvRequest()
 
 void ClientSocket::sendResponse()
 {
-    // std::cout << "\nREQUEST:\n"
-    //           << request_buff
-    //           << "REQUEST END\n";
-    std::string response_body = "\r\n\r\nOK";
-    std::string response_header = "HTTP/1.1 200 OK";
-    response_header += "\nContent-length:2";
+    std::string status_line = "HTTP/1.1 200 OK";
+    std::string response_headers = "";
+    response_headers += "Content-Type: text/html" + CRLF;
+    response_headers += "Content-Length: 0" + CRLF;
+    std::string response_body = "";
 
-    std::string response = response_header + response_body;
+    std::string response = status_line +
+                           CRLF +
+                           response_headers +
+                           CRLF +
+                           response_body;
 
     int bytes_sent = send(fd, response.c_str(), response.size(), 0);
 

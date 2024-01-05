@@ -8,13 +8,21 @@
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <stdexcept>
+#include <exception>
 
 class ClientSocket : public ASocket
 {
+public:
     class HungUpException : public std::exception
     {
     public:
         HungUpException(){};
+    };
+
+    class OtherErrException : public std::exception
+    {
+    public:
+        OtherErrException(){};
     };
 
 private:
