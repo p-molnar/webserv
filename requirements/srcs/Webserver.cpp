@@ -9,9 +9,9 @@ void WebServer::loadConfig()
     // load parsed configuration file;
 
     // tmp stuff
-    server_configs[8000] = 10;
-    server_configs[8001] = 10;
-    server_configs[8002] = 10;
+    // server_configs[8000] = 10;
+    // server_configs[8001] = 10;
+    // server_configs[8002] = 10;
     server_configs[8080] = 10;
 };
 

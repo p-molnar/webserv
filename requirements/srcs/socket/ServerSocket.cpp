@@ -72,7 +72,7 @@ void ServerSocket::bindPort(int port)
         ::close(fd);
         throw std::runtime_error("bind port: " + STRERR);
     }
-    Log::logMsg(fd, "file descriptor is bound to port " + std::to_string(port));
+    Log::logMsg("file descriptor is bound to port " + std::to_string(port), fd);
 }
 
 void ServerSocket::listenPort(int backlog)
@@ -82,7 +82,7 @@ void ServerSocket::listenPort(int backlog)
         ::close(fd);
         throw std::runtime_error("listen port: " + STRERR);
     }
-    Log::logMsg(fd, "server is listening on port 8080");
+    Log::logMsg("server is listening on port 8080", fd);
 }
 
 ClientSocket *ServerSocket::acceptConnection()
@@ -98,7 +98,7 @@ ClientSocket *ServerSocket::acceptConnection()
     }
     else
     {
-        Log::logMsg(fd, "new connection accepted: " + std::to_string(cli_fd));
+        Log::logMsg("new connection accepted: " + std::to_string(cli_fd), fd);
     }
 
     return new ClientSocket(cli_fd);

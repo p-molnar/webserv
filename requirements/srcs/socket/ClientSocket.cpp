@@ -20,7 +20,7 @@ void ClientSocket::recvRequest()
     {
         if (bytes_received == 0)
         {
-            Log::logMsg(fd, "Connection hung up");
+            Log::logMsg("Connection hung up", fd);
             throw ClientSocket::HungUpException();
         }
         else
@@ -28,7 +28,7 @@ void ClientSocket::recvRequest()
             throw std::runtime_error(STRERR);
         }
     }
-    Log::logMsg(fd, "request received");
+    Log::logMsg("request received", fd);
 }
 
 void ClientSocket::sendResponse()
@@ -51,5 +51,5 @@ void ClientSocket::sendResponse()
     {
         throw std::runtime_error("accept: " + STRERR);
     }
-    Log::logMsg(fd, "response sent");
+    Log::logMsg("response sent", fd);
 }

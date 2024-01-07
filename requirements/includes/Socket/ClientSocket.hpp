@@ -18,7 +18,7 @@ public:
         std::string exc;
 
     public:
-        HungUpException() : exc(""){};
+        HungUpException(){};
         HungUpException(std::string what_arg) : exc(what_arg){};
         const char *what() const throw() { return exc.c_str(); };
         ~HungUpException() throw(){};
