@@ -12,8 +12,6 @@ ClientSocket::~ClientSocket()
     ::close(fd);
 }
 
-t_socketType ClientSocket::getType() const { return CLIENT; }
-
 void ClientSocket::recvRequest()
 {
 

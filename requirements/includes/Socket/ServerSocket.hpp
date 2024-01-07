@@ -6,20 +6,17 @@
 #include <stdexcept>
 #include <fcntl.h>
 
-#include "ASocket.hpp"
+#include "Socket.hpp"
 #include "Log.hpp"
 #include "ClientSocket.hpp"
 #include "errors.hpp"
 
-class ServerSocket : public ASocket
+class ServerSocket : public Socket
 {
 public:
     ServerSocket();
-    ServerSocket(const ASocket &obj);
+    ServerSocket(const Socket &obj);
     ~ServerSocket();
-
-public:
-    t_socketType getType() const;
 
 public:
     void createSocket();

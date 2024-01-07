@@ -7,25 +7,19 @@
 
 #include "errors.hpp"
 
-typedef enum e_SocketType
-{
-	SERVER = 1,
-	CLIENT
-} t_socketType;
-
 typedef struct pollfd t_pollfd;
 
-class ASocket
+class Socket
 {
 protected:
 	int fd;
 	t_pollfd pfd;
 
 public:
-	ASocket();
-	ASocket(int fd);
-	ASocket(const ASocket &obj);
-	virtual ~ASocket();
+	Socket();
+	Socket(int fd);
+	Socket(const Socket &obj);
+	virtual ~Socket();
 
 public:
 	int getFd() const;
@@ -34,9 +28,6 @@ public:
 	// public:
 	void setFd(int fd);
 	void setPfd(t_pollfd pfd);
-
-public:
-	virtual t_socketType getType() const = 0;
 };
 
 #endif

@@ -1,7 +1,7 @@
 #ifndef CLIENTSOCKET_HPP
 #define CLIENTSOCKET_HPP
 
-#include "ASocket.hpp"
+#include "Socket.hpp"
 #include "errors.hpp"
 #include "Log.hpp"
 
@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include <exception>
 
-class ClientSocket : public ASocket
+class ClientSocket : public Socket
 {
 public:
     class HungUpException : public std::exception
@@ -32,7 +32,6 @@ public:
     ~ClientSocket(void);
 
 public:
-    t_socketType getType() const;
     void recvRequest();
     void sendResponse();
 };

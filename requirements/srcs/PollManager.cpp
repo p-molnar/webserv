@@ -8,7 +8,7 @@ PollManager::~PollManager()
 {
 }
 
-void PollManager::addSocket(ASocket *socket)
+void PollManager::addSocket(Socket *socket)
 {
 	pfds.push_back(socket->getPfd());
 	sockets[socket->getFd()] = socket;
@@ -28,7 +28,7 @@ void PollManager::removeSocket(int fd)
 		v_it++;
 	}
 
-	std::map<int, ASocket *>::iterator m_it = sockets.find(fd);
+	std::map<int, Socket *>::iterator m_it = sockets.find(fd);
 	delete m_it->second;
 	sockets.erase(m_it);
 }
@@ -36,7 +36,7 @@ void PollManager::removeSocket(int fd)
 t_pollFds PollManager::getPfds()
 {
 	t_pollFds pfds;
-	std::map<int, ASocket *>::iterator it = sockets.begin();
+	std::map<int, Socket *>::iterator it = sockets.begin();
 
 	pfds.size = sockets.size();
 	pfds.arr = new struct pollfd[pfds.size];
@@ -66,7 +66,7 @@ void PollManager::pollRequests()
 		{
 			std::vector<t_pollfd>::iterator curr_pfd = it;
 			int fd = curr_pfd->fd;
-			ASocket *curr_socket = sockets[fd];
+			Socket *curr_socket = sockets[fd];
 
 			if (curr_pfd->revents & POLLIN)
 			{

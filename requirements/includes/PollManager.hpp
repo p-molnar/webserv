@@ -4,7 +4,7 @@
 #include <map>
 #include <vector>
 
-#include "ASocket.hpp"
+#include "Socket.hpp"
 #include "ServerSocket.hpp"
 #include "ClientSocket.hpp"
 
@@ -24,14 +24,14 @@ class PollManager
 {
 private:
     std::vector<t_pollfd> pfds;
-    std::map<int, ASocket *> sockets;
+    std::map<int, Socket *> sockets;
 
 public:
     PollManager();
     ~PollManager();
 
 public:
-    void addSocket(ASocket *socket);
+    void addSocket(Socket *socket);
     // void addServerFd(int fd);
     // void addSocket(int fd, int events);
     void removeSocket(int fd);

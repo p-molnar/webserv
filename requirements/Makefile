@@ -12,7 +12,7 @@ INC_DIR		:= 		includes
 INC_FLAGS	:= 		$(addprefix -I, $(shell find $(INC_DIR) -type d))
 
 #=== Sources ===#
-# SRCS		:=		socket/ASocket.cpp							\
+# SRCS		:=		socket/Socket.cpp							\
 # 					socket/ServerSocket.cpp						\
 # 					socket/ClientSocket.cpp 					\
 # 					PollManager.cpp 							\

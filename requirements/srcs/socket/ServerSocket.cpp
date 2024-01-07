@@ -38,7 +38,7 @@ void ServerSocket::createSocket()
     setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&yes, sizeof(yes));
 }
 
-ServerSocket::ServerSocket(const ASocket &obj)
+ServerSocket::ServerSocket(const Socket &obj)
 {
     this->setFd(obj.getFd());
 }
@@ -103,5 +103,3 @@ ClientSocket *ServerSocket::acceptConnection()
 
     return new ClientSocket(cli_fd);
 }
-
-t_socketType ServerSocket::getType() const { return SERVER; }
