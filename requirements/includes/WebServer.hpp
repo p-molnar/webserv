@@ -9,21 +9,28 @@
 
 #include <vector>
 #include <map>
-#include <memory>
 
-class WebServer
+class WebServer : public ServerSocket, public PollManager
 {
+
 private:
-    PollManager _pollManager;
-    std::map<int, std::shared_ptr<ServerSocket> > _activeServer;
-    std::map<int, std::shared_ptr<ClientSocket> > _activeClients;
+    // temporary solution for server configuration
+    std::map<int, int> server_configs;
 
+    std::vector<ServerSocket *> server_sockets;
+    PollManager poll_manager;
+
+    // constructor & destructor
 public:
-    WebServer(){};
-    ~WebServer(){};
+    WebServer();
+    ~WebServer();
 
-    void addFdToPollManager(int fd, short events);
-    void pollClients();
+    // main member functions
+public:
+    void loadConfig();
+    void startService();
+
+    static int getServerFd();
 };
 
 #endif

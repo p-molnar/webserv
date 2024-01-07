@@ -1,21 +1,12 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   PollManager.hpp                                    :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2023/12/15 14:35:38 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/18 14:05:04 by pmolnar       ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef POLLMANAGER_HPP
 #define POLLMANAGER_HPP
 
+#include <map>
 #include <vector>
-#include <poll.h>
-#include <algorithm>
+
+#include "Socket.hpp"
+#include "ServerSocket.hpp"
+#include "ClientSocket.hpp"
 
 /*
     #define POLLIN 0x001  There is data to read.
@@ -23,19 +14,30 @@
     #define POLLOUT 0x004 Writing now will not block.
 */
 
+typedef struct s_pollFds
+{
+    t_pollfd *arr;
+    int size;
+} t_pollFds;
+
 class PollManager
 {
 private:
-    std::vector<struct pollfd> fds;
+    std::vector<t_pollfd> pfds;
+    std::map<int, Socket *> sockets;
 
 public:
     PollManager();
     ~PollManager();
 
-    void addFd(int fd, short events);
-    void removeFd(int fd);
-
-    std::vector<struct pollfd> getPollFds(void);
+public:
+    void addSocket(Socket *socket);
+    // void addServerFd(int fd);
+    // void addSocket(int fd, int events);
+    void removeSocket(int fd);
+    void pollRequests();
+    void acceptConnection(int socket_fd);
+    t_pollFds getPfds();
 };
 
 #endif
