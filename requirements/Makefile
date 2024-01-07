@@ -11,15 +11,6 @@ CPP_FLAGS	:= 		-Wall -Werror -Wextra -std=c++98 -g
 INC_DIR		:= 		includes
 INC_FLAGS	:= 		$(addprefix -I, $(shell find $(INC_DIR) -type d))
 
-#=== Sources ===#
-# SRCS		:=		socket/Socket.cpp							\
-# 					socket/ServerSocket.cpp						\
-# 					socket/ClientSocket.cpp 					\
-# 					PollManager.cpp 							\
-# 					WebServer.cpp 								\
-# 					Log.cpp										\
-# 					main.cpp									\
-
 SRCS		:=		$(shell find $(SRCSDIR) -type f)
 
 OBJ			:= 		$(addprefix $(OBJDIR)/,$(SRCS:.cpp=.o))
@@ -29,8 +20,6 @@ OBJ			:= 		$(addprefix $(OBJDIR)/,$(SRCS:.cpp=.o))
 GREEN = \033[0;32m
 RED = \033[0;31m
 RESET = \033[0m
-
-#=== Targets ===#
 
 all: $(NAME)
 
@@ -44,10 +33,6 @@ $(OBJDIR)/%.o: %.cpp
 	@printf "building %-75s" $@
 	@c++ $(CPP_FLAGS) $(INC_FLAGS) -c $< -o $@
 	@printf "[$(GREEN)%s$(RESET)]\n" ✓
-
-
-
-
 
 $(OBJDIR):
 	@mkdir -p $(OBJDIR)
@@ -63,3 +48,5 @@ fclean:
 	@printf "$(RED)cleaning completed$(RESET)\n"
 
 re: fclean all
+
+PHONY.: all clean fclean re
