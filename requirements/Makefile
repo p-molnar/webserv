@@ -9,16 +9,18 @@ OBJDIR 		:= 		obj
 CPP_FLAGS	:= 		-Wall -Werror -Wextra -std=c++98 -g
 
 INC_DIR		:= 		includes
-INC_FLAGS	:= 		-I$(INC_DIR)
+INC_FLAGS	:= 		$(addprefix -I, $(shell find $(INC_DIR) -type d))
 
 #=== Sources ===#
-SRCS		:=		socket/ASocket.cpp							\
-					socket/ServerSocket.cpp						\
-					socket/ClientSocket.cpp 					\
-					PollManager.cpp 							\
-					WebServer.cpp 								\
-					Log.cpp										\
-					main.cpp									\
+# SRCS		:=		socket/ASocket.cpp							\
+# 					socket/ServerSocket.cpp						\
+# 					socket/ClientSocket.cpp 					\
+# 					PollManager.cpp 							\
+# 					WebServer.cpp 								\
+# 					Log.cpp										\
+# 					main.cpp									\
+
+SRCS		:=		$(shell find $(SRCSDIR) -type f)
 
 OBJ			:= 		$(addprefix $(OBJDIR)/,$(SRCS:.cpp=.o))
 
@@ -33,24 +35,31 @@ RESET = \033[0m
 all: $(NAME)
 
 $(NAME): $(OBJDIR) $(OBJ)
-	@echo "$(GREEN)Building $(NAME) ...$(RESET)"
-	@c++ $(CPP_FLAGS) $(OBJ) -o $(NAME)
-	@echo "$(GREEN)Building completed$(RESET)"
+	@printf "$(GREEN)compiling '$(NAME)'...$(RESET)\n"
+	c++ $(CPP_FLAGS) $(OBJ) -o $(NAME)
+	@printf "$(GREEN)compilation completed$(RESET)\n"
 
-$(OBJDIR)/%.o: $(SRCSDIR)/%.cpp
+$(OBJDIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
+	@printf "building %-75s" $@
 	@c++ $(CPP_FLAGS) $(INC_FLAGS) -c $< -o $@
+	@printf "[$(GREEN)%s$(RESET)]\n" ✓
+
+
+
 
 
 $(OBJDIR):
 	@mkdir -p $(OBJDIR)
 
 clean:
-	@echo "$(RED)Cleaning ...$(RESET)"
-	@rm -rf $(OBJDIR)
-	@echo "$(RED)Cleaning completed$(RESET)"
+	@printf "$(RED)cleaning...$(RESET)\n"
+	rm -rf $(OBJDIR)
+	@printf "$(RED)cleaning completed$(RESET)\n"
 
-fclean: clean
-	@rm -rf $(NAME) $(OBJDIR)
+fclean: 
+	@printf "$(RED)cleaning...$(RESET)\n"
+	rm -rf $(NAME) $(OBJDIR)
+	@printf "$(RED)cleaning completed$(RESET)\n"
 
 re: fclean all
