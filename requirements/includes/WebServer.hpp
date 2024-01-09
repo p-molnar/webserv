@@ -4,7 +4,6 @@
 #include "ServerSocket.hpp"
 #include "ClientSocket.hpp"
 #include "PollManager.hpp"
-#include "httpRequest.hpp"
 #include "Config.hpp"
 #include "Parcer.hpp"
 
