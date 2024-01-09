@@ -4,6 +4,7 @@
 #include "Socket.hpp"
 #include "errors.hpp"
 #include "Log.hpp"
+#include "httpRequest.hpp"
 
 #include <sys/poll.h>
 #include <sys/socket.h>
@@ -25,7 +26,8 @@ public:
     };
 
 private:
-    char request_buff[2048];
+    bool request_parsed;
+    httpRequest request;
 
 public:
     ClientSocket(int fd);

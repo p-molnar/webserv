@@ -1,35 +1,61 @@
-#ifndef WEBSERVER_HPP
-#define WEBSERVER_HPP
+#ifndef HTTPREQUEST__HPP
+#define HTTPREQUEST__HPP
 
-#include "WebServer.hpp"
 #include <map>
+#include <cstdio>
+#include <cstring>
+#include <string>
+#include "consts.hpp"
+
 /*  HTTP Request parser.
     Requirements:
         - A request should never hang forever - set a timeout for a request;
         - GET, POST, DELETE methods should be parsed;
-            - For POST parse the 'Content-Length' header. 
+            - For POST parse the 'Content-Length' header.
  */
 
 /* TO MAKE : Chunked data function
     save chunks with istream and append to requestText
  */
 
-class httpRequest 
+enum e_parse_status
 {
-    private:
-        std::string                         _method;
-        std::map<std::string, std::string>  _headers;
-
-        void parseHeaders(const std::string& headers);
-
-    
-    public:
-        httpRequest(const std::string& requestText);
-        void            parseRequest(const std::string& requestText);
-        void            parseRequestLine(const std::string& line);
-
-        std::string getMethod() const;
-        std::string getHeader(const std::string& headerName) const;
+    INCOMPLETE,
+    COMPLETE,
+    NA,
 };
+
+class httpRequest
+{
+private:
+    e_parse_status request_line_parse_status;
+    e_parse_status request_headers_parse_status;
+    e_parse_status request_msg_body_parse_status;
+
+private:
+    std::string raw_request;
+    std::map<std::string, std::string> request_line;
+    std::map<std::string, std::string> request_headers;
+    std::string request_message_body;
+
+private:
+    std::vector<std::string> tokenize(const std::string &input, const std::string &delimeter, std::size_t max_count);
+    void parseRequestLine(const std::string &raw_request);
+    void parseHeaders(const std::string &raw_request);
+    void parseMessageBody(const std::string &raw_request);
+
+public:
+    httpRequest();
+
+    bool parseRequest(char *request_buff);
+    void flushBuffers();
+
+    std::string getRequestLine(const std::string &request_line_el) const;
+    std::string getHeader(const std::string &headerName) const;
+    std::string getMessageBody() const;
+    void printParsedContent() const;
+};
+
+// std::ostream &operator<<(std::ostream &os, httpRequest obj) { return os; };
 
 #endif
