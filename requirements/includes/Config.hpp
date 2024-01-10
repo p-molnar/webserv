@@ -8,9 +8,13 @@
 #include <sstream>
 #include <stack>
 
+#define NC  "\x1B[0m"
+#define CRED  "\x1B[31m"
+#define CGRN  "\x1B[32m"
 #define	DEFAULT_CONFIG_PATH "../default.conf"
 
-std::string removeSemicolon(const std::string& str);
+bool		is_number(std::string s);
+std::string	removeSemicolon(const std::string& str);
 
 class LocationBlock {
 private:

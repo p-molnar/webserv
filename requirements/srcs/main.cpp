@@ -7,7 +7,7 @@ int main(int argc, char* argv[])
 {
 	Config config(argc, argv);
 	config.display();	// temp for testing
-
+	return (0);
     try
     {
         ServerSocket serverSocket;

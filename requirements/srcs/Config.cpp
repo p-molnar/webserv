@@ -1,6 +1,10 @@
 #include "Config.hpp"
 
-LocationBlock::LocationBlock() {}
+LocationBlock::LocationBlock()
+{
+	_path = "/";
+	_index = "index.html";
+}
 
 LocationBlock::~LocationBlock() {}
 
@@ -64,7 +68,13 @@ void LocationBlock::addLocation(const LocationBlock& location) {
 	_locations.push_back(location);
 }
 
-ServerBlock::ServerBlock() : _listenPort(0), _clientMaxBodySize(0) {}
+ServerBlock::ServerBlock()
+{
+	_listenPort = 0;
+	_serverName = "server-name";
+	_clientMaxBodySize = 0;
+	_index = "index.html";
+}
 
 ServerBlock::~ServerBlock() {}
 
@@ -134,12 +144,12 @@ void ServerBlock::addLocation(const LocationBlock& location) {
 
 Config::Config(): _file_path(DEFAULT_CONFIG_PATH)
 {
-	this->parseFile();
+	parseFile();
 }
 
 Config::Config(const char* file_path): _file_path(file_path)
 {
-	this->parseFile();
+	parseFile();
 }
 
 Config::Config(int argc, char* argv[])
@@ -184,46 +194,151 @@ void	Config::openFile()
 	std::cout << "Using config file '" << _file_path << "'" << std::endl;
 }
 
-void	Config::readFile()
+// std::string	removeSemicolon
+
+// void	Config::readFile() // old
+// {
+// 	std::string line;
+// 	while (getline(_config_file, line))
+// 	{
+// 		std::istringstream lineStream(line);
+// 		std::string key;
+// 		lineStream >> key;
+
+// 		if (key == "#" || key == " ")
+// 			continue;
+// 		if (key == "server")
+// 			continue; // lineStream >> key == {
+// 		else if (key == "location")
+// 		{
+// 			std::string path;
+// 			lineStream >> path;
+// 			locationStack.push(new LocationBlock());
+// 			locationStack.top()->setPath(path);
+// 		}
+// 		else if (key == "}")
+// 		{
+// 			if (!locationStack.empty())
+// 			{
+// 				LocationBlock* topLocation = locationStack.top();
+// 				locationStack.pop();
+// 				if (locationStack.empty())
+// 					serverBlock.addLocation(*topLocation);
+// 				else
+// 					locationStack.top()->addLocation(*topLocation);
+// 				delete topLocation;
+// 			}
+// 		}
+// 		else
+// 		{
+// 			if (locationStack.empty())
+// 				parseServerLine(key, lineStream, serverBlock);
+// 			else
+// 				parseLocationLine(key, lineStream, *locationStack.top());
+// 		}
+// 	}
+// }
+
+void	Config::readFile() // new
 {
-	std::string line;
+	int			line_nr = 1;
+	std::string	line;
+	std::string key, value;
+	std::stack<std::string> block;
+
 	while (getline(_config_file, line))
 	{
 		std::istringstream lineStream(line);
-		std::string key;
-		lineStream >> key;
-
-		if (key == "server")
-			continue;
-		else if (key == "location")
+		while (lineStream >> key)
 		{
-			std::string path;
-			lineStream >> path;
-			locationStack.push(new LocationBlock());
-			locationStack.top()->setPath(path);
-		}
-		else if (key == "}")
-		{
-			if (!locationStack.empty())
+			if (key[0] == '#')
+				break;
+			if (key == "server")
 			{
-				LocationBlock* topLocation = locationStack.top();
-				locationStack.pop();
-				if (locationStack.empty())
-					serverBlock.addLocation(*topLocation);
+				std::cout << CGRN << "Block " << key << NC << std::endl;
+				lineStream >> key;
+				if (key == "{")
+					block.push("server");
 				else
-					locationStack.top()->addLocation(*topLocation);
-				delete topLocation;
+					std::cout << CRED << "Error config format, line " << NC << line_nr << ": '" << line << "'" << std::endl;
+			}
+			else if (key == "location")
+			{
+				std::cout << CGRN << "Block " << key << NC << " ";
+				lineStream >> key;
+				std::cout << key  << std::endl;
+				lineStream >> key;
+				if (key == "{")
+					block.push("location");
+				else
+					std::cout << CRED << "Error config format, line " << NC << line_nr << ": '" << line << "'" << std::endl;
+			}
+			else if (key == "}")
+			{
+				if (!block.empty())
+				{
+					std::cout << CGRN << "End Block " << block.top() << NC << std::endl;
+					block.pop();
+				}
+				else
+					std::cout << CRED << "Error config format, line " << NC << line_nr << ": '" << line << "'" << std::endl;
+			}
+			else if (!block.empty() && block.top() == "server")
+			{
+				value = "";
+				while (value.back() != ';' && lineStream >> value)
+				{
+					std::cout << "key = '" << key << "' value = '" << value << "'" << std::endl;
+					if (key == "listen")
+					{
+						if (is_number(removeSemicolon(value)))
+							serverBlock.setListenPort(std::stoi(removeSemicolon(value)));
+						else
+							std::cout << CRED << "Error config format, line " << NC << line_nr << ": '" << line << "'" << std::endl;
+					}
+					if (key == "server_name")
+						serverBlock.setServerName(removeSemicolon(value));
+				}
+				if (value == "")
+					std::cout << "key = '" << key << "' value = ''" << std::endl;
+			}
+			else if (!block.empty() && block.top() == "location")
+			{
+				value = "";
+				while (value.back() != ';' && lineStream >> value)
+				{
+					std::cout << "key = '" << key << "' value = '" << value << "'" << std::endl;
+				}
+				if (value == "")
+					std::cout << "key = '" << key << "' value = ''" << std::endl;
+			}
+			else
+			{
+				value = "";
+				while (value.back() != ';' && lineStream >> value)
+				{
+					std::cout << "key = '" << key << "' value = '" << value << "'" << std::endl;
+				}
+				if (value == "")
+					std::cout << "key = '" << key << "' value = ''" << std::endl;
 			}
 		}
-		else
-		{
-			if (locationStack.empty())
-				parseServerLine(key, lineStream, serverBlock);
-			else
-				parseLocationLine(key, lineStream, *locationStack.top());
-		}
+		line_nr++;
 	}
+	std::cout << std::endl;
 }
+
+// bool isInt(const std::string& s)
+// {
+// 	std::stringstream stream(s);
+// 	int int_choice;
+// 	if (!(stream >> int_choice) || stream.peek() != std::char_traits<int>::eof())
+// 	{
+// 		return false;
+// 	}
+
+// 	return true;
+// }
 
 void	Config::parseServerLine(const std::string& key, std::istringstream& lineStream, ServerBlock& serverBlock)
 {
@@ -231,9 +346,9 @@ void	Config::parseServerLine(const std::string& key, std::istringstream& lineStr
 	{
 		int port;
 		std::string ip;
-		if (!(lineStream >> ip >> port))
+		if (!(lineStream >> ip >> port)) // && ip has not []
 		{
-			port = std::stoi(ip);
+			port = std::stoi(removeSemicolon(ip)); // get integer from string
 			ip = "127.0.0.1";
 		}
 		serverBlock.setListenIpAddress(removeSemicolon(ip));
@@ -267,6 +382,12 @@ void	Config::parseLocationLine(const std::string& key, std::istringstream& lineS
 		lineStream >> index;
 		locationBlock.setIndex(removeSemicolon(index));
 	}
+	else if (key == "return")
+	{
+		std::string redirection;
+		lineStream >> redirection;
+		locationBlock.setReturn(removeSemicolon(redirection));
+	}
 }
 
 void	Config::closeFile()
@@ -280,6 +401,16 @@ void	Config::parseFile()
 	openFile();
 	readFile();
 	closeFile();
+}
+
+bool is_number(std::string s)
+{
+   for (size_t i = 0; i < s.length(); i++)
+   {
+      if (!isdigit(s[i]))
+         return false;
+   }
+   return true;
 }
 
 std::string removeSemicolon(const std::string& str)
