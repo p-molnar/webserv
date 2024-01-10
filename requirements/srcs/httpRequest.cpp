@@ -1,37 +1,11 @@
 #include "httpRequest.hpp"
 #include "WebServer.hpp"
-#include <string>
 
 httpRequest::httpRequest()
     : request_line_parse_status(INCOMPLETE),
       request_headers_parse_status(INCOMPLETE),
       request_msg_body_parse_status(INCOMPLETE)
 {
-}
-
-std::vector<std::string> httpRequest::tokenize(const std::string &input, const std::string &delimiter, std::size_t max_count = -1)
-{
-    std::vector<std::string> tokens;
-    std::string token;
-
-    size_t count = 0;
-    size_t pos = 0;
-    size_t found;
-
-    while ((found = input.find(delimiter, pos)) != std::string::npos && count < max_count)
-    {
-        token = input.substr(pos, found - pos);
-        tokens.push_back(token);
-        pos = found + delimiter.size();
-    }
-
-    token = input.substr(pos);
-    if (!token.empty())
-    {
-        tokens.push_back(token);
-    }
-
-    return tokens;
 }
 
 std::string httpRequest::getMessageBody() const
@@ -43,9 +17,12 @@ bool httpRequest::parseRequest(char *request_buff)
 {
     raw_request += request_buff;
 
+    static std::size_t clrf_pos;
+    static std::size_t dbl_clrf_pos;
+
     if (request_line_parse_status == INCOMPLETE)
     {
-        std::size_t clrf_pos = raw_request.find(CRLF);
+        clrf_pos = raw_request.find(CRLF);
         if (clrf_pos != std::string::npos)
         {
             std::string raw_request_line = raw_request.substr(0, clrf_pos);
@@ -56,11 +33,10 @@ bool httpRequest::parseRequest(char *request_buff)
 
     if (request_headers_parse_status == INCOMPLETE)
     {
-        std::size_t dbl_clrf_pos = raw_request.find(DBL_CRLF);
+        dbl_clrf_pos = raw_request.find(DBL_CRLF);
         if (dbl_clrf_pos != std::string::npos)
         {
-            std::size_t first_line = raw_request.find(CRLF);
-            std::string raw_headers = raw_request.substr(first_line, dbl_clrf_pos);
+            std::string raw_headers = raw_request.substr(clrf_pos, dbl_clrf_pos - clrf_pos);
             parseHeaders(raw_headers);
             request_headers_parse_status = COMPLETE;
         }
@@ -71,11 +47,10 @@ bool httpRequest::parseRequest(char *request_buff)
         try
         {
             std::size_t content_length = atoi(getHeader("Content-Length").c_str());
-            std::size_t msg_body_start = raw_request.find(DBL_CRLF);
+            std::size_t msg_body_start = dbl_clrf_pos + DBL_CRLF.length();
             std::string raw_msg_body = raw_request.substr(msg_body_start);
-            std::size_t msg_body_length = raw_request.substr(msg_body_start).length() - DBL_CRLF.length();
 
-            if (content_length == msg_body_length)
+            if (content_length != raw_msg_body.length())
                 request_msg_body_parse_status = INCOMPLETE;
             else
             {

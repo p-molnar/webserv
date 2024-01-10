@@ -14,14 +14,16 @@ ClientSocket::~ClientSocket()
 
 void ClientSocket::recvRequest()
 {
-    char request_buff[256];
+    char request_buff[2048];
     int bytes_received = recv(fd, request_buff, sizeof(request_buff) - 1, 0);
     request_buff[bytes_received] = '\0';
 
     if (bytes_received <= 0)
     {
+        request.flushBuffers();
         if (bytes_received == 0)
         {
+
             Log::logMsg("Connection hung up", fd);
             throw ClientSocket::HungUpException();
         }
@@ -33,9 +35,9 @@ void ClientSocket::recvRequest()
 
     request_parsed = request.parseRequest(request_buff);
 
+    Log::logMsg("request received", fd);
     if (request_parsed)
         request.printParsedContent();
-    Log::logMsg("request received", fd);
 }
 
 void ClientSocket::sendResponse()
@@ -59,6 +61,7 @@ void ClientSocket::sendResponse()
 
     if (bytes_sent < 0)
     {
+        request.flushBuffers();
         throw std::runtime_error("accept: " + STRERR);
     }
     request.flushBuffers();

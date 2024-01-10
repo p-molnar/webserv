@@ -6,6 +6,7 @@
 #include <cstring>
 #include <string>
 #include "consts.hpp"
+#include "tokenizer.hpp"
 
 /*  HTTP Request parser.
     Requirements:
@@ -39,7 +40,6 @@ private:
     std::string request_message_body;
 
 private:
-    std::vector<std::string> tokenize(const std::string &input, const std::string &delimeter, std::size_t max_count);
     void parseRequestLine(const std::string &raw_request);
     void parseHeaders(const std::string &raw_request);
     void parseMessageBody(const std::string &raw_request);
@@ -53,9 +53,10 @@ public:
     std::string getRequestLine(const std::string &request_line_el) const;
     std::string getHeader(const std::string &headerName) const;
     std::string getMessageBody() const;
+
     void printParsedContent() const;
 };
 
-// std::ostream &operator<<(std::ostream &os, httpRequest obj) { return os; };
+std::ostream &operator<<(std::ostream &os, const httpRequest &obj);
 
 #endif
