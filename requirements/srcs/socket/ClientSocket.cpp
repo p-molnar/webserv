@@ -65,5 +65,6 @@ void ClientSocket::sendResponse()
         throw std::runtime_error("accept: " + STRERR);
     }
     request.flushBuffers();
+    request_parsed = false;
     Log::logMsg("response sent", fd);
 }
