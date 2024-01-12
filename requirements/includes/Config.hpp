@@ -2,6 +2,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include "ConfigTypes.hpp"
 #include <iostream>
 #include <fstream>
 #include <vector>
