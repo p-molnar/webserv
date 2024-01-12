@@ -24,16 +24,30 @@ public:
         ~HungUpException() throw(){};
     };
 
-private:
-    char request_buff[2048];
+    private:
+        bool isReadyToRead;
+        bool isReadyToWrite;
 
-public:
-    ClientSocket(int fd);
-    ~ClientSocket(void);
+        std::string _request_buff;
+        std::string _response;
 
-public:
-    void recvRequest();
-    void sendResponse();
+
+    public:
+        ClientSocket(int fd) ;
+        ~ClientSocket(void);
+
+        std::string getRequestBuff() const { return this->_request_buff ;}
+
+        void recvRequest();
+        void sendResponse();
+
+        void setReadyToRead(bool ready) { isReadyToRead = ready; }
+        bool getReadyToRead() const { return isReadyToRead ;}
+
+        void setReadyToWrite(bool ready) { isReadyToWrite = ready; }
+        bool getReadyToWrite() const { return isReadyToWrite ;}
+
+        void    setResponse(std::string response);
 };
 
 #endif

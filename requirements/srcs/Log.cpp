@@ -8,10 +8,10 @@ const std::string Log::getMsec()
 
 	switch (msec.length())
 	{
-	case 1:
-		msec = "0" + msec;
-	case 2:
-		msec = "0" + msec;
+		case 1:
+			msec = "0" + msec;
+		// case 2:
+		// 	msec = "0" + msec;
 	}
 
 	return msec;

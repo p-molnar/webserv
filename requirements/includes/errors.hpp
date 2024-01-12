@@ -2,7 +2,7 @@
 #define ERRORS_HPP
 
 #include <cerrno>
-#include <string>
+#include <cstring>
 
 #define STRERR std::string(strerror(errno))
 

@@ -1,4 +1,7 @@
 #include "PollManager.hpp"
+#include "httpRequest.hpp"
+
+#define RUNNING 1
 
 PollManager::PollManager()
 {
@@ -51,9 +54,8 @@ t_pollFds PollManager::getPfds()
 
 void PollManager::pollRequests()
 {
-	while (true)
+	while (RUNNING)
 	{
-
 		int active_events = poll(pfds.data(), pfds.size(), 1000);
 
 		if (active_events < 0)
@@ -68,34 +70,61 @@ void PollManager::pollRequests()
 			int fd = curr_pfd->fd;
 			Socket *curr_socket = sockets[fd];
 
-			if (curr_pfd->revents & POLLIN)
+			if (curr_pfd->revents & POLLIN) // REFACTOR TO A FUNCTION FOR POLLIN EVENT
 			{
 				polled_events++;
-				if (ServerSocket *server_socket = dynamic_cast<ServerSocket *>(curr_socket))
-				{
-					ClientSocket *new_client = server_socket->acceptConnection();
-					PollManager::addSocket(new_client);
-				}
-				if (ClientSocket *client_socket = dynamic_cast<ClientSocket *>(curr_socket))
-				{
-					try
-					{
-						client_socket->recvRequest();
-						// process request
-						client_socket->sendResponse();
-					}
-					catch (const ClientSocket::HungUpException &e)
-					{
-						PollManager::removeSocket(client_socket->getFd());
-					}
-					catch (const std::exception &e)
-					{
-						PollManager::removeSocket(client_socket->getFd());
-						Log::logMsg(e.what());
-					}
-				}
+				HandlePollInEvent(curr_socket);
+			}
+			if (curr_pfd->revents & POLLOUT)
+			{
+				// sendResponse()
 			}
 			it++;
 		}
 	}
+}
+
+void PollManager::HandlePollInEvent(Socket* curr_socket)
+{
+	if (ServerSocket *server_socket = dynamic_cast<ServerSocket *>(curr_socket))
+	{
+		ClientSocket *new_client = server_socket->acceptConnection();
+		PollManager::addSocket(new_client);
+	}
+	if (ClientSocket *client_socket = dynamic_cast<ClientSocket *>(curr_socket))
+	{
+		client_socket->setReadyToRead(true);
+		try
+		{
+			client_socket->recvRequest();
+			httpRequest request(client_socket->getRequestBuff());
+			if (request.isComplete(client_socket->getRequestBuff()))
+				
+		}
+		catch (const ClientSocket::HungUpException &e)
+		{
+			PollManager::removeSocket(client_socket->getFd());
+		}
+		catch (const std::exception &e)
+		{
+			PollManager::removeSocket(client_socket->getFd());
+			Log::logMsg(e.what());
+		}
+		client_socket->setReadyToRead(false);
+	}
+}
+
+void	PollManager::processHttpRequest(const httpRequest& request, ClientSocket& client_socket)
+{
+	std::string response;
+
+	// if (request.getMethod() == "GET")
+	// 	// WRITE HANDLE GET REQUEST FUNCTION
+	// if (request.getMethod() == "POST")
+	// 	// WRITE HANDLE POST REQUEST FUNCTION
+	// if (request.getMethod() == "DELETE")
+		// DO DELetE SHIt
+	// else
+	// 	response = "HTTP/1.1 405 Method Not Allowed\r\n\r\n";
+	// client_socket->setResponse(response);
 }

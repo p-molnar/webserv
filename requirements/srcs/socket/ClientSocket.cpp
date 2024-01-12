@@ -5,6 +5,8 @@ ClientSocket::ClientSocket(int fd)
 {
     this->setFd(fd);
     this->setPfd((t_pollfd){fd, POLLIN, 0});
+    isReadyToRead = false;
+    isReadyToWrite = false;
 }
 
 ClientSocket::~ClientSocket()
@@ -14,8 +16,12 @@ ClientSocket::~ClientSocket()
 
 void ClientSocket::recvRequest()
 {
+    if (!isReadyToRead)
+        return;
 
-    int bytes_received = recv(fd, request_buff, sizeof(request_buff), 0);
+    char buffer[1024];
+
+    int bytes_received = recv(fd, buffer, sizeof(buffer), 0);
     if (bytes_received <= 0)
     {
         if (bytes_received == 0)
@@ -28,6 +34,8 @@ void ClientSocket::recvRequest()
             throw std::runtime_error(STRERR);
         }
     }
+    else
+        request_buff.append(buffer, bytes_received); 
     Log::logMsg("request received", fd);
 }
 
