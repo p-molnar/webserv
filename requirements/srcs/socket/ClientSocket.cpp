@@ -16,16 +16,16 @@ ClientSocket::~ClientSocket()
 
 void ClientSocket::recvRequest()
 {
-    if (!isReadyToRead)
-        return;
+    char request_buff[2048];
+    int bytes_received = recv(fd, request_buff, sizeof(request_buff) - 1, 0);
+    request_buff[bytes_received] = '\0';
 
-    char buffer[1024];
-
-    int bytes_received = recv(fd, buffer, sizeof(buffer), 0);
     if (bytes_received <= 0)
     {
+        request.flushBuffers();
         if (bytes_received == 0)
         {
+
             Log::logMsg("Connection hung up", fd);
             throw ClientSocket::HungUpException();
         }
@@ -34,13 +34,19 @@ void ClientSocket::recvRequest()
             throw std::runtime_error(STRERR);
         }
     }
-    else
-        request_buff.append(buffer, bytes_received); 
+
+    is_request_parsed = request.parseRequest(request_buff);
+
     Log::logMsg("request received", fd);
+    if (is_request_parsed)
+        request.printParsedContent();
 }
 
 void ClientSocket::sendResponse()
 {
+    if (!is_request_parsed)
+        return;
+
     std::string status_line = "HTTP/1.1 200 OK";
     std::string response_headers = "";
     response_headers += "Content-Type: text/html" + CRLF;
@@ -57,7 +63,10 @@ void ClientSocket::sendResponse()
 
     if (bytes_sent < 0)
     {
+        request.flushBuffers();
         throw std::runtime_error("accept: " + STRERR);
     }
+    request.flushBuffers();
+    is_request_parsed = false;
     Log::logMsg("response sent", fd);
 }

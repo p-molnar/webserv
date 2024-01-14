@@ -84,7 +84,7 @@ void PollManager::pollRequests()
 	}
 }
 
-void PollManager::HandlePollInEvent(Socket* curr_socket)
+void PollManager::HandlePollInEvent(Socket *curr_socket)
 {
 	if (ServerSocket *server_socket = dynamic_cast<ServerSocket *>(curr_socket))
 	{
@@ -97,9 +97,6 @@ void PollManager::HandlePollInEvent(Socket* curr_socket)
 		try
 		{
 			client_socket->recvRequest();
-			httpRequest request(client_socket->getRequestBuff());
-			if (request.isComplete(client_socket->getRequestBuff()))
-				
 		}
 		catch (const ClientSocket::HungUpException &e)
 		{
@@ -114,16 +111,18 @@ void PollManager::HandlePollInEvent(Socket* curr_socket)
 	}
 }
 
-void	PollManager::processHttpRequest(const httpRequest& request, ClientSocket& client_socket)
+void PollManager::processHttpRequest(const httpRequest &request, ClientSocket &client_socket)
 {
 	std::string response;
+	(void)request; // voiding to mute compiler errors
+	(void)client_socket;
 
 	// if (request.getMethod() == "GET")
 	// 	// WRITE HANDLE GET REQUEST FUNCTION
 	// if (request.getMethod() == "POST")
 	// 	// WRITE HANDLE POST REQUEST FUNCTION
 	// if (request.getMethod() == "DELETE")
-		// DO DELetE SHIt
+	// DO DELetE SHIt
 	// else
 	// 	response = "HTTP/1.1 405 Method Not Allowed\r\n\r\n";
 	// client_socket->setResponse(response);

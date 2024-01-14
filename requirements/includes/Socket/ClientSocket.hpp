@@ -4,6 +4,7 @@
 #include "Socket.hpp"
 #include "errors.hpp"
 #include "Log.hpp"
+#include "httpRequest.hpp"
 
 #include <sys/poll.h>
 #include <sys/socket.h>
@@ -24,30 +25,33 @@ public:
         ~HungUpException() throw(){};
     };
 
-    private:
-        bool isReadyToRead;
-        bool isReadyToWrite;
+private:
+    bool is_request_parsed;
+    httpRequest request;
 
-        std::string _request_buff;
-        std::string _response;
+private:
+    bool isReadyToRead;
+    bool isReadyToWrite;
 
+    std::string _request_buff;
+    std::string _response;
 
-    public:
-        ClientSocket(int fd) ;
-        ~ClientSocket(void);
+public:
+    ClientSocket(int fd);
+    ~ClientSocket(void);
 
-        std::string getRequestBuff() const { return this->_request_buff ;}
+    std::string getRequestBuff() const { return this->_request_buff; }
 
-        void recvRequest();
-        void sendResponse();
+    void recvRequest();
+    void sendResponse();
 
-        void setReadyToRead(bool ready) { isReadyToRead = ready; }
-        bool getReadyToRead() const { return isReadyToRead ;}
+    void setReadyToRead(bool ready) { isReadyToRead = ready; }
+    bool getReadyToRead() const { return isReadyToRead; }
 
-        void setReadyToWrite(bool ready) { isReadyToWrite = ready; }
-        bool getReadyToWrite() const { return isReadyToWrite ;}
+    void setReadyToWrite(bool ready) { isReadyToWrite = ready; }
+    bool getReadyToWrite() const { return isReadyToWrite; }
 
-        void    setResponse(std::string response);
+    void setResponse(std::string response);
 };
 
 #endif
