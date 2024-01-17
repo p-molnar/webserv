@@ -122,6 +122,7 @@ std::string httpRequest::getHeader(const std::string &headerName) const
 
 void httpRequest::printParsedContent() const
 {
+    std::cout << "\n\nPARSED CONTENT:\n" << std::endl;
     std::map<std::string, std::string>::const_iterator it = request_line.begin();
     std::map<std::string, std::string>::const_iterator ite = request_line.end();
 
@@ -148,12 +149,6 @@ void httpRequest::printParsedContent() const
     }
 }
 
-// duplicate function, it's the same as httpRequest::getRequestLine("method")
-// std::string httpRequest::getMethod() const
-// {
-//     return _method;
-// }
-
 void httpRequest::flushBuffers()
 {
     request_line_parse_status = INCOMPLETE;
@@ -165,21 +160,6 @@ void httpRequest::flushBuffers()
     request_line.clear();
     request_headers.clear();
 }
-
-// duplicate function, identical to httpRequest::printParsedContent()
-// void httpRequest::printRequest() const
-// {
-//     std::cout << "HTTP Request:" << std::endl;
-//     std::cout << "Method: " << _method << std::endl;
-//     std::cout << "Path: " << _path << std::endl;
-//     std::cout << "HTTP Version: " << _httpVersion << std::endl;
-
-//     std::cout << "Headers:" << std::endl;
-//     for (const auto &header : _headers)
-//     {
-//         std::cout << header.first << ": " << header.second << std::endl;
-//     }
-// }
 
 // Commenting out to mute the compiler
 // bool httpRequest::isComplete(const std::string &recievedData)

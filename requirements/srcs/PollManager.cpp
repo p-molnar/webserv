@@ -70,10 +70,11 @@ void PollManager::pollRequests()
 			int fd = curr_pfd->fd;
 			Socket *curr_socket = sockets[fd];
 
-			if (curr_pfd->revents & POLLIN) // REFACTOR TO A FUNCTION FOR POLLIN EVENT
+			if (curr_pfd->revents & POLLIN)
 			{
 				polled_events++;
 				HandlePollInEvent(curr_socket);
+
 			}
 			if (curr_pfd->revents & POLLOUT)
 			{
@@ -111,18 +112,24 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 	}
 }
 
+// void PollManager::HandleGETRequest(const httpRequest& request)
+// {
+
+// }
+
 void PollManager::processHttpRequest(const httpRequest &request, ClientSocket &client_socket)
 {
 	std::string response;
 	(void)request; // voiding to mute compiler errors
 	(void)client_socket;
 
-	// if (request.getMethod() == "GET")
+	// if (request.getRequestLine("Method") == "GET")
+	// 	getRequest(request);
 	// 	// WRITE HANDLE GET REQUEST FUNCTION
-	// if (request.getMethod() == "POST")
-	// 	// WRITE HANDLE POST REQUEST FUNCTION
-	// if (request.getMethod() == "DELETE")
-	// DO DELetE SHIt
+	// // if (request.getMethod() == "POST")
+	// // 	// WRITE HANDLE POST REQUEST FUNCTION
+	// // if (request.getMethod() == "DELETE")
+	// // DO DELetE SHIt
 	// else
 	// 	response = "HTTP/1.1 405 Method Not Allowed\r\n\r\n";
 	// client_socket->setResponse(response);

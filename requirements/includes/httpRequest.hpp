@@ -54,7 +54,7 @@ public:
     std::string getHeader(const std::string &header_name) const;
     std::string getMessageBody() const;
 
-    void printParsedContent() const;
+    std::string printParsedContent() const;
 };
 
 std::ostream &operator<<(std::ostream &os, const httpRequest &obj);
