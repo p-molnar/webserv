@@ -4,7 +4,7 @@
 #include "ServerSocket.hpp"
 #include "ClientSocket.hpp"
 #include "PollManager.hpp"
-#include "Config.hpp"
+// #include "Config.hpp"
 #include "Parcer.hpp"
 
 #include <vector>
@@ -28,6 +28,7 @@ public:
     // main member functions
 public:
     void loadConfig();
+    // void loadConfig(Config& config);
     void startService();
 
     static int getServerFd();

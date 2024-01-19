@@ -34,6 +34,11 @@ ServerSocket::~ServerSocket()
         close(sockfd);
 }
 
+void ServerSocket::loadConfig(Config& config_data)
+{
+	config = &config_data;
+}
+
 /* This function binds the Socket ('sockfd') to the specified port.
     It configures the socket to listen for incoming connections on the given port.
     The function uses the 'AF_INET' address family (IPv4) and sets the address to 'INADDR_ANY',
@@ -66,8 +71,8 @@ void ServerSocket::listenPort(int backlog)
         std::string err = strerror(errno);
         throw std::runtime_error("listen port: " + err);
     }
-	// todo: print port that is used
-    std::cout << "Server is listening on port 8080..." << std::endl;
+    // std::cout << "Server is listening on port 8080..." << std::endl; // old
+	std::cout << "Server is listening on port " << this->config->getServers()[0].getListenPort() << "..." << std::endl; // new
 }
 
 ClientSocket ServerSocket::acceptConnection()
@@ -85,3 +90,5 @@ ClientSocket ServerSocket::acceptConnection()
     std::cout << "Connection accepted" << std::endl;
     return ClientSocket(newsockfd);
 }
+
+

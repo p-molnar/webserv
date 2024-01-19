@@ -15,6 +15,7 @@ INC_FLAGS	:= 		-I$(INC_DIR)
 SRCS		:=		ServerSocket.cpp \
 					ClientSocket.cpp \
 					Config.cpp \
+					ConfigTypes.cpp \
 					Parcer.cpp \
 					PollManager.cpp \
 					Webserver.cpp \

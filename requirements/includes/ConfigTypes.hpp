@@ -7,22 +7,37 @@
 
 class ConfigType
 {
+private:
+
+
+public:
+	virtual int getInt();
+	virtual std::string getString();
 
 };
 
 class ConfigInt : public ConfigType
 {
-	int int_val;
+private:
+	int _int_val;
+
+public:
+	ConfigInt(int val);
+	int getInt();
+	~ConfigInt();
 };
 
-class ConfigVecInt : public ConfigType
-{
-	std::vector<int> vec_int_val;
-};
 
 class ConfigStr : public ConfigType
 {
-	std::string str_val;
+private:
+	std::string _str_val;
+
+public:
+	ConfigStr(std::string val);
+	std::string getString();
+	std::string getData();
+	~ConfigStr();
 };
 
 class ConfigVecStr : public ConfigType

@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/12/06 09:48:15 by tklouwer      #+#    #+#                 */
-/*   Updated: 2023/12/19 14:54:26 by pmolnar       ########   odam.nl         */
+/*   Updated: 2024/01/19 11:48:05 by bprovoos      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <stdexcept>    // For error handling, and to throw exceptions
 #include <cerrno>       // Defines a set of string errors
 #include "ClientSocket.hpp"
+#include "Config.hpp"
 
 class ClientSocket;
 
@@ -31,6 +32,7 @@ private:
     int sockfd;
 
 public:
+	Config* config;
     ServerSocket();
     ~ServerSocket();
 
@@ -39,6 +41,8 @@ public:
     ClientSocket acceptConnection();
 
     int getServerFd() { return this->sockfd; };
+
+	void loadConfig(Config& config);
 };
 
 #endif
