@@ -1,5 +1,4 @@
 #include "PollManager.hpp"
-#include "httpRequest.hpp"
 
 #define RUNNING 1
 
@@ -74,7 +73,6 @@ void PollManager::pollRequests()
 			{
 				polled_events++;
 				HandlePollInEvent(curr_socket);
-
 			}
 			if (curr_pfd->revents & POLLOUT)
 			{
@@ -97,7 +95,12 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 		client_socket->setReadyToRead(true);
 		try
 		{
-			client_socket->recvRequest();
+			httpRequest request = client_socket->recvRequest();
+			request.printParsedContent();
+			if (request.isParsed())
+			{
+				httpResponse reponse = httpResponse::generateResponse(request);
+			}
 		}
 		catch (const ClientSocket::HungUpException &e)
 		{
