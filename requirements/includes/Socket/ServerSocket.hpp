@@ -10,6 +10,7 @@
 #include "Log.hpp"
 #include "ClientSocket.hpp"
 #include "errors.hpp"
+#include "Config.hpp"
 
 class ServerSocket : public Socket
 {
