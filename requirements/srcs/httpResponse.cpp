@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/17 10:53:12 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/17 13:27:54 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/19 13:37:39 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,20 @@ void    httpResponse::setHeaders(const std::string& key, const std::string& valu
     _headers[key] = value;
 }
 
-void    httpResponse::setStatusCode(const std::string& statusCode)
+void    httpResponse::setStatusLine(const std::string& statusCode)
 {
-    _statusCode = statusCode;
+    _statusline = _httpVersion + " " + _statusCode;
 }
 
-// std::string    httpResponse::generateResponse(httpRequest& request)
-// {
-    
-// }
+std::string    httpResponse::generateResponse(httpRequest& request)
+{
+    std::string response;
+
+    response = _statusline + CRLF;
+    for (const auto& header : _headers) {
+        response += header.first + ": " + header.second + CRLF;
+    }
+    response += CRLF;
+    response += _body;
+    return response;
+}

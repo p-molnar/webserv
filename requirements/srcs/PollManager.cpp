@@ -115,21 +115,3 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 		client_socket->setReadyToRead(false);
 	}
 }
-
-void PollManager::processHttpRequest(const httpRequest &request, ClientSocket &client_socket)
-{
-	std::string response;
-	(void)request; // voiding to mute compiler errors
-	(void)client_socket;
-
-	// if (request.getRequestLine("Method") == "GET")
-	// 	getRequest(request);
-	// 	// WRITE HANDLE GET REQUEST FUNCTION
-	// // if (request.getMethod() == "POST")
-	// // 	// WRITE HANDLE POST REQUEST FUNCTION
-	// // if (request.getMethod() == "DELETE")
-	// // DO DELetE SHIt
-	// else
-	// 	response = "HTTP/1.1 405 Method Not Allowed\r\n\r\n";
-	// client_socket->setResponse(response);
-}

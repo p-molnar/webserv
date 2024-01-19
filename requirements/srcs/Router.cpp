@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/19 10:40:30 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/19 12:43:02 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/19 13:47:25 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <regex>
 
 void    Router::registerRoute(std::string url_regex, std::string request_method,
-            void (*callback)(const httpRequest*))
+            void (*callback)(const httpRequest*, httpResponse*))
 {
     Route route;
     route.url_regex = url_regex;
@@ -23,7 +23,7 @@ void    Router::registerRoute(std::string url_regex, std::string request_method,
     routes.push_back(route);
 }
 
-void    Router::routeRequest(const httpRequest& req)
+void    Router::routeRequest(const httpRequest& req, httpResponse& res)
 {
     for (auto& r : routes) {
         std::regex pat {r.url_regex};
@@ -33,7 +33,7 @@ void    Router::routeRequest(const httpRequest& req)
     if ((std::regex_match(tmp, match, pat))
         && (req.getRequestLine("method").compare(r.request_method) == 0))
         {
-            r.callback(&req);
+            r.callback(&req, &res);
             break ;
         }
     }

@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/17 10:22:04 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/17 11:29:06 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/19 13:33:20 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,12 @@ class httpResponse
         std::string                         _statusCode;
         std::string                         _body;
         std::map<std::string, std::string>  _headers;
+        std::string                         _statusline; // HttpVersion + status code
 
     public:
         httpResponse() : _httpVersion("HTTP/1.1") {};
 
-        void        setStatusCode(const std::string& code);
+        void        setStatusLine(const std::string& code);
         void        setBody(const std::string& body);
         void        setHeaders(const std::string& key, const std::string& value);
 
