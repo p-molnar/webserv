@@ -46,7 +46,7 @@ bool httpRequest::parseRequest(char *request_buff)
     {
         try
         {
-            std::size_t content_length = atoi(getHeader("Content-Length").c_str());
+            std::size_t content_length = atoi(getHeaderComp("Content-Length").c_str());
             std::size_t msg_body_start = dbl_clrf_pos + DBL_CRLF.length();
             std::string raw_msg_body = raw_request.substr(msg_body_start);
 
@@ -72,12 +72,12 @@ bool httpRequest::parseRequest(char *request_buff)
 void httpRequest::parseRequestLine(const std::string &raw_request)
 {
 
-    std::vector<std::string> request_line_parts = tokenize(raw_request, SP);
+    std::vector<std::string> request_line_comps = tokenize(raw_request, SP);
 
-    if (request_line_parts.size() != 3)
+    if (request_line_comps.size() != 3)
         throw std::runtime_error("request line parse error: '" + raw_request + "'");
 
-    std::vector<std::string>::iterator curr_field = request_line_parts.begin();
+    std::vector<std::string>::iterator curr_field = request_line_comps.begin();
 
     request_line["method"] = *curr_field++;
     request_line["request_uri"] = *curr_field++;
@@ -99,7 +99,7 @@ void httpRequest::parseHeaders(const std::string &raw_request_headers)
         if (headers[i].size() == 0)
             continue;
 
-        std::vector<std::string> header_parts = tokenize(headers[i], ": ", 1);
+        std::vector<std::string> header_parts = tokenize(headers[i], HEADER_SEP, 1);
         if (header_parts.size() != 2)
             throw std::runtime_error("http header parse error on line: '" + headers[i] + "'");
 
@@ -110,19 +110,20 @@ void httpRequest::parseHeaders(const std::string &raw_request_headers)
     }
 }
 
-std::string httpRequest::getRequestLine(const std::string &request_line_name) const
+std::string httpRequest::getRequestLineComp(const std::string &key) const
 {
-    return request_line.at(request_line_name);
+    return request_line.at(key);
 }
 
-std::string httpRequest::getHeader(const std::string &headerName) const
+std::string httpRequest::getHeaderComp(const std::string &key) const
 {
-    return request_headers.at(headerName);
+    return request_headers.at(key);
 }
 
 void httpRequest::printParsedContent() const
 {
-    std::cout << "\n\nPARSED CONTENT:\n" << std::endl;
+    std::cout << "\n\nPARSED CONTENT:\n"
+              << std::endl;
     std::map<std::string, std::string>::const_iterator it = request_line.begin();
     std::map<std::string, std::string>::const_iterator ite = request_line.end();
 
@@ -160,6 +161,38 @@ void httpRequest::flushBuffers()
     request_line.clear();
     request_headers.clear();
 }
+
+bool httpRequest::isParsed()
+{
+    return (request_line_parse_status == COMPLETE &&
+            request_headers_parse_status == COMPLETE &&
+            (request_msg_body_parse_status == NA ||
+             request_msg_body_parse_status == COMPLETE));
+}
+
+httpRequest::httpRequest(const httpRequest &obj)
+    : request_line_parse_status(obj.request_line_parse_status),
+      request_headers_parse_status(obj.request_headers_parse_status),
+      request_msg_body_parse_status(obj.request_msg_body_parse_status),
+      raw_request(obj.raw_request),
+      request_line(obj.request_line),
+      request_headers(obj.request_headers),
+      request_message_body(obj.request_message_body)
+{
+}
+
+httpRequest httpRequest::operator=(const httpRequest &obj)
+{
+    request_line_parse_status = obj.request_line_parse_status;
+    request_headers_parse_status = obj.request_headers_parse_status;
+    request_msg_body_parse_status = obj.request_msg_body_parse_status;
+    raw_request = obj.raw_request;
+    request_line = obj.request_line;
+    request_headers = obj.request_headers;
+    request_message_body = obj.request_message_body;
+    return *this;
+}
+httpRequest::~httpRequest(){};
 
 // Commenting out to mute the compiler
 // bool httpRequest::isComplete(const std::string &recievedData)

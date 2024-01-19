@@ -46,15 +46,19 @@ private:
 
 public:
     httpRequest();
+    httpRequest(const httpRequest &obj);
+    httpRequest operator=(const httpRequest &obj);
+    ~httpRequest();
 
     bool parseRequest(char *request_buff);
     void flushBuffers();
 
-    std::string getRequestLine(const std::string &request_line_el) const;
-    std::string getHeader(const std::string &header_name) const;
+    std::string getRequestLineComp(const std::string &request_line_el) const;
+    std::string getHeaderComp(const std::string &header_name) const;
     std::string getMessageBody() const;
+    bool isParsed();
 
-    std::string printParsedContent() const;
+    void printParsedContent() const;
 };
 
 std::ostream &operator<<(std::ostream &os, const httpRequest &obj);
