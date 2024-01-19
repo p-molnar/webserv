@@ -4,8 +4,9 @@
 
 WebServer::WebServer(){};
 
-void WebServer::loadConfig()
+void WebServer::loadConfig(Config &config_data)
 {
+	config = config_data;
     // load parsed configuration file;
 
     // tmp stuff

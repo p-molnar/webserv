@@ -1,9 +1,12 @@
 #ifndef WEBSERV_HPP
 #define WEBSERV_HPP
 
-#include "ServerSocket.hpp"
-#include "ClientSocket.hpp"
+
+#include "Socket/ClientSocket.hpp"
+#include "Socket/ServerSocket.hpp"
+#include "Socket/Socket.hpp"
 #include "PollManager.hpp"
+
 #include "httpRequest.hpp"
 #include "Config.hpp"
 #include "Parcer.hpp"
@@ -28,7 +31,8 @@ public:
 
     // main member functions
 public:
-    void loadConfig();
+	Config config;
+    void loadConfig(Config &config);
     void startService();
 
     static int getServerFd();
