@@ -19,6 +19,8 @@ public:
     ~ServerSocket();
 
 public:
+	Config *config;
+	void loadConfig(Config &config);
     void createSocket();
     void bindPort(int port);
     void listenPort(int backlog);

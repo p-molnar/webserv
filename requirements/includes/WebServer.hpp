@@ -31,8 +31,7 @@ public:
 
     // main member functions
 public:
-	Config config;
-    void loadConfig(Config &config);
+    void loadConfig();
     void startService();
 
     static int getServerFd();

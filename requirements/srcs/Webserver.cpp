@@ -4,17 +4,22 @@
 
 WebServer::WebServer(){};
 
-void WebServer::loadConfig(Config &config_data)
-{
-	config = config_data;
-    // load parsed configuration file;
+// void WebServer::loadConfig(Config &config_data)
+// {
+// 	config = config_data;
+//     // load parsed configuration file;
 
-    // tmp stuff
-    // server_configs[8000] = 10;
-    // server_configs[8001] = 10;
-    // server_configs[8002] = 10;
-    server_configs[8080] = 10;
-};
+//     // tmp stuff
+//     // server_configs[8000] = 10;
+//     // server_configs[8001] = 10;
+//     // server_configs[8002] = 10;
+//     server_configs[8080] = 10;
+// };
+
+void ServerSocket::loadConfig(Config& config_data)
+{
+	config = &config_data;
+}
 
 void WebServer::startService()
 {
