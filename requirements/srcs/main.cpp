@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
         serverSocket.bindPort(serverSocket.config->getServers()[0].getListenPort()); // new
         // serverSocket.bindPort(8080); // old
         serverSocket.listenPort(10);
-        ClientSocket clientSocket = serverSocket.acceptConnection();
+        // ClientSocket clientSocket = serverSocket.acceptConnection();
         // server.addFdToPollManager(serverSocket.getServerFd(), POLLIN);
         // server.pollClients(); // disabled because the function does not exist
     }
