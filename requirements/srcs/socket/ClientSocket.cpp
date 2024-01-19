@@ -14,7 +14,7 @@ ClientSocket::~ClientSocket()
     ::close(fd);
 }
 
-void ClientSocket::recvRequest()
+httpRequest ClientSocket::recvRequest()
 {
     char request_buff[2048];
     int bytes_received = recv(fd, request_buff, sizeof(request_buff) - 1, 0);
@@ -37,9 +37,8 @@ void ClientSocket::recvRequest()
 
     is_request_parsed = request.parseRequest(request_buff);
 
+    return (request);
     Log::logMsg("request received", fd);
-    if (is_request_parsed)
-        request.printParsedContent();
 }
 
 void ClientSocket::sendResponse()

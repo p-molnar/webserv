@@ -42,7 +42,7 @@ public:
 
     std::string getRequestBuff() const { return this->_request_buff; }
 
-    void recvRequest();
+    httpRequest recvRequest();
     void sendResponse();
 
     void setReadyToRead(bool ready) { isReadyToRead = ready; }
