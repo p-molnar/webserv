@@ -40,8 +40,8 @@ std::string cgiExecutor::executeCgi(std::string uri)
 	std::string cgi_fd_env_var = "CGI_FD=" + std::to_string(filedes[1]);
 	env.push_back(const_cast<char *>(cgi_fd_env_var.c_str()));
 
-	char response_buff[1024];
-	std::string raw_response;
+	char output_buff[1024];
+	std::string raw_cgi_output;
 
 	int pid = fork();
 	if (pid < 0)
@@ -54,18 +54,20 @@ std::string cgiExecutor::executeCgi(std::string uri)
 			throw std::runtime_error("execve error: " + STRERR);
 		}
 
-		while (true)
+		while (int bytes_read = read(filedes[0], output_buff, sizeof(output_buff) - 1))
 		{
-			int bytes_read = read(filedes[0], response_buff, sizeof(response_buff) - 1);
 			if (bytes_read < 0)
 			{
 				kill(pid, SIGKILL);
 				throw std::runtime_error("execve error: " + STRERR);
 			}
-			response_buff[bytes_read] = '\0';
+			output_buff[bytes_read] = '\0';
+			raw_cgi_output += output_buff;
 		}
 	}
 	kill(pid, SIGKILL);
+
+	std::cout << raw_cgi_output;
 
 	return "a";
 }
