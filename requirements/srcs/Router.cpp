@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/19 10:40:30 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/19 11:18:14 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/19 12:43:02 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ void    Router::routeRequest(const httpRequest& req)
         std::regex pat {r.url_regex};
         std::smatch match;
 
-    //std::cout << "PRINTING HEADERS\n\n" << req.getRequestLine("request_uri") << req.getRequestLine("method") << std::endl;
     std::string tmp = req.getRequestLine("request_uri");
     if ((std::regex_match(tmp, match, pat))
         && (req.getRequestLine("method").compare(r.request_method) == 0))
@@ -37,5 +36,5 @@ void    Router::routeRequest(const httpRequest& req)
             r.callback(&req);
             break ;
         }
-}
+    }
 }
