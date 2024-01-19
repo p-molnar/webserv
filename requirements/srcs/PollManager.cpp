@@ -1,5 +1,6 @@
 #include "PollManager.hpp"
 #include "httpRequest.hpp"
+#include "Router.hpp"
 
 #define RUNNING 1
 
@@ -98,6 +99,9 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 		try
 		{
 			client_socket->recvRequest();
+			Router route;
+			route.routeRequest(client_socket->getRequest());
+			
 		}
 		catch (const ClientSocket::HungUpException &e)
 		{
@@ -111,11 +115,6 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 		client_socket->setReadyToRead(false);
 	}
 }
-
-// void PollManager::HandleGETRequest(const httpRequest& request)
-// {
-
-// }
 
 void PollManager::processHttpRequest(const httpRequest &request, ClientSocket &client_socket)
 {

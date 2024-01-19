@@ -18,6 +18,9 @@ void ClientSocket::recvRequest()
 {
     char request_buff[2048];
     int bytes_received = recv(fd, request_buff, sizeof(request_buff) - 1, 0);
+    std::cout << "RAW REQUEST\n";
+    std::cout << request_buff << '\n';
+    std::cout << "RAW REQUEST END\n";
     request_buff[bytes_received] = '\0';
 
     if (bytes_received <= 0)

@@ -40,6 +40,7 @@ public:
     ClientSocket(int fd);
     ~ClientSocket(void);
 
+    const httpRequest& getRequest() const { return request; }
     std::string getRequestBuff() const { return this->_request_buff; }
 
     void recvRequest();
