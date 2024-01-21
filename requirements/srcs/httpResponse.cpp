@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   httpResponse.cpp                                   :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/01/17 10:53:12 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/19 13:27:53 by pmolnar       ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "httpResponse.hpp"
 
 void httpResponse::setBody(const std::string &body)
@@ -30,7 +18,8 @@ void httpResponse::setStatusCode(const std::string &statusCode)
 
 httpResponse httpResponse::generateResponse(httpRequest &request)
 {
-    cgiExecutor::executeCgi(request.getRequestLineComp("request_uri"));
+    std::string cgi_raw_output = cgiExecutor::executeCgi(request.getRequestLineComp("request_uri"));
+    std::cout << cgi_raw_output << "\n";
     return httpResponse();
 }
 
