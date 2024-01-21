@@ -12,6 +12,7 @@ cgiExecutor::~cgiExecutor()
 std::string cgiExecutor::executeCgi(std::string uri)
 {
 	std::string raw_html;
+	std::string raw_cgi_output;
 
 	std::vector<std::string> uri_comps = tokenize(uri, QSTR_SEP);
 
@@ -23,9 +24,8 @@ std::string cgiExecutor::executeCgi(std::string uri)
 
 	std::string www_path = "srv/";	 // retrieved from config
 	std::string cgi_bin = "cgi-bin"; // retrieved from config
-
 	std::string exec_path = www_path + cgi_bin + cgi_exec_name;
-	std::cout << exec_path;
+
 	if (access(exec_path.c_str(), X_OK))
 		throw std::runtime_error("access error: " + STRERR);
 
@@ -39,35 +39,36 @@ std::string cgiExecutor::executeCgi(std::string uri)
 
 	std::string cgi_fd_env_var = "CGI_FD=" + std::to_string(filedes[1]);
 	env.push_back(const_cast<char *>(cgi_fd_env_var.c_str()));
+	env.push_back(NULL);
 
-	char output_buff[1024];
-	std::string raw_cgi_output;
-
-	int pid = fork();
-	if (pid < 0)
+	pid_t pid;
+	if ((pid = fork()) < 0)
 		throw std::runtime_error("fork error: " + STRERR);
 	if (pid == 0)
 	{
+		close(filedes[0]);
 		if (execve(exec_path.c_str(), NULL, env.data()) < 0)
-		{
-			kill(pid, SIGKILL);
 			throw std::runtime_error("execve error: " + STRERR);
-		}
-
-		while (int bytes_read = read(filedes[0], output_buff, sizeof(output_buff) - 1))
+	}
+	else
+	{
+		close(filedes[1]);
+		int status;
+		if (waitpid(pid, &status, 0) == pid)
 		{
-			if (bytes_read < 0)
+			char cgi_output_buff[1024];
+			while (1)
 			{
-				kill(pid, SIGKILL);
-				throw std::runtime_error("execve error: " + STRERR);
+				int bytes_read = read(filedes[0], cgi_output_buff, sizeof(cgi_output_buff) - 1);
+				if (bytes_read == 0)
+					break;
+				else if (bytes_read < 0)
+					throw std::runtime_error("read error: " + STRERR);
+				std::cout << bytes_read << '\n';
+				cgi_output_buff[bytes_read] = '\0';
+				raw_cgi_output += cgi_output_buff;
 			}
-			output_buff[bytes_read] = '\0';
-			raw_cgi_output += output_buff;
 		}
 	}
-	kill(pid, SIGKILL);
-
-	std::cout << raw_cgi_output;
-
-	return "a";
+	return raw_cgi_output;
 }
