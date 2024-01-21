@@ -1,8 +1,10 @@
 #ifndef CGIEXECUTOR__HPP
 #define CGIEXECUTOR__HPP
 
-#include <string>
 #include <unistd.h>
+#include <sys/wait.h>
+
+#include <string>
 #include <csignal>
 
 #include "errors.hpp"
