@@ -99,6 +99,8 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 			request.printParsedContent();
 			if (request.isParsed())
 			{
+				// if request is (GET || POST) &&  (file extension == .py)
+				// 		execute CGI
 				httpResponse reponse = httpResponse::generateResponse(request);
 			}
 		}
