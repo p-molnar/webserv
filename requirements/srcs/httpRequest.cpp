@@ -13,6 +13,56 @@ std::string httpRequest::getMessageBody() const
     return request_message_body;
 }
 
+void httpRequest::parseRequestUri(const std::string &uri)
+{
+    // accepted extension name comes from config file
+    std::string config_cgi_ext = ".py";
+
+    std::size_t qstr_sep_pos = uri.find(QSTR_SEP);
+    std::size_t frag_sep_pos = uri.find(FRAG_SEP);
+
+    if (qstr_sep_pos != NPOS)
+        uri_comps.path = uri.substr(0, qstr_sep_pos);
+    else if (frag_sep_pos != NPOS)
+        uri_comps.path = uri.substr(0, frag_sep_pos);
+    else
+        uri_comps.path = uri;
+
+    if (uri_comps.path.find(config_cgi_ext) != NPOS)
+    {
+        request_type = EXECUTABLE;
+        std::vector<std::string> path_comps = tokenize(uri_comps.path, DIR_SEP);
+        std::vector<std::string>::iterator it = path_comps.begin();
+        std::vector<std::string>::iterator ite = path_comps.end();
+
+        while (it != ite)
+        {
+            if (it->find(config_cgi_ext) != NPOS)
+            {
+                uri_comps.executable_name = *it;
+                break;
+            }
+            it++;
+        }
+
+        std::size_t path_info_start = uri.find(uri_comps.executable_name) + uri_comps.executable_name.length();
+        if (qstr_sep_pos != NPOS)
+            uri_comps.path_info = uri.substr(path_info_start, qstr_sep_pos - path_info_start);
+        else if (frag_sep_pos != NPOS)
+            uri_comps.path_info = uri.substr(path_info_start, frag_sep_pos - path_info_start);
+        else
+            uri_comps.path_info = uri.substr(path_info_start);
+    }
+    else
+        request_type = RESOURCE;
+    if (qstr_sep_pos != NPOS && frag_sep_pos != NPOS)
+        uri_comps.query_str = uri.substr(qstr_sep_pos, frag_sep_pos - qstr_sep_pos);
+    else if (qstr_sep_pos != NPOS && frag_sep_pos == NPOS)
+        uri_comps.query_str = uri.substr(qstr_sep_pos);
+    else if (qstr_sep_pos == NPOS && frag_sep_pos != NPOS)
+        uri_comps.fragment = uri.substr(frag_sep_pos);
+}
+
 bool httpRequest::parseRequest(char *request_buff)
 {
     raw_request += request_buff;
@@ -82,6 +132,8 @@ void httpRequest::parseRequestLine(const std::string &raw_request)
     request_line["method"] = *curr_field++;
     request_line["request_uri"] = *curr_field++;
     request_line["http_version"] = *curr_field++;
+
+    parseRequestUri(request_line["request_uri"]);
 }
 
 void httpRequest::parseMessageBody(const std::string &raw_request)
@@ -110,6 +162,11 @@ void httpRequest::parseHeaders(const std::string &raw_request_headers)
     }
 }
 
+t_uri_comps httpRequest::getUriComps() const
+{
+    return uri_comps;
+}
+
 std::string httpRequest::getRequestLineComp(const std::string &key) const
 {
     return request_line.at(key);
@@ -122,8 +179,18 @@ std::string httpRequest::getHeaderComp(const std::string &key) const
 
 void httpRequest::printParsedContent() const
 {
+    if (this->isParsed() == false)
+        return;
+
     std::cout << "\n\nPARSED CONTENT:\n"
               << std::endl;
+
+    std::cout << "path: |" << uri_comps.path << "|" << '\n';
+    std::cout << "executable_name: |" << uri_comps.executable_name << "|" << '\n';
+    std::cout << "path_info: |" << uri_comps.path_info << "|" << '\n';
+    std::cout << "query_string: |" << uri_comps.query_str << "|" << '\n';
+    std::cout << "fragment: |" << uri_comps.fragment << "|" << '\n';
+
     std::map<std::string, std::string>::const_iterator it = request_line.begin();
     std::map<std::string, std::string>::const_iterator ite = request_line.end();
 
@@ -155,14 +222,20 @@ void httpRequest::flushBuffers()
     request_line_parse_status = INCOMPLETE;
     request_headers_parse_status = INCOMPLETE;
     request_msg_body_parse_status = INCOMPLETE;
+    request_type = UNDEF;
 
     raw_request.erase();
     request_message_body.erase();
     request_line.clear();
     request_headers.clear();
+    uri_comps.path.erase();
+    uri_comps.executable_name.erase();
+    uri_comps.path_info.erase();
+    uri_comps.query_str.erase();
+    uri_comps.fragment.erase();
 }
 
-bool httpRequest::isParsed()
+bool httpRequest::isParsed() const
 {
     return (request_line_parse_status == COMPLETE &&
             request_headers_parse_status == COMPLETE &&
@@ -175,6 +248,7 @@ httpRequest::httpRequest(const httpRequest &obj)
       request_headers_parse_status(obj.request_headers_parse_status),
       request_msg_body_parse_status(obj.request_msg_body_parse_status),
       raw_request(obj.raw_request),
+      uri_comps(obj.uri_comps),
       request_line(obj.request_line),
       request_headers(obj.request_headers),
       request_message_body(obj.request_message_body)
@@ -187,6 +261,7 @@ httpRequest httpRequest::operator=(const httpRequest &obj)
     request_headers_parse_status = obj.request_headers_parse_status;
     request_msg_body_parse_status = obj.request_msg_body_parse_status;
     raw_request = obj.raw_request;
+    uri_comps = obj.uri_comps;
     request_line = obj.request_line;
     request_headers = obj.request_headers;
     request_message_body = obj.request_message_body;
