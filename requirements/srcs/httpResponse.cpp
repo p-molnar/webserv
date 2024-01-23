@@ -18,7 +18,7 @@ void httpResponse::setStatusCode(const std::string &statusCode)
 
 httpResponse httpResponse::generateResponse(httpRequest &request)
 {
-    std::string cgi_raw_output = cgiExecutor::executeCgi(request.getRequestLineComp("request_uri"));
+    std::string cgi_raw_output = cgiExecutor::executeCgi(request.getUriComps());
     std::cout << cgi_raw_output << "\n";
     return httpResponse();
 }
