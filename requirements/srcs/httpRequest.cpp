@@ -206,6 +206,9 @@ void httpRequest::printParsedContent() const
         std::cout << "\n";
         it++;
     }
+
+    std::cout << "\n\n";
+    std::cout << request_message_body << '\n';
 }
 
 void httpRequest::flushBuffers()
