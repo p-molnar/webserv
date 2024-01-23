@@ -17,16 +17,15 @@ void httpRequest::parseRequestUri(const std::string &uri)
 {
     // accepted extension name comes from config file
     std::string config_cgi_ext = ".py";
+    std::vector<std ::string> uri_comps_local = tokenize(uri, QSTR_SEP);
 
-    std::size_t qstr_sep_pos = uri.find(QSTR_SEP);
-    std::size_t frag_sep_pos = uri.find(FRAG_SEP);
-
-    if (qstr_sep_pos != NPOS)
-        uri_comps.path = uri.substr(0, qstr_sep_pos);
-    else if (frag_sep_pos != NPOS)
-        uri_comps.path = uri.substr(0, frag_sep_pos);
-    else
-        uri_comps.path = uri;
+    if (uri_comps_local.size() == 1)
+        uri_comps.path = uri_comps_local[0];
+    else if (uri_comps_local.size() == 2)
+    {
+        uri_comps.path = uri_comps_local[0];
+        uri_comps.query_str = uri_comps_local[1];
+    }
 
     if (uri_comps.path.find(config_cgi_ext) != NPOS)
     {
@@ -45,22 +44,15 @@ void httpRequest::parseRequestUri(const std::string &uri)
             it++;
         }
 
+        std::size_t qstr_sep_pos = uri.find(QSTR_SEP);
         std::size_t path_info_start = uri.find(uri_comps.executable_name) + uri_comps.executable_name.length();
         if (qstr_sep_pos != NPOS)
             uri_comps.path_info = uri.substr(path_info_start, qstr_sep_pos - path_info_start);
-        else if (frag_sep_pos != NPOS)
-            uri_comps.path_info = uri.substr(path_info_start, frag_sep_pos - path_info_start);
         else
             uri_comps.path_info = uri.substr(path_info_start);
     }
     else
         request_type = RESOURCE;
-    if (qstr_sep_pos != NPOS && frag_sep_pos != NPOS)
-        uri_comps.query_str = uri.substr(qstr_sep_pos, frag_sep_pos - qstr_sep_pos);
-    else if (qstr_sep_pos != NPOS && frag_sep_pos == NPOS)
-        uri_comps.query_str = uri.substr(qstr_sep_pos);
-    else if (qstr_sep_pos == NPOS && frag_sep_pos != NPOS)
-        uri_comps.fragment = uri.substr(frag_sep_pos);
 }
 
 bool httpRequest::parseRequest(char *request_buff)
@@ -189,7 +181,6 @@ void httpRequest::printParsedContent() const
     std::cout << "executable_name: |" << uri_comps.executable_name << "|" << '\n';
     std::cout << "path_info: |" << uri_comps.path_info << "|" << '\n';
     std::cout << "query_string: |" << uri_comps.query_str << "|" << '\n';
-    std::cout << "fragment: |" << uri_comps.fragment << "|" << '\n';
 
     std::map<std::string, std::string>::const_iterator it = request_line.begin();
     std::map<std::string, std::string>::const_iterator ite = request_line.end();
@@ -232,7 +223,6 @@ void httpRequest::flushBuffers()
     uri_comps.executable_name.erase();
     uri_comps.path_info.erase();
     uri_comps.query_str.erase();
-    uri_comps.fragment.erase();
 }
 
 bool httpRequest::isParsed() const

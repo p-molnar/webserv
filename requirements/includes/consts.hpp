@@ -12,7 +12,6 @@
 #define QSTR_SEP std::string("?")		 // query string separator
 #define QPARAM_SEP std::string("&")		 // query param separator
 #define QPARAM_KV_SEP std::string("=")	 // query param's key-value separator
-#define FRAG_SEP std::string("#")		 // query string separator
 
 #define NPOS std::string::npos
 
