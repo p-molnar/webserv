@@ -29,15 +29,14 @@ class FormData
 
 private:
 	std::string raw_data;
-	std::vector<t_form_data> form_data;
+	std::vector<t_form_data> form_data_arr;
 
 public:
 	FormData(const std::string &data, const std::map<std::string, std::string> &headers);
 	~FormData();
 
 private:
-	t_form_overhead FormData::parseFormOverhead(std::string raw_overhead);
-	std::string FormData::parseFormPayload(std::string raw_payload);
+	t_form_overhead parseFormOverhead(const std::string &raw_overhead);
 };
 
 #endif
