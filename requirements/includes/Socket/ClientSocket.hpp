@@ -1,15 +1,15 @@
 #ifndef CLIENTSOCKET_HPP
 #define CLIENTSOCKET_HPP
 
-#include "Socket.hpp"
-#include "errors.hpp"
-#include "Log.hpp"
-#include "HttpRequest.hpp"
-
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <stdexcept>
 #include <exception>
+
+#include "Socket.hpp"
+#include "errors.hpp"
+#include "Log.hpp"
+#include "HttpRequest.hpp"
 
 class ClientSocket : public Socket
 {

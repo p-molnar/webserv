@@ -18,7 +18,7 @@ HttpRequest ClientSocket::recvRequest()
 {
     char request_buff[10240]; // 10kb buffer size
     int bytes_received = recv(fd, request_buff, sizeof(request_buff), 0);
-    std::cout << "bytes recv: " << bytes_received << '\n';
+
     if (bytes_received <= 0)
     {
         request.flushBuffers();
@@ -33,11 +33,10 @@ HttpRequest ClientSocket::recvRequest()
             throw std::runtime_error(STRERR);
         }
     }
-    // request_buff[bytes_received] = '\0';
-    is_request_parsed = request.parseRequest(request_buff, bytes_received);
 
-    return (request);
+    is_request_parsed = request.parseRequest(request_buff, bytes_received);
     Log::logMsg("request received", fd);
+    return (request);
 }
 
 void ClientSocket::sendResponse()
