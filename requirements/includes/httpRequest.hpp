@@ -56,21 +56,22 @@ private:
     std::map<std::string, std::string> request_headers;
     std::string request_message_body;
 
-private:
-    void parseRequestLine(const std::string &raw_request);
-    void parseRequestUri(const std::string &uri);
-    void parseHeaders(const std::string &raw_request);
-    void parseMessageBody(const std::string &raw_request);
-
 public:
     httpRequest();
     httpRequest(const httpRequest &obj);
     httpRequest operator=(const httpRequest &obj);
     ~httpRequest();
 
-    bool parseRequest(char *request_buff);
+public:
+    bool parseRequest(char *request_buff, std::size_t parse_size);
     void flushBuffers();
     void printParsedContent() const;
+
+private:
+    void parseRequestLine(const std::string &raw_request);
+    void parseRequestUri(const std::string &uri);
+    void parseHeaders(const std::string &raw_request);
+    void parseMessageBody(const std::string &raw_request);
 
 public:
     std::string getRequestLineComp(const std::string &request_line_el) const;
