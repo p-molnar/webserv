@@ -1,15 +1,15 @@
-#include "cgiExecutor.hpp"
+#include "CgiExecutor.hpp"
 #include <iostream>
 
-cgiExecutor::cgiExecutor(/* args */)
+CgiExecutor::CgiExecutor(/* args */)
 {
 }
 
-cgiExecutor::~cgiExecutor()
+CgiExecutor::~CgiExecutor()
 {
 }
 
-std::string cgiExecutor::executeCgi(const t_uri_comps &uri)
+std::string CgiExecutor::executeCgi(const t_uri_comps &uri)
 {
 	std::string raw_html;
 	std::string raw_cgi_output;
@@ -19,7 +19,7 @@ std::string cgiExecutor::executeCgi(const t_uri_comps &uri)
 	std::cout << "exec name: " << uri.executable_name << '\n';
 	std::string exec_path = www_path + cgi_bin + uri.executable_name;
 	std::cout << "exec_path " << exec_path << '\n';
-	sysCall::access(exec_path, X_OK);
+	SysCall::access(exec_path, X_OK);
 
 	int filedes[2];
 

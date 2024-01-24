@@ -4,8 +4,8 @@
 #include "iostream"
 #include <map>
 
-#include "httpRequest.hpp"
-#include "cgiExecutor.hpp"
+#include "HttpRequest.hpp"
+#include "CgiExecutor.hpp"
 
 /*  HTTP Response
     -   HTTP VERSION    "HTTP/1.1"
@@ -18,7 +18,7 @@
     -   Response Body   content being returned
 
  */
-class httpResponse
+class HttpResponse
 {
 private:
     std::string _httpVersion;
@@ -27,16 +27,16 @@ private:
     std::map<std::string, std::string> _headers;
 
 public:
-    httpResponse();
-    httpResponse(const httpResponse &obj);
-    httpResponse operator=(const httpResponse &obj);
-    ~httpResponse();
+    HttpResponse();
+    HttpResponse(const HttpResponse &obj);
+    HttpResponse operator=(const HttpResponse &obj);
+    ~HttpResponse();
 
     void setStatusCode(const std::string &code);
     void setBody(const std::string &body);
     void setHeaders(const std::string &key, const std::string &value);
 
-    static httpResponse generateResponse(httpRequest &request);
+    static HttpResponse generateResponse(HttpRequest &request);
 };
 
 #endif

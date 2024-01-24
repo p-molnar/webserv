@@ -14,7 +14,7 @@ ClientSocket::~ClientSocket()
     ::close(fd);
 }
 
-httpRequest ClientSocket::recvRequest()
+HttpRequest ClientSocket::recvRequest()
 {
     char request_buff[10240]; // 10kb buffer size
     int bytes_received = recv(fd, request_buff, sizeof(request_buff), 0);

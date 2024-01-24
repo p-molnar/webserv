@@ -7,7 +7,7 @@
 
 #include <unistd.h>
 
-class sysCall
+class SysCall
 {
 public:
 	static void access(std::string path, int mode);

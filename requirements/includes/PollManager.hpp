@@ -7,8 +7,8 @@
 #include "Socket.hpp"
 #include "ServerSocket.hpp"
 #include "ClientSocket.hpp"
-#include "httpRequest.hpp"
-#include "httpResponse.hpp"
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 
 /*
     #define POLLIN 0x001  There is data to read.
@@ -35,10 +35,10 @@ public:
     void addSocket(Socket *socket);
     // void addServerFd(int fd);
     // void addSocket(int fd, int events);
-    void HandleGETRequest(const httpRequest &request);
+    void HandleGETRequest(const HttpRequest &request);
     void HandlePollInEvent(Socket *curr_socket);
 
-    void processHttpRequest(const httpRequest &request, ClientSocket &client_socket);
+    void processHttpRequest(const HttpRequest &request, ClientSocket &client_socket);
     void removeSocket(int fd);
     void pollRequests();
     void acceptConnection(int socket_fd);

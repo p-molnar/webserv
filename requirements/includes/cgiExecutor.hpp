@@ -10,15 +10,15 @@
 #include "errors.hpp"
 #include "consts.hpp"
 #include "tokenizer.hpp"
-#include "sysCall.hpp"
-#include "httpRequest.hpp"
+#include "SysCall.hpp"
+#include "HttpRequest.hpp"
 
-class cgiExecutor
+class CgiExecutor
 {
 private:
 public:
 	static std::string executeCgi(const t_uri_comps &uri);
-	cgiExecutor();
-	~cgiExecutor();
+	CgiExecutor();
+	~CgiExecutor();
 };
 #endif

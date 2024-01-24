@@ -95,13 +95,13 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 		client_socket->setReadyToRead(true);
 		try
 		{
-			httpRequest request = client_socket->recvRequest();
+			HttpRequest request = client_socket->recvRequest();
 			request.printParsedContent();
 			if (request.isParsed())
 			{
 				// if request is (GET || POST) &&  (file extension == .py)
 				// 		execute CGI
-				httpResponse reponse = httpResponse::generateResponse(request);
+				HttpResponse reponse = HttpResponse::generateResponse(request);
 			}
 		}
 		catch (const ClientSocket::HungUpException &e)
@@ -117,12 +117,12 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 	}
 }
 
-// void PollManager::HandleGETRequest(const httpRequest& request)
+// void PollManager::HandleGETRequest(const HttpRequest& request)
 // {
 
 // }
 
-void PollManager::processHttpRequest(const httpRequest &request, ClientSocket &client_socket)
+void PollManager::processHttpRequest(const HttpRequest &request, ClientSocket &client_socket)
 {
 	std::string response;
 	(void)request; // voiding to mute compiler errors

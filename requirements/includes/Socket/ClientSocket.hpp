@@ -4,7 +4,7 @@
 #include "Socket.hpp"
 #include "errors.hpp"
 #include "Log.hpp"
-#include "httpRequest.hpp"
+#include "HttpRequest.hpp"
 
 #include <sys/poll.h>
 #include <sys/socket.h>
@@ -27,7 +27,7 @@ public:
 
 private:
     bool is_request_parsed;
-    httpRequest request;
+    HttpRequest request;
 
 private:
     bool isReadyToRead;
@@ -42,7 +42,7 @@ public:
 
     std::string getRequestBuff() const { return this->_request_buff; }
 
-    httpRequest recvRequest();
+    HttpRequest recvRequest();
     void sendResponse();
 
     void setReadyToRead(bool ready) { isReadyToRead = ready; }

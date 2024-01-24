@@ -41,7 +41,7 @@ typedef struct s_uri_comps
     std::string path_info;
 } t_uri_comps;
 
-class httpRequest
+class HttpRequest
 {
 private:
     e_parse_status request_line_parse_status;
@@ -57,10 +57,10 @@ private:
     std::string request_message_body;
 
 public:
-    httpRequest();
-    httpRequest(const httpRequest &obj);
-    httpRequest operator=(const httpRequest &obj);
-    ~httpRequest();
+    HttpRequest();
+    HttpRequest(const HttpRequest &obj);
+    HttpRequest operator=(const HttpRequest &obj);
+    ~HttpRequest();
 
 public:
     bool parseRequest(char *request_buff, std::size_t parse_size);
@@ -81,6 +81,6 @@ public:
     bool isParsed() const;
 };
 
-std::ostream &operator<<(std::ostream &os, const httpRequest &obj);
+std::ostream &operator<<(std::ostream &os, const HttpRequest &obj);
 
 #endif
