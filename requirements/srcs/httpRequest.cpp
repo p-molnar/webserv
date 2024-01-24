@@ -1,5 +1,4 @@
 #include "HttpRequest.hpp"
-#include "WebServer.hpp"
 
 HttpRequest::HttpRequest()
     : request_line_parse_status(INCOMPLETE),
@@ -57,10 +56,10 @@ void HttpRequest::parseRequestUri(const std::string &uri)
 
 bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_received)
 {
-    raw_request += std::string(raw_request_data, bytes_received);
-    // std::cout << "curr raw request: " << raw_request << "\n";
     static std::size_t clrf_pos;
     static std::size_t dbl_clrf_pos;
+
+    raw_request += std::string(raw_request_data, bytes_received);
 
     if (request_line_parse_status == INCOMPLETE)
     {
@@ -92,8 +91,8 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
             std::size_t msg_body_start = dbl_clrf_pos + DBL_CRLF.length();
             std::string raw_msg_body = raw_request.substr(msg_body_start);
 
-            std::cout << "exp content_lenght: " << content_length << '\n';
-            std::cout << "content_lenght: " << raw_msg_body.length() << '\n';
+            // std::cout << "exp content_lenght: " << content_length << '\n';
+            // std::cout << "content_lenght: " << raw_msg_body.length() << '\n';
 
             if (content_length != raw_msg_body.length())
                 request_msg_body_parse_status = INCOMPLETE;
@@ -133,17 +132,22 @@ void HttpRequest::parseRequestLine(const std::string &raw_request)
 
 void HttpRequest::parseMessageBody(const std::string &raw_request)
 {
-    int fd;
-    if ((fd = open("uploaded_file.c", O_WRONLY | O_CREAT, S_IRWXU | S_IRGRP | S_IROTH)) < 0)
+    if (request_headers.at("Content-Type").find("multipart/form-data") != NPOS)
     {
-        std::cout << "ERROR in OPEN" << '\n';
+        FormData form_data(raw_request, request_headers);
     }
 
-    std::size_t size = atoi(request_headers["Content-Length"].c_str());
-    std::cout << "write size: " << size << '\n';
-    write(fd, raw_request.c_str(), size);
-    close(fd);
-    request_message_body = raw_request;
+    // int fd;
+    // if ((fd = open("uploaded_file.c", O_WRONLY | O_CREAT, S_IRWXU | S_IRGRP | S_IROTH)) < 0)
+    // {
+    //     std::cout << "ERROR in OPEN" << '\n';
+    // }
+
+    // std::size_t size = atoi(request_headers["Content-Length"].c_str());
+    // std::cout << "write size: " << size << '\n';
+    // write(fd, raw_request.c_str(), size);
+    // close(fd);
+    // request_message_body = raw_request;
 }
 
 void HttpRequest::parseHeaders(const std::string &raw_request_headers)

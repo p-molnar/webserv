@@ -5,8 +5,11 @@
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <iostream>
+
 #include "consts.hpp"
 #include "tokenizer.hpp"
+#include "FormData.hpp"
 
 /*  HTTP Request parser.
     Requirements:
