@@ -1,19 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   requestHandler.hpp                                 :+:    :+:            */
+/*   ServerException.hpp                                :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2024/01/19 13:41:13 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/25 11:36:48 by tklouwer      ########   odam.nl         */
+/*   Created: 2024/01/25 08:52:51 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/01/25 09:38:09 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef SERVEREXCEPTION_HPP
+#define SERVEREXCEPTION_HPP
 
-#include "httpRequest.hpp"
+#include <stdexcept>
 #include "httpResponse.hpp"
+#include "httpStatus.hpp"
 
+class ServerException : public httpStatus, public std::runtime_error {
+    public: 
+        ServerException(statusCode status) : 
+            httpStatus(status), std::runtime_error(getStatusLine()) {};
+};
 
-// void    handleGetRequest(const httpRequest *req, httpResponse *res);
+#endif

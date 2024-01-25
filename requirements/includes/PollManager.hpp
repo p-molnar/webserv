@@ -36,6 +36,7 @@ class PollManager
         // void addSocket(int fd, int events);
         void HandleGETRequest(const httpRequest& request);
         void HandlePollInEvent(Socket* curr_socket);
+        void HandlePollOutEvent(Socket *curr_socket);
 
         void processHttpRequest(const httpRequest& request, ClientSocket& client_socket);
         void removeSocket(int fd);

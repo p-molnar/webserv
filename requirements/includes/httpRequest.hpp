@@ -53,7 +53,7 @@ public:
     std::string getRequestLine(const std::string &request_line_el) const;
     std::string getHeader(const std::string &header_name) const;
     std::string getMessageBody() const;
-
+    std::map<std::string, std::string> getHeaders() const {return request_headers;}
     void printParsedContent() const;
 };
 

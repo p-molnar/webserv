@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/17 10:53:12 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/19 13:37:39 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/25 09:49:56 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,10 @@ void    httpResponse::setHeaders(const std::string& key, const std::string& valu
 
 void    httpResponse::setStatusLine(const std::string& statusCode)
 {
-    _statusline = _httpVersion + " " + _statusCode;
+    _statusline = _httpVersion + " " + statusCode;
 }
 
-std::string    httpResponse::generateResponse(httpRequest& request)
+std::string    httpResponse::generateResponse(bool includeBody)
 {
     std::string response;
 
@@ -37,6 +37,7 @@ std::string    httpResponse::generateResponse(httpRequest& request)
         response += header.first + ": " + header.second + CRLF;
     }
     response += CRLF;
-    response += _body;
+    if (includeBody)
+        response += _body;
     return response;
 }

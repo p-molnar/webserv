@@ -73,17 +73,41 @@ void PollManager::pollRequests()
 
 			if (curr_pfd->revents & POLLIN)
 			{
-				polled_events++;
+				// polled_events++;
 				HandlePollInEvent(curr_socket);
-
 			}
-			if (curr_pfd->revents & POLLOUT)
+			else if (curr_pfd->revents & POLLOUT)
 			{
-				// sendResponse()
+				HandlePollOutEvent(curr_socket);
 			}
 			it++;
 		}
 	}
+}
+
+void PollManager::HandlePollOutEvent(Socket *curr_socket)
+{
+	std::cout << "HERE\n";
+	if (ClientSocket *client_socket = dynamic_cast<ClientSocket *>(curr_socket))
+	{
+		try
+		{
+			Router route;
+			route.routeRequest(client_socket->getRequest(), client_socket->getResponse());
+			client_socket->sendResponse();
+			std::cout << "ENDED\n";
+		}
+		catch (const ClientSocket::HungUpException &e)
+		{
+			PollManager::removeSocket(client_socket->getFd());
+		}
+		catch (const std::exception &e)
+		{
+			PollManager::removeSocket(client_socket->getFd());
+			Log::logMsg(e.what());
+		}
+	}
+	std::cout << "NOPE\n";
 }
 
 void PollManager::HandlePollInEvent(Socket *curr_socket)
@@ -98,10 +122,7 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 		client_socket->setReadyToRead(true);
 		try
 		{
-			client_socket->recvRequest();
-			Router route;
-			route.routeRequest(client_socket->getRequest());
-			
+			client_socket->recvRequest();			
 		}
 		catch (const ClientSocket::HungUpException &e)
 		{
@@ -114,4 +135,5 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 		}
 		client_socket->setReadyToRead(false);
 	}
+	return ;
 }

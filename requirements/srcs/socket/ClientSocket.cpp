@@ -18,9 +18,9 @@ void ClientSocket::recvRequest()
 {
     char request_buff[2048];
     int bytes_received = recv(fd, request_buff, sizeof(request_buff) - 1, 0);
-    std::cout << "RAW REQUEST\n";
-    std::cout << request_buff << '\n';
-    std::cout << "RAW REQUEST END\n";
+    // std::cout << "RAW REQUEST\n";
+    // std::cout << request_buff << '\n';
+    // std::cout << "RAW REQUEST END\n";
     request_buff[bytes_received] = '\0';
 
     if (bytes_received <= 0)
@@ -41,8 +41,8 @@ void ClientSocket::recvRequest()
     is_request_parsed = request.parseRequest(request_buff);
 
     Log::logMsg("request received", fd);
-    if (is_request_parsed)
-        request.printParsedContent();
+    // if (is_request_parsed)
+    //     request.printParsedContent();
 }
 
 void ClientSocket::sendResponse()
@@ -50,19 +50,10 @@ void ClientSocket::sendResponse()
     if (!is_request_parsed)
         return;
 
-    std::string status_line = "HTTP/1.1 200 OK";
-    std::string response_headers = "";
-    response_headers += "Content-Type: text/html" + CRLF;
-    response_headers += "Content-Length: 0" + CRLF;
-    std::string response_body = "";
+    std::string _response = response.generateResponse(false);
 
-    std::string response = status_line +
-                           CRLF +
-                           response_headers +
-                           CRLF +
-                           response_body;
-
-    int bytes_sent = send(fd, response.c_str(), response.size(), 0);
+    std::cout << "THIS IS THE RESPONSE: \n" << _response << std::endl;
+    int bytes_sent = send(fd, _response.c_str(), _response.size(), 0);
 
     if (bytes_sent < 0)
     {

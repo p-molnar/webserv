@@ -6,35 +6,36 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/19 10:40:30 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/19 13:47:25 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/25 14:21:48 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Router.hpp"
 #include <regex>
+#include "FileHandler.hpp"
 
-void    Router::registerRoute(std::string url_regex, std::string request_method,
+Router::Router() 
+{
+    registerRoute("GET", &handleGetRequest);
+    // registerRoute("POST", &handlePostRequest);
+}
+void    Router::registerRoute(std::string request_method,
             void (*callback)(const httpRequest*, httpResponse*))
 {
-    Route route;
-    route.url_regex = url_regex;
-    route.request_method = request_method;
-    route.callback = callback;
-    routes.push_back(route);
+    routes.push_back({request_method, callback});
 }
 
 void    Router::routeRequest(const httpRequest& req, httpResponse& res)
 {
-    for (auto& r : routes) {
-        std::regex pat {r.url_regex};
-        std::smatch match;
+    std::cout << "ROUTE\n";
+    std::string method = req.getRequestLine("method");
 
-    std::string tmp = req.getRequestLine("request_uri");
-    if ((std::regex_match(tmp, match, pat))
-        && (req.getRequestLine("method").compare(r.request_method) == 0))
+    for (const auto& route : routes) 
+    {
+        if (method == route.request_method)
         {
-            r.callback(&req, &res);
-            break ;
+            route.callback(&req, &res);
+            return ;
         }
     }
 }

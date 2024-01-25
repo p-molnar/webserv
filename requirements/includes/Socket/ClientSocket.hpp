@@ -5,6 +5,7 @@
 #include "errors.hpp"
 #include "Log.hpp"
 #include "httpRequest.hpp"
+#include "httpResponse.hpp"
 
 #include <sys/poll.h>
 #include <sys/socket.h>
@@ -28,19 +29,21 @@ public:
 private:
     bool is_request_parsed;
     httpRequest request;
+    httpResponse response;
 
 private:
     bool isReadyToRead;
     bool isReadyToWrite;
 
     std::string _request_buff;
-    std::string _response;
+    // std::string _response;
 
 public:
     ClientSocket(int fd);
     ~ClientSocket(void);
 
     const httpRequest& getRequest() const { return request; }
+    httpResponse& getResponse() { return response; }
     std::string getRequestBuff() const { return this->_request_buff; }
 
     void recvRequest();
@@ -51,8 +54,6 @@ public:
 
     void setReadyToWrite(bool ready) { isReadyToWrite = ready; }
     bool getReadyToWrite() const { return isReadyToWrite; }
-
-    void setResponse(std::string response);
 };
 
 #endif
