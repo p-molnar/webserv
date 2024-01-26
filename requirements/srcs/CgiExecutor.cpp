@@ -1,15 +1,7 @@
-#include "CgiExecutor.hpp"
+#include "RequestProcessor.hpp"
 #include <iostream>
 
-CgiExecutor::CgiExecutor(/* args */)
-{
-}
-
-CgiExecutor::~CgiExecutor()
-{
-}
-
-std::string CgiExecutor::executeCgi(const t_uri_comps &uri)
+std::string RequestProcessor::executeCgi(const t_uri_comps &uri)
 {
 	std::string raw_html;
 	std::string raw_cgi_output;
