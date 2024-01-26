@@ -74,10 +74,10 @@ void PollManager::pollRequests()
 				polled_events++;
 				HandlePollInEvent(curr_socket);
 			}
-			if (curr_pfd->revents & POLLOUT)
-			{
-				// sendResponse()
-			}
+			// if (curr_pfd->revents & POLLOUT)
+			// {
+			// 	// sendResponse()
+			// }
 			it++;
 		}
 	}
@@ -92,7 +92,6 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 	}
 	if (ClientSocket *client_socket = dynamic_cast<ClientSocket *>(curr_socket))
 	{
-		client_socket->setReadyToRead(true);
 		try
 		{
 			HttpRequest request = client_socket->recvRequest();
@@ -113,7 +112,6 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 			PollManager::removeSocket(client_socket->getFd());
 			Log::logMsg(e.what());
 		}
-		client_socket->setReadyToRead(false);
 	}
 }
 

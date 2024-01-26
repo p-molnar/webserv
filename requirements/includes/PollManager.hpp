@@ -33,9 +33,6 @@ public:
     ~PollManager();
 
     void addSocket(Socket *socket);
-    // void addServerFd(int fd);
-    // void addSocket(int fd, int events);
-    void HandleGETRequest(const HttpRequest &request);
     void HandlePollInEvent(Socket *curr_socket);
 
     void processHttpRequest(const HttpRequest &request, ClientSocket &client_socket);
