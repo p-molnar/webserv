@@ -18,8 +18,10 @@ void HttpResponse::setStatusCode(const std::string &statusCode)
 
 HttpResponse HttpResponse::generateResponse(HttpRequest &request)
 {
-    std::string cgi_raw_output = CgiExecutor::executeCgi(request.getUriComps());
-    std::cout << cgi_raw_output << "\n";
+    // std::string cgi_raw_output = RequestProcessor::executeCgi(request.getUriComps());
+    // std::cout << cgi_raw_output << "\n";
+
+    RequestProcessor::uploadFiles(request);
     return HttpResponse();
 }
 
