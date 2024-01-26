@@ -1,5 +1,5 @@
-#ifndef TOKENIZER__HPP
-#define TOKENIZER__HPP
+#ifndef STRING_UTILS__HPP
+#define STRING_UTILS__HPP
 
 #include <vector>
 #include <string>
