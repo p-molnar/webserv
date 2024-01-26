@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/17 10:53:12 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/26 13:46:23 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/26 13:59:55 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,12 @@ std::string    httpResponse::generateResponse(bool includeBody)
     std::string response;
 
     response += _statusline + CRLF;
-    setHeaders("Content-Type", "text/html");
-    setHeaders("Connection", "close");
+    // setHeaders("Connection", "close");
     response += DBL_CRLF;
     if (includeBody)
     {
         response += _body;
         setHeaders("Content-Length", std::to_string(_body.size()));
     }
-    Log::logMsg(response);
     return response;
 }
