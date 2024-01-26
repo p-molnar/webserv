@@ -69,6 +69,15 @@ t_pollFds PollManager::getPfds()
 	return pfds;
 }
 
+bool PollManager::shouldCloseConnection(ClientSocket* client_socket)
+{
+	const auto& connectionHeader = client_socket->getResponse().getHeader("Connection");
+	
+	if (connectionHeader == "close")	
+		return true;
+	return false;
+}
+
 void PollManager::processEvents()
 {
 	Log::logMsg("Server is processing events");
@@ -113,6 +122,8 @@ void PollManager::HandlePollOutEvent(Socket *curr_socket)
 		{
 			router.routeRequest(client_socket->getRequest(), client_socket->getResponse());
 			client_socket->sendResponse();
+			if (shouldCloseConnection(client_socket))
+				removeSocket(client_socket->getFd());
 		}
 		catch (const ClientSocket::HungUpException &e)
 		{

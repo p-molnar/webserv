@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/17 10:22:04 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/25 08:59:08 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/26 11:31:49 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,11 @@ class httpResponse
     public:
         httpResponse() : _httpVersion("HTTP/1.1") {};
 
-        void        setStatusLine(const std::string& code);
+        void        setStatusLine(const std::string& statusline);
         void        setBody(const std::string& body);
         void        setHeaders(const std::string& key, const std::string& value);
+
+        std::string getHeader(const std::string &header_name) const;
 
         std::string getStatusLine() const { return _statusline; }
         std::string generateResponse(bool includeBody);

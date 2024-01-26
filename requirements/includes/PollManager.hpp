@@ -47,7 +47,7 @@ public:
     void acceptConnection(int socket_fd);
     t_pollFds getPfds();
 
-    
+    bool shouldCloseConnection(ClientSocket* client_socket);
     void processEvents();
 };
 

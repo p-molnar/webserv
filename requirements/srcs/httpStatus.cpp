@@ -6,14 +6,15 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 09:13:36 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/25 09:36:23 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/26 11:13:20 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "httpStatus.hpp"
 #include "consts.hpp"
+#include <iostream>
 
-std::unordered_map<statusCode, std::string> _message = {
+std::unordered_map<statusCode, std::string> httpStatus::_message = {
 	{statusCode::OK, "OK"},
 	{statusCode::Created, "Created"},
 	{statusCode::Accepted, "Accepted"},
@@ -26,7 +27,7 @@ std::unordered_map<statusCode, std::string> _message = {
 	{statusCode::NotFound, "Not Found"},
 	{statusCode::MethodNotAllowed, "Method Not Allowed"},
 	{statusCode::RequestTimeout, "Request Timeout"},
-	{statusCode::LenghtRequired, "Length Required"},
+	{statusCode::LengthRequired, "Length Required"},
 	{statusCode::PayloadToLarge, "Payload Too Large"},
 	{statusCode::URIToLong, "URI Too Long"},
 	{statusCode::UnsupportedMediaType, "Unsupported Media Type"},
@@ -37,8 +38,8 @@ std::unordered_map<statusCode, std::string> _message = {
 	{statusCode::GatewayTimeout, "Gateway Timeout"}
 };
 
-std::string httpStatus::getStatusLine()
+std::string httpStatus::getStatusLine() const
 {
 	return (version + " " + std::to_string(static_cast<int>(_statusCode)) + 
-		" " + _message.at(_statusCode)) + DBL_CRLF; 
+		" " + _message.at(_statusCode)) + CRLF;
 }

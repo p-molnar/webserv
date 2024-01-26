@@ -18,7 +18,7 @@ enum class statusCode
 	NotFound = 404,
 	MethodNotAllowed = 405,
 	RequestTimeout = 408,
-	LenghtRequired = 411,
+	LengthRequired = 411,
 	PayloadToLarge = 413,
 	URIToLong = 414,
 	UnsupportedMediaType = 415,
@@ -32,14 +32,13 @@ enum class statusCode
 class httpStatus {
 	private:
 		statusCode _statusCode;
-		std::unordered_map<statusCode, std::string> _message;
+		static std::unordered_map<statusCode, std::string> _message;
 
 	public:
 		httpStatus(statusCode statuscode) : _statusCode(statuscode) {};
 		~httpStatus() {};
 
-		std::string getStatusLine();
-		
+		std::string getStatusLine() const;
 };
 
 #endif

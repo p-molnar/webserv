@@ -1,5 +1,6 @@
 #include "ClientSocket.hpp"
 #include "consts.hpp"
+#include <iostream>
 
 ClientSocket::ClientSocket(int fd)
 {
@@ -44,6 +45,7 @@ void ClientSocket::sendResponse()
         return;
     }
     std::string _response = response.generateResponse(true);
+    std::cout << _response << std::endl;
     int bytes_sent = send(fd, _response.c_str(), _response.size(), 0);
     if (bytes_sent < 0)
     {

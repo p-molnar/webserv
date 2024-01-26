@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/17 10:53:12 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/26 09:41:11 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/26 11:43:59 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 
 void    httpResponse::setBody(const std::string& body)
 {
-    _body = body;
     setHeaders("Content-Length", std::to_string(body.size()));
+    _body = body;
 }
 
 void    httpResponse::setHeaders(const std::string& key, const std::string& value)
@@ -24,9 +24,14 @@ void    httpResponse::setHeaders(const std::string& key, const std::string& valu
     _headers[key] = value;
 }
 
-void    httpResponse::setStatusLine(const std::string& statusCode)
+void    httpResponse::setStatusLine(const std::string& statusline)
 {
-    _statusline = _httpVersion + " " + statusCode;
+    _statusline = statusline;
+}
+
+std::string httpResponse::getHeader(const std::string &headerName) const
+{
+    return _headers.at(headerName);
 }
 
 std::string    httpResponse::generateResponse(bool includeBody)
@@ -41,5 +46,7 @@ std::string    httpResponse::generateResponse(bool includeBody)
     response += CRLF;
     if (includeBody)
         response += _body;
+    response += CRLF;
+    // Log::logMsg(response);
     return response;
 }
