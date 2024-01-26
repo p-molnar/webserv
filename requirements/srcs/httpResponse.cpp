@@ -6,11 +6,12 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/17 10:53:12 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/25 09:49:56 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/26 09:41:11 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "httpResponse.hpp"
+#include "Log.hpp"
 
 void    httpResponse::setBody(const std::string& body)
 {
@@ -30,6 +31,7 @@ void    httpResponse::setStatusLine(const std::string& statusCode)
 
 std::string    httpResponse::generateResponse(bool includeBody)
 {
+    Log::logMsg("Response generated, ready to sent");
     std::string response;
 
     response = _statusline + CRLF;

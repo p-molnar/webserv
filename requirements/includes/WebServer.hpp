@@ -7,6 +7,7 @@
 #include "Config.hpp"
 #include "Parcer.hpp"
 
+#include <memory>
 #include <vector>
 #include <map>
 
@@ -17,7 +18,7 @@ private:
     // temporary solution for server configuration
     std::map<int, int> server_configs;
 
-    std::vector<ServerSocket *> server_sockets;
+    std::vector<std::unique_ptr<ServerSocket>>server_sockets; // Changed to UNIQUE_PTR
     PollManager poll_manager;
 
     // constructor & destructor

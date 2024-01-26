@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/25 14:22:11 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/26 09:51:20 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "httpStatus.hpp"
 #include <fstream>
 #include <sstream>
+#include "Log.hpp"
 
 bool fileHandler::fileExists(std::string& filePath)
 {
@@ -33,14 +34,16 @@ std::string fileHandler::readFileContent(const std::string& filePath)
 
 void     handleGetRequest(const httpRequest *req, httpResponse *res) 
 {
-    std::cout << "GET REQUEST\n";
-    std::string uri = req->getHeader("request_uri");
-    if (uri.empty() || uri == "/")
-        uri = "/index.html";
+    Log::logMsg("Handling GET request");
+    // std::string uri = req->getHeader("request_uri");
+    // if (uri.empty() || uri == "/")
+    std::string uri = "/index.html";
     
-    std::string filePath = "../www" + uri;
+    std::string filePath = "www" + uri;
+    std::cout << "\n\n" << filePath << "\n\n" << std::endl;
     if (fileHandler::fileExists(filePath))
     {
+        Log::logMsg("File exists");
         std::string content = fileHandler::readFileContent(filePath);
         httpStatus status(statusCode::OK);
         res->setBody(content);
@@ -51,5 +54,6 @@ void     handleGetRequest(const httpRequest *req, httpResponse *res)
             res->setHeaders(header.first, header.second);
         }
         res->setHeaders("Content-Length", std::to_string(content.size()));
+        res->generateResponse(true);
     }
 }

@@ -31,23 +31,19 @@ void WebServer::startService()
         int port = it->first;
         int backlog = it->second;
 
-        ServerSocket *server_socket = new ServerSocket;
-        server_sockets.push_back(server_socket);
+        auto server_socket = std::make_unique<ServerSocket>();
 
         server_socket->createSocket();
         server_socket->bindPort(port);
         server_socket->listenPort(backlog);
-        poll_manager.addSocket(server_socket);
+        poll_manager.addSocket(server_socket.get());
+        server_sockets.push_back(std::move(server_socket));
         it++;
     }
-    poll_manager.pollRequests();
+    poll_manager.processEvents();
 }
 
 WebServer::~WebServer()
 {
-    for (size_t i = 0; i < server_sockets.size(); i++)
-    {
-        delete server_sockets[i];
-    }
     Log::logMsg("Server(s) shutdown");
 }

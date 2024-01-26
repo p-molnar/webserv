@@ -1,6 +1,7 @@
 #include "PollManager.hpp"
 #include "httpRequest.hpp"
 #include "Router.hpp"
+#include "Log.hpp"
 
 #define RUNNING 1
 
@@ -37,6 +38,21 @@ void PollManager::removeSocket(int fd)
 	sockets.erase(m_it);
 }
 
+void PollManager::updatePollfd() 
+{
+	for (auto& pfd : pfds)
+	{
+		Socket* socket = sockets[pfd.fd];
+		if (ClientSocket* clientSocket = dynamic_cast<ClientSocket*>(socket))
+		{
+			if (clientSocket->getState() == ClientSocket::State::Reading)
+				pfd.events = POLLIN;
+			else if (clientSocket->getState() == ClientSocket::State::Writing)
+				pfd.events = POLLOUT;
+		}
+	}
+}
+
 t_pollFds PollManager::getPfds()
 {
 	t_pollFds pfds;
@@ -53,12 +69,13 @@ t_pollFds PollManager::getPfds()
 	return pfds;
 }
 
-void PollManager::pollRequests()
+void PollManager::processEvents()
 {
+	Log::logMsg("Server is processing events");
 	while (RUNNING)
 	{
+		updatePollfd();
 		int active_events = poll(pfds.data(), pfds.size(), 1000);
-
 		if (active_events < 0)
 			throw std::runtime_error("poll: " + STRERR);
 
@@ -73,11 +90,14 @@ void PollManager::pollRequests()
 
 			if (curr_pfd->revents & POLLIN)
 			{
-				// polled_events++;
+				Log::logMsg("POLLIN event");
+				polled_events++;
 				HandlePollInEvent(curr_socket);
 			}
 			else if (curr_pfd->revents & POLLOUT)
 			{
+				Log::logMsg("POLLOUT event");
+				polled_events++;
 				HandlePollOutEvent(curr_socket);
 			}
 			it++;
@@ -87,15 +107,12 @@ void PollManager::pollRequests()
 
 void PollManager::HandlePollOutEvent(Socket *curr_socket)
 {
-	std::cout << "HERE\n";
 	if (ClientSocket *client_socket = dynamic_cast<ClientSocket *>(curr_socket))
 	{
 		try
 		{
-			Router route;
-			route.routeRequest(client_socket->getRequest(), client_socket->getResponse());
+			router.routeRequest(client_socket->getRequest(), client_socket->getResponse());
 			client_socket->sendResponse();
-			std::cout << "ENDED\n";
 		}
 		catch (const ClientSocket::HungUpException &e)
 		{
@@ -107,7 +124,6 @@ void PollManager::HandlePollOutEvent(Socket *curr_socket)
 			Log::logMsg(e.what());
 		}
 	}
-	std::cout << "NOPE\n";
 }
 
 void PollManager::HandlePollInEvent(Socket *curr_socket)
@@ -119,7 +135,6 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 	}
 	if (ClientSocket *client_socket = dynamic_cast<ClientSocket *>(curr_socket))
 	{
-		client_socket->setReadyToRead(true);
 		try
 		{
 			client_socket->recvRequest();			
@@ -133,7 +148,6 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 			PollManager::removeSocket(client_socket->getFd());
 			Log::logMsg(e.what());
 		}
-		client_socket->setReadyToRead(false);
 	}
 	return ;
 }

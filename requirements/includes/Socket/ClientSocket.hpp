@@ -14,6 +14,7 @@
 
 class ClientSocket : public Socket
 {
+
 public:
     class HungUpException : public std::exception
     {
@@ -32,15 +33,17 @@ private:
     httpResponse response;
 
 private:
-    bool isReadyToRead;
-    bool isReadyToWrite;
-
     std::string _request_buff;
-    // std::string _response;
 
 public:
+
+    enum class State { Reading, Writing } state = State::Reading;
+
     ClientSocket(int fd);
     ~ClientSocket(void);
+
+    void setState(State newState) { state = newState; }
+    State getState() const { return state; }
 
     const httpRequest& getRequest() const { return request; }
     httpResponse& getResponse() { return response; }
@@ -49,11 +52,6 @@ public:
     void recvRequest();
     void sendResponse();
 
-    void setReadyToRead(bool ready) { isReadyToRead = ready; }
-    bool getReadyToRead() const { return isReadyToRead; }
-
-    void setReadyToWrite(bool ready) { isReadyToWrite = ready; }
-    bool getReadyToWrite() const { return isReadyToWrite; }
 };
 
 #endif

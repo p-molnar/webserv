@@ -6,13 +6,14 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/19 10:40:30 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/25 14:21:48 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/26 09:39:26 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Router.hpp"
 #include <regex>
 #include "FileHandler.hpp"
+#include "Log.hpp"
 
 Router::Router() 
 {
@@ -27,7 +28,7 @@ void    Router::registerRoute(std::string request_method,
 
 void    Router::routeRequest(const httpRequest& req, httpResponse& res)
 {
-    std::cout << "ROUTE\n";
+    Log::logMsg("Routing the request");
     std::string method = req.getRequestLine("method");
 
     for (const auto& route : routes) 
