@@ -5,7 +5,7 @@
 #include <map>
 
 #include "HttpRequest.hpp"
-#include "CgiExecutor.hpp"
+#include "RequestProcessor.hpp"
 
 /*  HTTP Response
     -   HTTP VERSION    "HTTP/1.1"
