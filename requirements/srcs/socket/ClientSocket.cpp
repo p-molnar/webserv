@@ -5,8 +5,6 @@ ClientSocket::ClientSocket(int fd)
 {
     this->setFd(fd);
     this->setPfd((t_pollfd){fd, POLLIN, 0});
-    isReadyToRead = false;
-    isReadyToWrite = false;
 }
 
 ClientSocket::~ClientSocket()
