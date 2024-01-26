@@ -58,6 +58,7 @@ private:
     std::map<std::string, std::string> request_line;
     std::map<std::string, std::string> request_headers;
     std::string request_message_body;
+    FormData form_data;
 
 public:
     HttpRequest();
@@ -81,6 +82,7 @@ public:
     t_uri_comps getUriComps() const;
     std::string getHeaderComp(const std::string &header_name) const;
     std::string getMessageBody() const;
+    const FormData &getFormDataObj() const;
     bool isParsed() const;
 };
 
