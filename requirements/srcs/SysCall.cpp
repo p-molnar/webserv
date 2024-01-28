@@ -181,3 +181,35 @@ int SysCall::open(const char *path, int oflag, int permission_flags)
 
 	return ret_val;
 }
+
+DIR *SysCall::opendir(std::string filename)
+{
+	DIR *dir_stream = ::opendir(filename.c_str());
+
+	if (dir_stream == NULL)
+		throw std::runtime_error("opendir error: " + STRERR);
+
+	return dir_stream;
+}
+
+struct dirent *SysCall::readdir(DIR *dirp)
+{
+	errno = 0;
+	struct dirent *dirent = ::readdir(dirp);
+
+	if (dirent == NULL && errno != 0)
+		throw std::runtime_error("readdir error: " + STRERR);
+
+	return dirent;
+}
+
+std::vector<struct dirent *> SysCall::listdir(DIR *dirp)
+{
+	std::vector<struct dirent *> dirents;
+
+	struct dirent *dirent;
+	while ((dirent = SysCall::readdir(dirp)) != NULL)
+		dirents.push_back(dirent);
+
+	return dirents;
+}

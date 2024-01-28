@@ -4,10 +4,13 @@
 #include "errors.hpp"
 
 #include <string>
+#include <vector>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <fcntl.h>
 #include <poll.h>
+#include <dirent.h>
+#include <sys/types.h>
 
 class SysCall
 {
@@ -30,8 +33,20 @@ public:
 	static ssize_t write(int fildes, const void *buf, size_t nbyte);
 	static int open(const char *path, int oflag, int permission_flags);
 	static pid_t fork();
-
+	static DIR *opendir(std::string filename);
+	static struct dirent *readdir(DIR *dirp);
+	static std::vector<struct dirent *> listdir(DIR *dirp);
 	static int close(int fd);
+
+	// struct dirent
+	// {
+	// 	ino_t d_ino;			 /* Inode number */
+	// 	off_t d_off;			 /* Not an offset; see below */
+	// 	unsigned short d_reclen; /* Length of this record */
+	// 	unsigned char d_type;	 /* Type of file; not supported
+	// 								by all filesystem types */
+	// 	char d_name[256];		 /* Null-terminated filename */
+	// };
 };
 
 #endif
