@@ -1,4 +1,5 @@
 #include "string_utils.hpp"
+#include "SysCall.hpp"
 
 std::string strip(const std::string &input, std::string strip_chars)
 {
@@ -37,4 +38,18 @@ std::vector<std::string> tokenize(const std::string &input,
 	}
 
 	return tokens;
+}
+
+std::string readFull(int fd)
+{
+	char buff[10240];
+	std::string output;
+
+	int bytes_read;
+	while ((bytes_read = SysCall::read(fd, buff, sizeof(buff))) != 0)
+	{
+		output += std::string(buff, bytes_read);
+	}
+
+	return output;
 }
