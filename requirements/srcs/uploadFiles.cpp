@@ -1,8 +1,7 @@
 #include "RequestProcessor.hpp"
 
-void RequestProcessor::uploadFiles(const HttpRequest &request)
+void RequestProcessor::uploadFiles(const FormData &form_data)
 {
-	FormData form_data = request.getFormDataObj();
 	for (t_form_data filedata : form_data.getFormData())
 	{
 		std::string filename = filedata.overhead.content_disposition.at("filename");
