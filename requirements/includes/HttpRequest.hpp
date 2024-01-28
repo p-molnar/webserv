@@ -33,6 +33,7 @@ enum e_request_type
 {
     UNDEF,
     RESOURCE,
+    DIRECTORY,
     EXECUTABLE,
 };
 
