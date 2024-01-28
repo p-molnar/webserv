@@ -18,7 +18,8 @@ class RequestProcessor
 {
 public:
 	static std::string executeCgi(const t_uri_comps &uri);
-	static void uploadFiles(const HttpRequest &request);
+	static void uploadFiles(const FormData &form_data);
+	static std::string listDirectoryContent(const std::string &path);
 };
 
 #endif
