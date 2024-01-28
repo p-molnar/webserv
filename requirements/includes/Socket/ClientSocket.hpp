@@ -1,8 +1,6 @@
 #ifndef CLIENTSOCKET_HPP
 #define CLIENTSOCKET_HPP
 
-#include <sys/poll.h>
-#include <sys/socket.h>
 #include <stdexcept>
 #include <exception>
 
@@ -10,6 +8,7 @@
 #include "errors.hpp"
 #include "Log.hpp"
 #include "HttpRequest.hpp"
+#include "SysCall.hpp"
 
 class ClientSocket : public Socket
 {

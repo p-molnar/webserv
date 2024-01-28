@@ -17,19 +17,11 @@ void WebServer::loadConfig()
 
 void WebServer::startService()
 {
-    // The server configuration is identified by its port number
-    // i.e., there should be a std::map<port, ServerConfig> server_configs that allows us
-    // to get a server configuration based on its port number
-
-    // tmp data structure while the ServerConfig parsed class is missing
     Log::logMsg("Server started");
-    std::map<int, int>::iterator it = server_configs.begin();
-    std::map<int, int>::iterator ite = server_configs.end();
-
-    while (it != ite)
+    for (std::pair<int, int> config : server_configs)
     {
-        int port = it->first;
-        int backlog = it->second;
+        int port = config.first;
+        int backlog = config.second;
 
         ServerSocket *server_socket = new ServerSocket;
         server_sockets.push_back(server_socket);
@@ -38,16 +30,13 @@ void WebServer::startService()
         server_socket->bindPort(port);
         server_socket->listenPort(backlog);
         poll_manager.addSocket(server_socket);
-        it++;
     }
     poll_manager.pollRequests();
 }
 
 WebServer::~WebServer()
 {
-    for (size_t i = 0; i < server_sockets.size(); i++)
-    {
-        delete server_sockets[i];
-    }
+    for (ServerSocket * socket : server_sockets)
+        delete socket;
     Log::logMsg("Server(s) shutdown");
 }

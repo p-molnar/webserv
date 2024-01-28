@@ -15,8 +15,7 @@ std::string RequestProcessor::executeCgi(const t_uri_comps &uri)
 
 	int filedes[2];
 
-	if (pipe(filedes) < 0)
-		throw std::runtime_error("pipe error: " + STRERR);
+	SysCall::pipe(filedes);
 
 	std::vector<char *> env;
 	std::string cgi_fd_env_var = "CGI_FD=" + std::to_string(filedes[1]);
@@ -28,36 +27,20 @@ std::string RequestProcessor::executeCgi(const t_uri_comps &uri)
 	env.push_back(NULL);
 
 	pid_t pid;
-	if ((pid = fork()) < 0)
-		throw std::runtime_error("fork error: " + STRERR);
-	if (pid == 0)
+	if ((pid = fork()) == 0)
 	{
-		close(filedes[0]);
-		if (execve(exec_path.c_str(), NULL, env.data()) < 0)
-			throw std::runtime_error("execve error: " + STRERR);
+		SysCall::close(filedes[0]);
+		execve(exec_path.c_str(), NULL, env.data());
 	}
 	else
 	{
-		close(filedes[1]);
+		std::string raw_cgi_output;
+		SysCall::close(filedes[1]);
+
 		int status;
-		if (waitpid(pid, &status, 0) == pid)
+		if (SysCall::waitpid(pid, &status, 0) == pid)
 		{
-			char cgi_output_buff[1024];
-			while (1)
-			{
-				int bytes_read = read(filedes[0], cgi_output_buff, sizeof(cgi_output_buff) - 1);
-				if (bytes_read <= 0)
-				{
-					close(filedes[0]);
-					if (bytes_read == 0)
-						break;
-					else if (bytes_read < 0)
-						throw std::runtime_error("read error: " + STRERR);
-				}
-				std::cout << bytes_read << '\n';
-				cgi_output_buff[bytes_read] = '\0';
-				raw_cgi_output += cgi_output_buff;
-			}
+			raw_cgi_output = readFull(filedes[0]);
 		}
 	}
 	return raw_cgi_output;

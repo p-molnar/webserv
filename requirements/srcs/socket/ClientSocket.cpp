@@ -15,21 +15,13 @@ ClientSocket::~ClientSocket()
 HttpRequest ClientSocket::recvRequest()
 {
     char request_buff[10240]; // 10kb buffer size
-    int bytes_received = recv(fd, request_buff, sizeof(request_buff), 0);
+    int bytes_received = SysCall::recv(fd, request_buff, sizeof(request_buff), 0);
 
-    if (bytes_received <= 0)
+    if (bytes_received == 0)
     {
         request.flushBuffers();
-        if (bytes_received == 0)
-        {
-
-            Log::logMsg("Connection hung up", fd);
-            throw ClientSocket::HungUpException();
-        }
-        else
-        {
-            throw std::runtime_error(STRERR);
-        }
+        Log::logMsg("Connection hung up", fd);
+        throw ClientSocket::HungUpException();
     }
 
     is_request_parsed = request.parseRequest(request_buff, bytes_received);
@@ -54,13 +46,9 @@ void ClientSocket::sendResponse()
                            CRLF +
                            response_body;
 
-    int bytes_sent = send(fd, response.c_str(), response.size(), 0);
+    // int bytes_sent = SysCall::send(fd, response.c_str(), response.size(), 0);
+    SysCall::send(fd, response.c_str(), response.size(), 0);
 
-    if (bytes_sent < 0)
-    {
-        request.flushBuffers();
-        throw std::runtime_error("accept: " + STRERR);
-    }
     request.flushBuffers();
     is_request_parsed = false;
     Log::logMsg("response sent", fd);

@@ -55,10 +55,7 @@ void PollManager::pollRequests()
 {
 	while (RUNNING)
 	{
-		int active_events = poll(pfds.data(), pfds.size(), 1000);
-
-		if (active_events < 0)
-			throw std::runtime_error("poll: " + STRERR);
+		int active_events = SysCall::poll(pfds.data(), pfds.size(), 1000);
 
 		std::vector<t_pollfd>::iterator it = pfds.begin();
 		std::vector<t_pollfd>::iterator ite = pfds.end();
@@ -103,14 +100,11 @@ void PollManager::HandlePollInEvent(Socket *curr_socket)
 				HttpResponse reponse = HttpResponse::generateResponse(request);
 			}
 		}
-		catch (const ClientSocket::HungUpException &e)
-		{
-			PollManager::removeSocket(client_socket->getFd());
-		}
 		catch (const std::exception &e)
 		{
 			PollManager::removeSocket(client_socket->getFd());
-			Log::logMsg(e.what());
+			if (e.what()[0] != '\0')
+				Log::logMsg(e.what());
 		}
 	}
 }
