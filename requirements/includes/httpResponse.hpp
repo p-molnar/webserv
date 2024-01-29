@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/17 10:22:04 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/26 11:31:49 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/29 10:49:44 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,10 @@
 #define HTTPRESPONSE__HPP
 
 #include "iostream"
-#include "httpRequest.hpp"
 #include <map>
+
+#include "httpRequest.hpp"
+#include "cgiExecutor.hpp"
 
 /*  HTTP Response
     -   HTTP VERSION    "HTTP/1.1"
@@ -26,25 +28,28 @@
                 "Content-Length"
                 "Connection"
     -   Response Body   content being returned
-    
+
  */
-class httpResponse 
+class httpResponse
 {
-    private:
-        std::string                         _httpVersion;
-        std::string                         _statusCode;
-        std::string                         _body;
-        std::map<std::string, std::string>  _headers;
+private:
+    std::string _httpVersion;
+    std::string _statusCode;
+    std::string _body;
+    std::map<std::string, std::string> _headers;
         std::string                         _statusline; // HttpVersion + status code
 
         std::string                         _response;
 
-    public:
-        httpResponse() : _httpVersion("HTTP/1.1") {};
+public:
+    httpResponse();
+    httpResponse(const httpResponse &obj);
+    httpResponse operator=(const httpResponse &obj);
+    ~httpResponse();
 
-        void        setStatusLine(const std::string& statusline);
-        void        setBody(const std::string& body);
-        void        setHeaders(const std::string& key, const std::string& value);
+    void setStatusLine(const std::string &statusline);
+    void setBody(const std::string &body);
+    void setHeaders(const std::string &key, const std::string &value);
 
         std::string getHeader(const std::string &header_name) const;
 

@@ -8,6 +8,7 @@
 #include "ServerSocket.hpp"
 #include "ClientSocket.hpp"
 #include "httpRequest.hpp"
+#include "httpResponse.hpp"
 #include "Router.hpp"
 
 /*
@@ -16,14 +17,17 @@
     #define POLLOUT 0x004 Writing now will not block.
 */
 
-typedef struct  s_pollFds
+typedef struct s_pollFds
 {
     t_pollfd *arr;
     int size;
-}               t_pollFds;
+} t_pollFds;
 
 class PollManager
 {
+private:
+    std::vector<t_pollfd> pfds;
+    std::map<int, Socket *> sockets;
 private:
     std::vector<t_pollfd> pfds;
     std::map<int, Socket *> sockets;
