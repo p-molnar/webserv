@@ -34,7 +34,6 @@ std::string RequestProcessor::executeCgi(const t_uri_comps &uri)
 	}
 	else
 	{
-		std::string raw_cgi_output;
 		SysCall::close(filedes[1]);
 
 		int status;
