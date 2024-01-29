@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/17 10:53:12 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/29 10:12:40 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/29 10:31:36 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ std::string    httpResponse::generateResponse(bool includeBody)
     for (const auto& header : _headers) {
         response += header.first + ": " + header.second + CRLF;
     }
-    // setHeaders("Connection", "close"); FIX THIS ;
     response += CRLF;
     if (includeBody) {
         response += _body;
