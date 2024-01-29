@@ -5,8 +5,6 @@
 #include <stdexcept>
 #include <unistd.h>
 
-#include "errors.hpp"
-
 typedef struct pollfd t_pollfd;
 
 class Socket

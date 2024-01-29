@@ -1,11 +1,19 @@
 #include "Config.hpp"
 
-LocationBlock::LocationBlock() {}
+LocationBlock::LocationBlock()
+{
+	_path = "/";
+	_root = "/var/www/html";
+	_index = "index.html";
+	_autoIndex = "off";
+	_return = "";
+	_alias = "";
+}
 
 LocationBlock::~LocationBlock() {}
 
-void LocationBlock::setAllowedMethods(const std::vector<std::string>& methods) {
-	_allowedMethods = methods;
+void LocationBlock::addAllowedMethod(const std::string& method) {
+	_allowedMethods.push_back(method);
 }
 
 void LocationBlock::setAutoIndex(const std::string& autoIndex) {
@@ -32,6 +40,14 @@ void LocationBlock::setIndex(const std::string& index) {
 	_index = index;
 }
 
+void LocationBlock::addCgiPath(const std::string& cgiPath) {
+	_cgiPath.push_back(cgiPath);
+}
+
+void LocationBlock::addCgiExt(const std::string& cgiExt) {
+	_cgiExt.push_back(cgiExt);
+}
+
 std::vector<std::string> LocationBlock::getAllowedMethods() const {
 	return _allowedMethods;
 }
@@ -46,6 +62,14 @@ std::string LocationBlock::getReturn() const {
 
 std::string LocationBlock::getAlias() const {
 	return _alias;
+}
+
+std::vector<std::string> LocationBlock::getCgiPath() const {
+	return _cgiPath;
+}
+
+std::vector<std::string> LocationBlock::getCgiExt() const {
+	return _cgiExt;
 }
 
 std::string LocationBlock::getRoot() const {
@@ -64,7 +88,16 @@ void LocationBlock::addLocation(const LocationBlock& location) {
 	_locations.push_back(location);
 }
 
-ServerBlock::ServerBlock() : _listenPort(0), _clientMaxBodySize(0) {}
+ServerBlock::ServerBlock()
+{
+	_listenPort = 8080;
+	_listenIpAddress = "127.0.0.1";
+	_serverName = "localhost";
+	_clientMaxBodySize = 1024;
+	_index = "index.html";
+	_root = "/var/www/html";
+	_errorPage = "error.html";
+}
 
 ServerBlock::~ServerBlock() {}
 
@@ -96,7 +129,7 @@ void ServerBlock::setServerName(const std::string& serverName) {
 	_serverName = serverName;
 }
 
-const std::vector<LocationBlock>& ServerBlock::getLocations() const {
+std::vector<LocationBlock>& ServerBlock::getLocations() {
 	return _locations;
 }
 
@@ -134,12 +167,12 @@ void ServerBlock::addLocation(const LocationBlock& location) {
 
 Config::Config(): _file_path(DEFAULT_CONFIG_PATH)
 {
-	this->parseFile();
+	parseFile();
 }
 
 Config::Config(const char* file_path): _file_path(file_path)
 {
-	this->parseFile();
+	parseFile();
 }
 
 Config::Config(int argc, char* argv[])
@@ -158,16 +191,33 @@ Config::~Config()
 
 void	Config::display()
 {
-	std::cout << "Server IP Address: " << serverBlock.getListenIpAddress() << std::endl;
-	std::cout << "Server Port: " << serverBlock.getListenPort() << std::endl;
-	std::cout << "Server Name: " << serverBlock.getServerName() << std::endl;
-
-	for (const auto& location : serverBlock.getLocations())
+	for (auto& server : getServers())
 	{
-		std::cout << "\n";
-		std::cout << "Location Path: " << location.getPath() << std::endl;
-		std::cout << "Location Root: " << location.getRoot() << std::endl;
-		std::cout << "Location Index: " << location.getIndex() << std::endl;
+		std::cout << "-----------------" << std::endl;
+		std::cout << "Server Port: " << server.getListenPort() << std::endl;
+		std::cout << "Server IP Address: " << server.getListenIpAddress() << std::endl;
+		std::cout << "Server Name: " << server.getServerName() << std::endl;
+		std::cout << "Server Error Page: " << server.getErrorPage() << std::endl;
+		std::cout << "Server client max body size: " << server.getClientMaxBodySize() << std::endl;
+		std::cout << "Server Root: " << server.getRoot() << std::endl;
+		std::cout << "Server Index: " << server.getIndex() << std::endl;
+
+		for (const auto& location : server.getLocations())
+		{
+			std::cout << "\n";
+			std::cout << "Location path: " << location.getPath() << std::endl;
+			std::cout << "Location root: " << location.getRoot() << std::endl;
+			std::cout << "Location autoindex: " << location.getAutoIndex() << std::endl;
+			for (const auto& method : location.getAllowedMethods())
+				std::cout << "Location allowed method: " << method << std::endl;
+			std::cout << "Location index: " << location.getIndex() << std::endl;
+			std::cout << "Location return: " << location.getReturn() << std::endl;
+			std::cout << "Location alias: " << location.getAlias() << std::endl;
+			for (const auto& cgi_path : location.getCgiPath())
+				std::cout << "Location cgi_path: " << cgi_path << std::endl;
+			for (const auto& cgi_ext : location.getCgiExt())
+				std::cout << "Location cgi_ext: " << cgi_ext << std::endl;
+		}
 	}
 }
 
@@ -186,87 +236,129 @@ void	Config::openFile()
 
 void	Config::readFile()
 {
-	std::string line;
+	int			line_nr = 1;
+	std::string	line;
+	std::string key, value;
+	std::stack<std::string> block;
+
 	while (getline(_config_file, line))
 	{
 		std::istringstream lineStream(line);
-		std::string key;
-		lineStream >> key;
-
-		if (key == "server")
-			continue;
-		else if (key == "location")
+		while (lineStream >> key)
 		{
-			std::string path;
-			lineStream >> path;
-			locationStack.push(new LocationBlock());
-			locationStack.top()->setPath(path);
-		}
-		else if (key == "}")
-		{
-			if (!locationStack.empty())
+			if (key[0] == '#')
+				break;
+			if (key == "server")
 			{
-				LocationBlock* topLocation = locationStack.top();
-				locationStack.pop();
-				if (locationStack.empty())
-					serverBlock.addLocation(*topLocation);
+				// std::cout << CGRN << "Block " << key << NC << std::endl;
+				lineStream >> key;
+				if (key == "{")
+				{
+					ServerBlock serverBlock;
+					addServer(serverBlock);
+					block.push("server");
+				}
 				else
-					locationStack.top()->addLocation(*topLocation);
-				delete topLocation;
+					std::cout << CRED << "Error config format, line " << NC << line_nr << ": '" << line << "'" << std::endl;
 			}
+			else if (key == "location")
+			{
+				// std::cout << CGRN << "Block " << key << NC << " ";
+				std::string path;
+				lineStream >> path;
+				// std::cout << path  << std::endl;
+				lineStream >> key;
+				if (key == "{")
+				{
+					block.push("location");
+					LocationBlock locationBlock;
+					getServers().back().addLocation(locationBlock);
+					getServers().back().getLocations().back().setPath(path);
+				}
+				else
+					std::cout << CRED << "Error config format, line " << NC << line_nr << ": '" << line << "'" << std::endl;
+			}
+			else if (key == "}")
+			{
+				if (!block.empty())
+				{
+					// std::cout << CGRN << "End Block " << block.top() << NC << std::endl;
+					block.pop();
+				}
+				else
+					std::cout << CRED << "Error config format, line " << NC << line_nr << ": '" << line << "'" << std::endl;
+			}
+			else if (!block.empty() && block.top() == "server")
+			{
+				value = "";
+				while (value.back() != ';' && lineStream >> value)
+				{
+					// std::cout << "key = '" << key << "' value = '" << removeSemicolon(value) << "'" << std::endl;
+					if (key == "listen" && is_number(removeSemicolon(value)))
+						getServers().back().setListenPort(std::stoi(removeSemicolon(value)));
+					if (key == "host")
+						getServers().back().setListenIpAddress(removeSemicolon(value));
+					if (key == "server_name")
+						getServers().back().setServerName(removeSemicolon(value));
+					if (key == "error_page")
+						getServers().back().setErrorPage(removeSemicolon(value));
+					if (key == "client_max_body_size" && is_number(removeSemicolon(value)))
+						getServers().back().setClientMaxBodySize(std::stoi(removeSemicolon(value)));
+					if (key == "root")
+						getServers().back().setRoot(removeSemicolon(value));
+					if (key == "index")
+						getServers().back().setIndex(removeSemicolon(value));
+				}
+				// if (value == "")
+					// std::cout << "key = '" << key << "' value = ''" << std::endl;
+			}
+			else if (!block.empty() && block.top() == "location")
+			{
+				value = "";
+				while (value.back() != ';' && lineStream >> value)
+				{
+					// std::cout << "key = '" << key << "' value = '" << removeSemicolon(value) << "'" << std::endl;
+					if (key == "root")
+						getServers().back().getLocations().back().setRoot(removeSemicolon(value));
+					if (key == "autoindex")
+						getServers().back().getLocations().back().setAutoIndex(removeSemicolon(value));
+					if (key == "index")
+						getServers().back().getLocations().back().setIndex(removeSemicolon(value));
+					if (key == "allow_methods")
+						getServers().back().getLocations().back().addAllowedMethod(removeSemicolon(value));
+					if (key == "return")
+						getServers().back().getLocations().back().setReturn(removeSemicolon(value));
+					if (key == "alias")
+						getServers().back().getLocations().back().setAlias(removeSemicolon(value));
+					if (key == "cgi_path")
+						getServers().back().getLocations().back().addCgiPath(removeSemicolon(value));
+					if (key == "cgi_ext")
+						getServers().back().getLocations().back().addCgiExt(removeSemicolon(value));
+				}
+				// if (value == "")
+					// std::cout << "key = '" << key << "' value = ''" << std::endl;
+			}
+			// else
+			// {
+			// 	value = "";
+			// 	while (value.back() != ';' && lineStream >> value)
+			// 	{
+			// 		std::cout << "key = '" << key << "' value = '" << removeSemicolon(value) << "'" << std::endl;
+			// 	}
+			// 	if (value == "")
+			// 		std::cout << "key = '" << key << "' value = ''" << std::endl;
+			// }
 		}
-		else
-		{
-			if (locationStack.empty())
-				parseServerLine(key, lineStream, serverBlock);
-			else
-				parseLocationLine(key, lineStream, *locationStack.top());
-		}
+		line_nr++;
 	}
 }
 
-void	Config::parseServerLine(const std::string& key, std::istringstream& lineStream, ServerBlock& serverBlock)
-{
-	if (key == "listen")
-	{
-		int port;
-		std::string ip;
-		if (!(lineStream >> ip >> port))
-		{
-			port = std::stoi(ip);
-			ip = "127.0.0.1";
-		}
-		serverBlock.setListenIpAddress(removeSemicolon(ip));
-		serverBlock.setListenPort(port);
-	}
-	else if (key == "host")
-	{
-		std::string host;
-		lineStream >> host;
-		serverBlock.setListenIpAddress(removeSemicolon(host));
-	}
-	else if (key == "server_name")
-	{
-		std::string name;
-		lineStream >> name;
-		serverBlock.setServerName(removeSemicolon(name));
-	}
+void Config::addServer(const ServerBlock& server) {
+	_servers.push_back(server);
 }
 
-void	Config::parseLocationLine(const std::string& key, std::istringstream& lineStream, LocationBlock& locationBlock)
-{
-	if (key == "root")
-	{
-		std::string root;
-		lineStream >> root;
-		locationBlock.setRoot(removeSemicolon(root));
-	}
-	else if (key == "index")
-	{
-		std::string index;
-		lineStream >> index;
-		locationBlock.setIndex(removeSemicolon(index));
-	}
+std::vector<ServerBlock>& Config::getServers() {
+	return _servers;
 }
 
 void	Config::closeFile()
@@ -280,6 +372,16 @@ void	Config::parseFile()
 	openFile();
 	readFile();
 	closeFile();
+}
+
+bool is_number(std::string s)
+{
+   for (size_t i = 0; i < s.length(); i++)
+   {
+      if (!isdigit(s[i]))
+         return false;
+   }
+   return true;
 }
 
 std::string removeSemicolon(const std::string& str)
