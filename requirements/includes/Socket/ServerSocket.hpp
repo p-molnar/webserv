@@ -1,16 +1,16 @@
 #ifndef SERVERSOCKET_HPP
 #define SERVERSOCKET_HPP
 
-#include <sys/socket.h>
 #include <netinet/in.h>
 #include <stdexcept>
-#include <fcntl.h>
+#include <memory>
 
 #include "Socket.hpp"
 #include "Log.hpp"
 #include "ClientSocket.hpp"
 #include "errors.hpp"
 #include "Config.hpp"
+#include "SysCall.hpp"
 
 class ServerSocket : public Socket
 {
@@ -27,7 +27,7 @@ public:
     void listenPort(int backlog);
     void recvRequest();
     void sendResponse();
-    ClientSocket *acceptConnection();
+    std::shared_ptr<ClientSocket> acceptConnection();
 };
 
 #endif

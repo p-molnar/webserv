@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/29 10:37:26 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/29 11:14:26 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ std::string fileHandler::readFileContent(const std::string& filePath)
     return std::string(std::istreambuf_iterator<char>(fileStream), std::istreambuf_iterator<char>());
 }
 
-void     handleGetRequest(const httpRequest */*  */, httpResponse *res) 
+void     handleGetRequest(const HttpRequest */*  */, HttpResponse *res) 
 {
     Log::logMsg("Handling GET request");
     // std::string uri = req->getHeader("request_uri"); // NOT WORKINGGGGG

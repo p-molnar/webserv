@@ -3,12 +3,13 @@
 
 #include <map>
 #include <vector>
+#include <memory>
 
 #include "Socket.hpp"
 #include "ServerSocket.hpp"
 #include "ClientSocket.hpp"
-#include "httpRequest.hpp"
-#include "httpResponse.hpp"
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 #include "Router.hpp"
 
 /*
@@ -27,7 +28,7 @@ class PollManager
 {
 private:
     std::vector<t_pollfd> pfds;
-    std::map<int, Socket *> sockets;
+    std::map<int, std::shared_ptr<Socket>> sockets;
     
 public:
     PollManager();
@@ -35,20 +36,19 @@ public:
 
     Router router;
 
-    void addSocket(Socket *socket);
-
+    void addSocket(std::shared_ptr<Socket> socket);
     void updatePollfd();
-    void HandleGETRequest(const httpRequest& request);
-    void HandlePollInEvent(Socket* curr_socket);
-    void HandlePollOutEvent(Socket *curr_socket);
+    void HandleGETRequest(const HttpRequest& request);
+    void HandlePollInEvent(std::shared_ptr<Socket> curr_socket);
+    void HandlePollOutEvent(std::shared_ptr<Socket> curr_socket);
 
-    void processHttpRequest(const httpRequest& request, ClientSocket& client_socket);
+    void processHttpRequest(const HttpRequest &request, ClientSocket &client_socket);
     void removeSocket(int fd);
 
     void acceptConnection(int socket_fd);
-    t_pollFds getPfds();
 
-    bool shouldCloseConnection(ClientSocket* client_socket);
+    bool shouldCloseConnection(std::shared_ptr<ClientSocket> client_socket);
+
     void processEvents();
 };
 

@@ -1,5 +1,5 @@
 #include "PollManager.hpp"
-#include "httpRequest.hpp"
+#include "HttpRequest.hpp"
 #include "Router.hpp"
 #include "Log.hpp"
 
@@ -13,11 +13,17 @@ PollManager::~PollManager()
 {
 }
 
-void PollManager::addSocket(Socket *socket)
+void PollManager::addSocket(std::shared_ptr<Socket> socket)
 {
 	pfds.push_back(socket->getPfd());
 	sockets[socket->getFd()] = socket;
 }
+
+// void PollManager::addSocket(std::unique_ptr<ClientSocket> socket)
+// {
+// 	pfds.push_back(socket->getPfd());
+// 	sockets[socket->getFd()] = socket;
+// }
 
 void PollManager::removeSocket(int fd)
 {
@@ -33,8 +39,7 @@ void PollManager::removeSocket(int fd)
 		v_it++;
 	}
 
-	std::map<int, Socket *>::iterator m_it = sockets.find(fd);
-	delete m_it->second;
+	std::map<int, std::shared_ptr<Socket>>::iterator m_it = sockets.find(fd);
 	sockets.erase(m_it);
 }
 
@@ -42,8 +47,9 @@ void PollManager::updatePollfd()
 {
 	for (auto& pfd : pfds)
 	{
-		Socket* socket = sockets[pfd.fd];
-		if (ClientSocket* clientSocket = dynamic_cast<ClientSocket*>(socket))
+		std::shared_ptr<Socket> socket = sockets.at(pfd.fd);
+
+		if (std::shared_ptr<ClientSocket> clientSocket = std::dynamic_pointer_cast<ClientSocket>(socket))
 		{
 			if (clientSocket->getState() == ClientSocket::State::Reading)
 				pfd.events = POLLIN;
@@ -53,23 +59,7 @@ void PollManager::updatePollfd()
 	}
 }
 
-t_pollFds PollManager::getPfds()
-{
-	t_pollFds pfds;
-	std::map<int, Socket *>::iterator it = sockets.begin();
-
-	pfds.size = sockets.size();
-	pfds.arr = new struct pollfd[pfds.size];
-
-	for (int i = 0; i < pfds.size; i++)
-	{
-		pfds.arr[i] = it->second->getPfd();
-		it++;
-	}
-	return pfds;
-}
-
-bool PollManager::shouldCloseConnection(ClientSocket* client_socket)
+bool PollManager::shouldCloseConnection(std::shared_ptr<ClientSocket> client_socket)
 {
 	const auto& connectionHeader = client_socket->getResponse().getHeader("Connection");
 	
@@ -84,18 +74,17 @@ void PollManager::processEvents()
 	while (RUNNING)
 	{
 		updatePollfd();
-		int active_events = poll(pfds.data(), pfds.size(), 1000);
-		if (active_events < 0)
-			throw std::runtime_error("poll: " + STRERR);
+		int active_events = SysCall::poll(pfds.data(), pfds.size(), 1000);
 
 		std::vector<t_pollfd>::iterator it = pfds.begin();
 		std::vector<t_pollfd>::iterator ite = pfds.end();
+
 		int polled_events = 0;
 		while (it != ite && polled_events < active_events)
 		{
 			std::vector<t_pollfd>::iterator curr_pfd = it;
 			int fd = curr_pfd->fd;
-			Socket *curr_socket = sockets[fd];
+			std::shared_ptr<Socket> curr_socket = sockets[fd];
 
 			if (curr_pfd->revents & POLLIN)
 			{
@@ -114,9 +103,9 @@ void PollManager::processEvents()
 	}
 }
 
-void PollManager::HandlePollOutEvent(Socket *curr_socket)
+void PollManager::HandlePollOutEvent(std::shared_ptr<Socket> curr_socket)
 {
-	if (ClientSocket *client_socket = dynamic_cast<ClientSocket *>(curr_socket))
+	if (std::shared_ptr<ClientSocket> client_socket = std::dynamic_pointer_cast<ClientSocket>(curr_socket))
 	{
 		try
 		{
@@ -137,27 +126,24 @@ void PollManager::HandlePollOutEvent(Socket *curr_socket)
 	}
 }
 
-void PollManager::HandlePollInEvent(Socket *curr_socket)
+void PollManager::HandlePollInEvent(std::shared_ptr<Socket> curr_socket)
 {
-	if (ServerSocket *server_socket = dynamic_cast<ServerSocket *>(curr_socket))
+	if (std::shared_ptr<ServerSocket> server_socket = std::dynamic_pointer_cast<ServerSocket>(curr_socket))
 	{
-		ClientSocket *new_client = server_socket->acceptConnection();
+		std::shared_ptr<ClientSocket> new_client = server_socket->acceptConnection();
 		PollManager::addSocket(new_client);
 	}
-	if (ClientSocket *client_socket = dynamic_cast<ClientSocket *>(curr_socket))
+	if (std::shared_ptr<ClientSocket> client_socket = std::dynamic_pointer_cast<ClientSocket>(curr_socket))
 	{
 		try
 		{
 			client_socket->recvRequest();			
 		}
-		catch (const ClientSocket::HungUpException &e)
-		{
-			PollManager::removeSocket(client_socket->getFd());
-		}
 		catch (const std::exception &e)
 		{
 			PollManager::removeSocket(client_socket->getFd());
-			Log::logMsg(e.what());
+			if (e.what()[0] != '\0')
+				Log::logMsg(e.what());
 		}
 	}
 	return ;

@@ -2,11 +2,11 @@
 #define FILEHANDLER_HPP
 
 #include <iostream>
-#include "httpRequest.hpp"
-#include "httpResponse.hpp"
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 
 
-void    handleGetRequest(const httpRequest *req, httpResponse *res);
+void    handleGetRequest(const HttpRequest *req, HttpResponse *res);
 
 class fileHandler {
     public:

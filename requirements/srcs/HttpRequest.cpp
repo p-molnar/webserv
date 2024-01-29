@@ -1,19 +1,48 @@
-#include "httpRequest.hpp"
-#include "WebServer.hpp"
+#include "HttpRequest.hpp"
 
-httpRequest::httpRequest()
+HttpRequest::HttpRequest()
     : request_line_parse_status(INCOMPLETE),
       request_headers_parse_status(INCOMPLETE),
       request_msg_body_parse_status(INCOMPLETE)
+
 {
 }
 
-std::string httpRequest::getMessageBody() const
+HttpRequest::HttpRequest(const HttpRequest &obj)
+    : request_line_parse_status(obj.request_line_parse_status),
+      request_headers_parse_status(obj.request_headers_parse_status),
+      request_msg_body_parse_status(obj.request_msg_body_parse_status),
+      raw_request(obj.raw_request),
+      uri_comps(obj.uri_comps),
+      request_line(obj.request_line),
+      request_headers(obj.request_headers),
+      request_message_body(obj.request_message_body),
+      form_data(obj.form_data)
+{
+}
+
+HttpRequest HttpRequest::operator=(const HttpRequest &obj)
+{
+    request_line_parse_status = obj.request_line_parse_status;
+    request_headers_parse_status = obj.request_headers_parse_status;
+    request_msg_body_parse_status = obj.request_msg_body_parse_status;
+    raw_request = obj.raw_request;
+    uri_comps = obj.uri_comps;
+    request_line = obj.request_line;
+    request_headers = obj.request_headers;
+    request_message_body = obj.request_message_body;
+    form_data = obj.form_data;
+    return *this;
+}
+
+HttpRequest::~HttpRequest(){};
+
+std::string HttpRequest::getMessageBody() const
 {
     return request_message_body;
 }
 
-void httpRequest::parseRequestUri(const std::string &uri)
+void HttpRequest::parseRequestUri(const std::string &uri)
 {
     // accepted extension name comes from config file
     std::string config_cgi_ext = ".py";
@@ -55,12 +84,12 @@ void httpRequest::parseRequestUri(const std::string &uri)
         request_type = RESOURCE;
 }
 
-bool httpRequest::parseRequest(char *request_buff)
+bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_received)
 {
-    raw_request += request_buff;
-
     static std::size_t clrf_pos;
     static std::size_t dbl_clrf_pos;
+
+    raw_request += std::string(raw_request_data, bytes_received);
 
     if (request_line_parse_status == INCOMPLETE)
     {
@@ -75,7 +104,7 @@ bool httpRequest::parseRequest(char *request_buff)
 
     if (request_headers_parse_status == INCOMPLETE)
     {
-        dbl_clrf_pos = raw_request.find(DBL_CRLF);
+        dbl_clrf_pos = raw_request.find(TWO_CRLF);
         if (dbl_clrf_pos != std::string::npos)
         {
             std::string raw_headers = raw_request.substr(clrf_pos, dbl_clrf_pos - clrf_pos);
@@ -89,8 +118,15 @@ bool httpRequest::parseRequest(char *request_buff)
         try
         {
             std::size_t content_length = atoi(getHeaderComp("Content-Length").c_str());
-            std::size_t msg_body_start = dbl_clrf_pos + DBL_CRLF.length();
+
+            // if (content_length > config.allowedUploadSize)
+            // throw file too large exception
+
+            std::size_t msg_body_start = dbl_clrf_pos + TWO_CRLF.length();
             std::string raw_msg_body = raw_request.substr(msg_body_start);
+
+            // std::cout << "exp content_lenght: " << content_length << '\n';
+            // std::cout << "content_lenght: " << raw_msg_body.length() << '\n';
 
             if (content_length != raw_msg_body.length())
                 request_msg_body_parse_status = INCOMPLETE;
@@ -100,7 +136,7 @@ bool httpRequest::parseRequest(char *request_buff)
                 request_msg_body_parse_status = COMPLETE;
             }
         }
-        catch (const std::exception &e)
+        catch (const std::out_of_range &e)
         {
             request_msg_body_parse_status = NA;
         }
@@ -111,7 +147,7 @@ bool httpRequest::parseRequest(char *request_buff)
              request_msg_body_parse_status == COMPLETE));
 }
 
-void httpRequest::parseRequestLine(const std::string &raw_request)
+void HttpRequest::parseRequestLine(const std::string &raw_request)
 {
 
     std::vector<std::string> request_line_comps = tokenize(raw_request, SP);
@@ -128,12 +164,15 @@ void httpRequest::parseRequestLine(const std::string &raw_request)
     parseRequestUri(request_line["request_uri"]);
 }
 
-void httpRequest::parseMessageBody(const std::string &raw_request)
+void HttpRequest::parseMessageBody(const std::string &raw_request)
 {
-    request_message_body = raw_request;
+    if (request_headers.at("Content-Type").find("multipart/form-data") != NPOS)
+    {
+        form_data = FormData(raw_request, request_headers);
+    }
 }
 
-void httpRequest::parseHeaders(const std::string &raw_request_headers)
+void HttpRequest::parseHeaders(const std::string &raw_request_headers)
 {
 
     std::vector<std::string> headers = tokenize(raw_request_headers, CRLF);
@@ -154,22 +193,22 @@ void httpRequest::parseHeaders(const std::string &raw_request_headers)
     }
 }
 
-t_uri_comps httpRequest::getUriComps() const
+t_uri_comps HttpRequest::getUriComps() const
 {
     return uri_comps;
 }
 
-std::string httpRequest::getRequestLineComp(const std::string &key) const
+std::string HttpRequest::getRequestLineComp(const std::string &key) const
 {
     return request_line.at(key);
 }
 
-std::string httpRequest::getHeaderComp(const std::string &key) const
+std::string HttpRequest::getHeaderComp(const std::string &key) const
 {
     return request_headers.at(key);
 }
 
-void httpRequest::printParsedContent() const
+void HttpRequest::printParsedContent() const
 {
     if (this->isParsed() == false)
         return;
@@ -211,7 +250,7 @@ void httpRequest::printParsedContent() const
     std::cout << request_message_body << '\n';
 }
 
-void httpRequest::flushBuffers()
+void HttpRequest::flushBuffers()
 {
     request_line_parse_status = INCOMPLETE;
     request_headers_parse_status = INCOMPLETE;
@@ -228,7 +267,7 @@ void httpRequest::flushBuffers()
     uri_comps.query_str.erase();
 }
 
-bool httpRequest::isParsed() const
+bool HttpRequest::isParsed() const
 {
     return (request_line_parse_status == COMPLETE &&
             request_headers_parse_status == COMPLETE &&
@@ -236,53 +275,7 @@ bool httpRequest::isParsed() const
              request_msg_body_parse_status == COMPLETE));
 }
 
-httpRequest::httpRequest(const httpRequest &obj)
-    : request_line_parse_status(obj.request_line_parse_status),
-      request_headers_parse_status(obj.request_headers_parse_status),
-      request_msg_body_parse_status(obj.request_msg_body_parse_status),
-      raw_request(obj.raw_request),
-      uri_comps(obj.uri_comps),
-      request_line(obj.request_line),
-      request_headers(obj.request_headers),
-      request_message_body(obj.request_message_body)
+const FormData &HttpRequest::getFormDataObj() const
 {
+    return form_data;
 }
-
-httpRequest httpRequest::operator=(const httpRequest &obj)
-{
-    request_line_parse_status = obj.request_line_parse_status;
-    request_headers_parse_status = obj.request_headers_parse_status;
-    request_msg_body_parse_status = obj.request_msg_body_parse_status;
-    raw_request = obj.raw_request;
-    uri_comps = obj.uri_comps;
-    request_line = obj.request_line;
-    request_headers = obj.request_headers;
-    request_message_body = obj.request_message_body;
-    return *this;
-}
-httpRequest::~httpRequest(){};
-
-// Commenting out to mute the compiler
-// bool httpRequest::isComplete(const std::string &recievedData)
-// {
-//     size_t headerEnd = recievedData.find(CRLF);
-//     if (headerEnd == std::string::npos)
-//         return false;
-
-//     if (this->_method == "POST")
-//     {
-//         size_t contentLengthHeaderStart = recievedData.find("Content-Length:");
-//         if (contentLengthHeaderStart != std::string::npos)
-//         {
-//             size_t contentLengthHeaderEnd = recievedData.find("\r\n", contentLengthHeaderStart);
-//             std::string contentLengthValue = recievedData.substr(contentLengthHeaderStart + 15, contentLengthHeaderEnd - (contentLengthHeaderStart + 15));
-
-//             size_t contentLength = std::stoi(contentLengthValue);
-//             size_t bodyStart = headerEnd + 4;
-//             size_t bodyLength = recievedData.length() - bodyStart;
-
-//             return bodyLength >= contentLength;
-//         }
-//         return true;
-//     }
-// }

@@ -5,7 +5,7 @@
 
 #define version std::string("HTTP/1.1")
 #define CRLF std::string("\r\n")		 // carriage return and new line
-#define DBL_CRLF std::string("\r\n\r\n") // double carriage return and new line
+#define TWO_CRLF std::string("\r\n\r\n") // double carriage return and new line
 #define SP std::string(" ")				 // single space separator
 #define SP_ " "							 // single space (C string);
 #define HEADER_SEP std::string(": ")	 // separator of an http header's key-val parseRequestLine
@@ -13,6 +13,8 @@
 #define QSTR_SEP std::string("?")		 // query string separator
 #define QPARAM_SEP std::string("&")		 // query param separator
 #define QPARAM_KV_SEP std::string("=")	 // query param's key-value separator
+#define SEMICOL std::string(";")
+#define WHTSPC std::string(" \r\n\t")
 
 #define NPOS std::string::npos
 

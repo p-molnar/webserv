@@ -15,24 +15,17 @@ ClientSocket::~ClientSocket()
 
 void ClientSocket::recvRequest()
 {
-    char request_buff[2048];
-    int bytes_received = recv(fd, request_buff, sizeof(request_buff) - 1, 0);
-    request_buff[bytes_received] = '\0';
-    if (bytes_received <= 0)
+    char request_buff[10240]; // 10kb buffer size
+    int bytes_received = SysCall::recv(fd, request_buff, sizeof(request_buff), 0);
+
+    if (bytes_received == 0)
     {
         request.flushBuffers();
-        if (bytes_received == 0)
-        {
-
-            Log::logMsg("Connection hung up", fd);
-            throw ClientSocket::HungUpException();
-        }
-        else
-        {
-            throw std::runtime_error(STRERR);
-        }
+        Log::logMsg("Connection hung up", fd);
+        throw ClientSocket::HungUpException();
     }
-    is_request_parsed = request.parseRequest(request_buff);
+
+    is_request_parsed = request.parseRequest(request_buff, bytes_received);
     Log::logMsg("request received", fd);
     if (is_request_parsed)
         setState(State::Writing);

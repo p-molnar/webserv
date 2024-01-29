@@ -7,7 +7,7 @@
 #include "Socket/Socket.hpp"
 #include "PollManager.hpp"
 
-#include "httpRequest.hpp"
+#include "HttpRequest.hpp"
 #include "Config.hpp"
 #include "Parcer.hpp"
 
@@ -22,7 +22,7 @@ private:
     // temporary solution for server configuration
     std::map<int, int> server_configs;
 
-    std::vector<std::unique_ptr<ServerSocket>>server_sockets; // Changed to UNIQUE_PTR
+    std::vector<std::shared_ptr<ServerSocket>>server_sockets; // Changed to UNIQUE_PTR
     PollManager poll_manager;
 
     // constructor & destructor

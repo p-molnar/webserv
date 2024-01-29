@@ -5,8 +5,11 @@
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <iostream>
+
 #include "consts.hpp"
-#include "tokenizer.hpp"
+#include "string_utils.hpp"
+#include "FormData.hpp"
 
 /*  HTTP Request parser.
     Requirements:
@@ -30,6 +33,7 @@ enum e_request_type
 {
     UNDEF,
     RESOURCE,
+    DIRECTORY,
     EXECUTABLE,
 };
 
@@ -41,7 +45,7 @@ typedef struct s_uri_comps
     std::string path_info;
 } t_uri_comps;
 
-class httpRequest
+class HttpRequest
 {
 private:
     e_parse_status request_line_parse_status;
@@ -55,6 +59,18 @@ private:
     std::map<std::string, std::string> request_line;
     std::map<std::string, std::string> request_headers;
     std::string request_message_body;
+    FormData form_data;
+
+public:
+    HttpRequest();
+    HttpRequest(const HttpRequest &obj);
+    HttpRequest operator=(const HttpRequest &obj);
+    ~HttpRequest();
+
+public:
+    bool parseRequest(char *request_buff, std::size_t parse_size);
+    void flushBuffers();
+    void printParsedContent() const;
 
 private:
     void parseRequestLine(const std::string &raw_request);
@@ -63,23 +79,14 @@ private:
     void parseMessageBody(const std::string &raw_request);
 
 public:
-    httpRequest();
-    httpRequest(const httpRequest &obj);
-    httpRequest operator=(const httpRequest &obj);
-    ~httpRequest();
-
-    bool parseRequest(char *request_buff);
-    void flushBuffers();
-    void printParsedContent() const;
-
-public:
     std::string getRequestLineComp(const std::string &request_line_el) const;
     t_uri_comps getUriComps() const;
     std::string getHeaderComp(const std::string &header_name) const;
     std::string getMessageBody() const;
+    const FormData &getFormDataObj() const;
     bool isParsed() const;
 };
 
-std::ostream &operator<<(std::ostream &os, const httpRequest &obj);
+std::ostream &operator<<(std::ostream &os, const HttpRequest &obj);
 
 #endif

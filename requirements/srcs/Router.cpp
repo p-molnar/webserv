@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/19 10:40:30 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/29 11:00:24 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/01/29 11:14:26 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,12 @@ Router::Router()
     // registerRoute("POST", &handlePostRequest);
 }
 void    Router::registerRoute(std::string request_method,
-            void (*callback)(const httpRequest*, httpResponse*))
+            void (*callback)(const HttpRequest*, HttpResponse*))
 {
     routes.push_back({request_method, callback});
 }
 
-void    Router::routeRequest(const httpRequest& req, httpResponse& res)
+void    Router::routeRequest(const HttpRequest& req, HttpResponse& res)
 {
     Log::logMsg("Routing the request");
     std::string method = req.getRequestLineComp("method");
