@@ -13,7 +13,7 @@ ClientSocket::~ClientSocket()
     ::close(fd);
 }
 
-httpRequest ClientSocket::recvRequest()
+void ClientSocket::recvRequest()
 {
     char request_buff[2048];
     int bytes_received = recv(fd, request_buff, sizeof(request_buff) - 1, 0);

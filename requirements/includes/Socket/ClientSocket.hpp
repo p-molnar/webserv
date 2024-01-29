@@ -49,7 +49,7 @@ public:
     httpResponse& getResponse() { return response; }
     std::string getRequestBuff() const { return this->_request_buff; }
 
-    httpRequest recvRequest();
+    void recvRequest();
     void sendResponse();
 
 };

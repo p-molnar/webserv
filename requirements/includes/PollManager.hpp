@@ -28,10 +28,7 @@ class PollManager
 private:
     std::vector<t_pollfd> pfds;
     std::map<int, Socket *> sockets;
-private:
-    std::vector<t_pollfd> pfds;
-    std::map<int, Socket *> sockets;
-
+    
 public:
     PollManager();
     ~PollManager();
