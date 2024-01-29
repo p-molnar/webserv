@@ -32,8 +32,9 @@ public:
 
     // main member functions
 public:
-    void loadConfig();
+    void ServerSocketloadConfig();
     void startService();
+    void loadConfig(Config &config_data);
 
     static int getServerFd();
 };

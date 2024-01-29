@@ -279,3 +279,8 @@ const FormData &HttpRequest::getFormDataObj() const
 {
     return form_data;
 }
+
+e_request_type HttpRequest::getType() const
+{
+    return request_type;
+}
