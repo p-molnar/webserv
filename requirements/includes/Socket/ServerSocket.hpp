@@ -14,17 +14,18 @@
 
 class ServerSocket : public Socket
 {
+private:
+    Config *config;
+
 public:
     ServerSocket();
     ServerSocket(const Socket &obj);
     ~ServerSocket();
 
 public:
-	Config *config;
-	void loadConfig(Config &config);
     void createSocket();
     void bindPort(int port);
-    void listenPort(int backlog);
+    void listenPort(int backlog, int port);
     void recvRequest();
     void sendResponse();
     std::shared_ptr<ClientSocket> acceptConnection();

@@ -40,10 +40,10 @@ void ServerSocket::bindPort(int port)
     Log::logMsg("file descriptor is bound to port " + std::to_string(port), fd);
 }
 
-void ServerSocket::listenPort(int backlog)
+void ServerSocket::listenPort(int backlog, int port)
 {
     SysCall::listen(fd, backlog);
-    Log::logMsg("server is listening on port 8080", fd);
+    Log::logMsg("server is listening on port " + std::to_string(port), fd);
 }
 
 std::shared_ptr<ClientSocket> ServerSocket::acceptConnection()
