@@ -42,6 +42,8 @@ std::string HttpRequest::getMessageBody() const
     return request_message_body;
 }
 
+// void HttpRequest::parseType();
+
 void HttpRequest::parseRequestUri(const std::string &uri)
 {
     // accepted extension name comes from config file
@@ -49,7 +51,10 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     std::vector<std ::string> uri_comps_local = tokenize(uri, QSTR_SEP);
 
     if (uri_comps_local.size() == 1)
+    {
         uri_comps.path = uri_comps_local[0];
+        // uri_comps.www_path = uri_comps.path == "/" ? Config::get().;
+    }
     else if (uri_comps_local.size() == 2)
     {
         uri_comps.path = uri_comps_local[0];
@@ -159,9 +164,8 @@ void HttpRequest::parseRequestLine(const std::string &raw_request)
 
     request_line["method"] = *curr_field++;
     request_line["request_uri"] = *curr_field++;
+    parseRequestUri(request_line.at("request_uri"));
     request_line["http_version"] = *curr_field++;
-
-    parseRequestUri(request_line["request_uri"]);
 }
 
 void HttpRequest::parseMessageBody(const std::string &raw_request)

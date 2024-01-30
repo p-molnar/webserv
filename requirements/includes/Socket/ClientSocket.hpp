@@ -36,8 +36,11 @@ private:
     std::string _request_buff;
 
 public:
-
-    enum class State { Reading, Writing } state = State::Reading;
+    enum class State
+    {
+        Reading,
+        Writing
+    } state = State::Reading;
 
     ClientSocket(int fd);
     ~ClientSocket(void);
@@ -45,13 +48,12 @@ public:
     void setState(State newState) { state = newState; }
     State getState() const { return state; }
 
-    const HttpRequest& getRequest() const { return request; }
-    HttpResponse& getResponse() { return response; }
+    const HttpRequest &getRequest() const { return request; }
+    HttpResponse &getResponse() { return response; }
     std::string getRequestBuff() const { return this->_request_buff; }
 
     void recvRequest();
     void sendResponse();
-
 };
 
 #endif

@@ -8,7 +8,6 @@
 
 #include "HttpRequest.hpp"
 #include "Config.hpp"
-#include "Parcer.hpp"
 
 #include <memory>
 #include <vector>
@@ -18,11 +17,11 @@ class WebServer : public ServerSocket, public PollManager
 {
 
 private:
-    Config *config;
+    // Config *config;
     std::vector<std::shared_ptr<ServerSocket>> server_sockets;
     PollManager poll_manager;
 
-    // constructor & destructor
+    // constructor & destructo
 public:
     WebServer();
     ~WebServer();

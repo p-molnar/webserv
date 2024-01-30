@@ -1,5 +1,18 @@
 #include "Config.hpp"
 
+Config &Config::get()
+{
+	if (instance == nullptr)
+		instance = new Config;
+	return *instance;
+}
+
+void Config::destruct()
+{
+	delete instance;
+	instance = nullptr;
+}
+
 LocationBlock::LocationBlock()
 {
 	_path = "/";
@@ -12,79 +25,98 @@ LocationBlock::LocationBlock()
 
 LocationBlock::~LocationBlock() {}
 
-void LocationBlock::addAllowedMethod(const std::string& method) {
+void LocationBlock::addAllowedMethod(const std::string &method)
+{
 	_allowedMethods.push_back(method);
 }
 
-void LocationBlock::setAutoIndex(const std::string& autoIndex) {
+void LocationBlock::setAutoIndex(const std::string &autoIndex)
+{
 	_autoIndex = autoIndex;
 }
 
-void LocationBlock::setReturn(const std::string& returnPath) {
+void LocationBlock::setReturn(const std::string &returnPath)
+{
 	_return = returnPath;
 }
 
-void LocationBlock::setAlias(const std::string& alias) {
+void LocationBlock::setAlias(const std::string &alias)
+{
 	_alias = alias;
 }
 
-void LocationBlock::setRoot(const std::string& root) {
+void LocationBlock::setRoot(const std::string &root)
+{
 	_root = root;
 }
 
-void LocationBlock::setPath(const std::string& path) {
+void LocationBlock::setPath(const std::string &path)
+{
 	_path = path;
 }
 
-void LocationBlock::setIndex(const std::string& index) {
+void LocationBlock::setIndex(const std::string &index)
+{
 	_index = index;
 }
 
-void LocationBlock::addCgiPath(const std::string& cgiPath) {
+void LocationBlock::addCgiPath(const std::string &cgiPath)
+{
 	_cgiPath.push_back(cgiPath);
 }
 
-void LocationBlock::addCgiExt(const std::string& cgiExt) {
+void LocationBlock::addCgiExt(const std::string &cgiExt)
+{
 	_cgiExt.push_back(cgiExt);
 }
 
-std::vector<std::string> LocationBlock::getAllowedMethods() const {
+std::vector<std::string> LocationBlock::getAllowedMethods() const
+{
 	return _allowedMethods;
 }
 
-std::string LocationBlock::getAutoIndex() const {
+std::string LocationBlock::getAutoIndex() const
+{
 	return _autoIndex;
 }
 
-std::string LocationBlock::getReturn() const {
+std::string LocationBlock::getReturn() const
+{
 	return _return;
 }
 
-std::string LocationBlock::getAlias() const {
+std::string LocationBlock::getAlias() const
+{
 	return _alias;
 }
 
-std::vector<std::string> LocationBlock::getCgiPath() const {
+std::vector<std::string> LocationBlock::getCgiPath() const
+{
 	return _cgiPath;
 }
 
-std::vector<std::string> LocationBlock::getCgiExt() const {
+std::vector<std::string> LocationBlock::getCgiExt() const
+{
 	return _cgiExt;
 }
 
-std::string LocationBlock::getRoot() const {
+std::string LocationBlock::getRoot() const
+{
 	return _root;
 }
 
-std::string LocationBlock::getPath() const {
+std::string LocationBlock::getPath() const
+{
 	return _path;
 }
 
-std::string LocationBlock::getIndex() const {
+std::string LocationBlock::getIndex() const
+{
 	return _index;
 }
 
-void LocationBlock::addLocation(const LocationBlock& location) {
+void LocationBlock::addLocation(const LocationBlock &location)
+{
 	_locations.push_back(location);
 }
 
@@ -101,81 +133,98 @@ ServerBlock::ServerBlock()
 
 ServerBlock::~ServerBlock() {}
 
-void ServerBlock::setErrorPage(const std::string& errorPage) {
+void ServerBlock::setErrorPage(const std::string &errorPage)
+{
 	_errorPage = errorPage;
 }
 
-void ServerBlock::setClientMaxBodySize(int size) {
+void ServerBlock::setClientMaxBodySize(int size)
+{
 	_clientMaxBodySize = size;
 }
 
-void ServerBlock::setRoot(const std::string& root) {
+void ServerBlock::setRoot(const std::string &root)
+{
 	_root = root;
 }
 
-void ServerBlock::setIndex(const std::string& index) {
+void ServerBlock::setIndex(const std::string &index)
+{
 	_index = index;
 }
 
-void ServerBlock::setListenIpAddress(const std::string& listenIpAddress) {
+void ServerBlock::setListenIpAddress(const std::string &listenIpAddress)
+{
 	_listenIpAddress = listenIpAddress;
 }
 
-void ServerBlock::setListenPort(int listenPort) {
+void ServerBlock::setListenPort(int listenPort)
+{
 	_listenPort = listenPort;
 }
 
-void ServerBlock::setServerName(const std::string& serverName) {
+void ServerBlock::setServerName(const std::string &serverName)
+{
 	_serverName = serverName;
 }
 
-std::vector<LocationBlock>& ServerBlock::getLocations() {
+std::vector<LocationBlock> &ServerBlock::getLocations()
+{
 	return _locations;
 }
 
-std::string ServerBlock::getErrorPage() const {
+std::string ServerBlock::getErrorPage() const
+{
 	return _errorPage;
 }
 
-int ServerBlock::getClientMaxBodySize() const {
+int ServerBlock::getClientMaxBodySize() const
+{
 	return _clientMaxBodySize;
 }
 
-std::string ServerBlock::getRoot() const {
+std::string ServerBlock::getRoot() const
+{
 	return _root;
 }
 
-std::string ServerBlock::getIndex() const {
+std::string ServerBlock::getIndex() const
+{
 	return _index;
 }
 
-std::string ServerBlock::getListenIpAddress() const {
+std::string ServerBlock::getListenIpAddress() const
+{
 	return _listenIpAddress;
 }
 
-int ServerBlock::getListenPort() const {
+int ServerBlock::getListenPort() const
+{
 	return _listenPort;
 }
 
-std::string ServerBlock::getServerName() const {
+std::string ServerBlock::getServerName() const
+{
 	return _serverName;
 }
 
-void ServerBlock::addLocation(const LocationBlock& location) {
+void ServerBlock::addLocation(const LocationBlock &location)
+{
 	_locations.push_back(location);
 }
 
-Config::Config(): _file_path(DEFAULT_CONFIG_PATH)
+// Config::Config() : _file_path(DEFAULT_CONFIG_PATH)
+// {
+// 	parseFile();
+// }
+
+void Config::parse(const char *file_path)
 {
+	_file_path = file_path;
 	parseFile();
 }
 
-Config::Config(const char* file_path): _file_path(file_path)
-{
-	parseFile();
-}
-
-Config::Config(int argc, char* argv[])
+void Config::parse(int argc, char *argv[])
 {
 	if (argc > 1 && argv[1] != NULL)
 		_file_path = argv[1];
@@ -189,9 +238,9 @@ Config::~Config()
 	closeFile();
 }
 
-void	Config::display()
+void Config::display()
 {
-	for (auto& server : getServers())
+	for (auto &server : getServers())
 	{
 		std::cout << "-----------------" << std::endl;
 		std::cout << "Server Port: " << server.getListenPort() << std::endl;
@@ -202,26 +251,26 @@ void	Config::display()
 		std::cout << "Server Root: " << server.getRoot() << std::endl;
 		std::cout << "Server Index: " << server.getIndex() << std::endl;
 
-		for (const auto& location : server.getLocations())
+		for (const auto &location : server.getLocations())
 		{
 			std::cout << "\n";
 			std::cout << "Location path: " << location.getPath() << std::endl;
 			std::cout << "Location root: " << location.getRoot() << std::endl;
 			std::cout << "Location autoindex: " << location.getAutoIndex() << std::endl;
-			for (const auto& method : location.getAllowedMethods())
+			for (const auto &method : location.getAllowedMethods())
 				std::cout << "Location allowed method: " << method << std::endl;
 			std::cout << "Location index: " << location.getIndex() << std::endl;
 			std::cout << "Location return: " << location.getReturn() << std::endl;
 			std::cout << "Location alias: " << location.getAlias() << std::endl;
-			for (const auto& cgi_path : location.getCgiPath())
+			for (const auto &cgi_path : location.getCgiPath())
 				std::cout << "Location cgi_path: " << cgi_path << std::endl;
-			for (const auto& cgi_ext : location.getCgiExt())
+			for (const auto &cgi_ext : location.getCgiExt())
 				std::cout << "Location cgi_ext: " << cgi_ext << std::endl;
 		}
 	}
 }
 
-void	Config::openFile()
+void Config::openFile()
 {
 	if (_file_path == NULL)
 		_file_path = DEFAULT_CONFIG_PATH;
@@ -234,10 +283,10 @@ void	Config::openFile()
 	std::cout << "Using config file '" << _file_path << "'" << std::endl;
 }
 
-void	Config::readFile()
+void Config::readFile()
 {
-	int			line_nr = 1;
-	std::string	line;
+	int line_nr = 1;
+	std::string line;
 	std::string key, value;
 	std::stack<std::string> block;
 
@@ -310,7 +359,7 @@ void	Config::readFile()
 						getServers().back().setIndex(removeSemicolon(value));
 				}
 				// if (value == "")
-					// std::cout << "key = '" << key << "' value = ''" << std::endl;
+				// std::cout << "key = '" << key << "' value = ''" << std::endl;
 			}
 			else if (!block.empty() && block.top() == "location")
 			{
@@ -336,7 +385,7 @@ void	Config::readFile()
 						getServers().back().getLocations().back().addCgiExt(removeSemicolon(value));
 				}
 				// if (value == "")
-					// std::cout << "key = '" << key << "' value = ''" << std::endl;
+				// std::cout << "key = '" << key << "' value = ''" << std::endl;
 			}
 			// else
 			// {
@@ -353,21 +402,23 @@ void	Config::readFile()
 	}
 }
 
-void Config::addServer(const ServerBlock& server) {
+void Config::addServer(const ServerBlock &server)
+{
 	_servers.push_back(server);
 }
 
-std::vector<ServerBlock>& Config::getServers() {
+std::vector<ServerBlock> &Config::getServers()
+{
 	return _servers;
 }
 
-void	Config::closeFile()
+void Config::closeFile()
 {
 	if (_config_file.is_open())
 		_config_file.close();
 }
 
-void	Config::parseFile()
+void Config::parseFile()
 {
 	openFile();
 	readFile();
@@ -376,17 +427,17 @@ void	Config::parseFile()
 
 bool is_number(std::string s)
 {
-   for (size_t i = 0; i < s.length(); i++)
-   {
-      if (!isdigit(s[i]))
-         return false;
-   }
-   return true;
+	for (size_t i = 0; i < s.length(); i++)
+	{
+		if (!isdigit(s[i]))
+			return false;
+	}
+	return true;
 }
 
-std::string removeSemicolon(const std::string& str)
+std::string removeSemicolon(const std::string &str)
 {
-    if (!str.empty() && str.back() == ';')
-        return str.substr(0, str.size() - 1);
-    return str;
+	if (!str.empty() && str.back() == ';')
+		return str.substr(0, str.size() - 1);
+	return str;
 }

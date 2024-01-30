@@ -107,13 +107,21 @@ private:
 	void addServer(const ServerBlock &server);
 
 public:
-	Config();
-	Config(const char *file_path);
-	Config(int argc, char *argv[]);
+	static Config &get();
+	void parse(const char *file_path);
+	void parse(int argc, char *argv[]);
+	static void destruct();
+	std::vector<ServerBlock> &getServers();
+
+private:
+	// Singleton pattern design
+	Config() = default;
 	~Config();
+	static Config *instance;
+	// Config(const char *file_path) = default;
+	// Config(int argc, char *argv[]) = default;
 
 	void display();
-	std::vector<ServerBlock> &getServers();
 };
 
 #endif

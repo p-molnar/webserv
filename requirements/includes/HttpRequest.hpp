@@ -40,6 +40,7 @@ enum e_request_type
 typedef struct s_uri_comps
 {
     std::string path;
+    std::string www_path;
     std::string query_str;
     std::string executable_name;
     std::string path_info;

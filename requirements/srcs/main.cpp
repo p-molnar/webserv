@@ -1,13 +1,16 @@
 #include "WebServer.hpp"
 
+Config *Config::instance = nullptr; // singleton design pattern
+
 int main(int argc, char *argv[])
 {
     try
     {
-        Config config(argc, argv);
-        config.display(); // temp for testing
         WebServer server;
-        server.loadConfig(&config);
+        Config::get().parse(argc, argv);
+        // Config config(argc, argv);
+        // config.display(); // temp for testing
+        // server.loadConfig();
         server.startService();
     }
     catch (const std::exception &e)

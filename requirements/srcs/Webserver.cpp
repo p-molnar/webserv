@@ -4,15 +4,15 @@
 
 WebServer::WebServer(){};
 
-void WebServer::loadConfig(Config *config_data)
-{
-    config = config_data;
-}
+// void WebServer::loadConfig(Config *config_data)
+// {
+//     config = config_data;
+// }
 
 void WebServer::startService()
 {
     Log::logMsg("Server started");
-    for (ServerBlock config : config->getServers())
+    for (ServerBlock config : Config::get().getServers())
     {
         int port = config.getListenPort();
         int backlog = 10;
