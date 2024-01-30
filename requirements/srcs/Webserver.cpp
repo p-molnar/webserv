@@ -51,6 +51,7 @@ void WebServer::startService()
         }
     }
 }
+
 WebServer::~WebServer()
 {
     Log::logMsg("Server(s) shutdown");

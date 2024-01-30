@@ -10,6 +10,7 @@
 #include "consts.hpp"
 #include "string_utils.hpp"
 #include "FormData.hpp"
+#include "Config.hpp"
 
 /*  HTTP Request parser.
     Requirements:

@@ -46,38 +46,59 @@ std::string HttpRequest::getMessageBody() const
 
 void HttpRequest::parseRequestUri(const std::string &uri)
 {
-    // accepted extension name comes from config file
-    std::string config_cgi_ext = ".py";
     std::vector<std ::string> uri_comps_local = tokenize(uri, QSTR_SEP);
 
+    // extract path
     if (uri_comps_local.size() == 1)
     {
         uri_comps.path = uri_comps_local[0];
-        // uri_comps.www_path = uri_comps.path == "/" ? Config::get().;
     }
-    else if (uri_comps_local.size() == 2)
+
+    // extract query string
+    if (uri_comps_local.size() == 2)
     {
-        uri_comps.path = uri_comps_local[0];
         uri_comps.query_str = uri_comps_local[1];
     }
 
-    if (uri_comps.path.find(config_cgi_ext) != NPOS)
-    {
-        request_type = EXECUTABLE;
-        std::vector<std::string> path_comps = tokenize(uri_comps.path, DIR_SEP);
-        std::vector<std::string>::iterator it = path_comps.begin();
-        std::vector<std::string>::iterator ite = path_comps.end();
+    // generate www path out of path
+    uri_comps.www_path = uri_comps.path == "/"
+                             ? Config::getConfig().getRoot() + "/" + Config::getConfig().getIndex()
+                             : Config::getConfig().getRoot() + uri_comps.path;
 
-        while (it != ite)
+    // determine if the requested cgi is accepted, and if so what type of cgi it is
+    bool is_accepted_cgi_extension = false;
+    std::string req_cgi_ext;
+    for (LocationBlock loc : Config::getConfig().getLocations())
+    {
+        for (std::string cgi_ext : loc.getCgiExt())
         {
-            if (it->find(config_cgi_ext) != NPOS)
+            if (!cgi_ext.empty() && uri_comps.path.find(cgi_ext))
             {
-                uri_comps.executable_name = *it;
+                is_accepted_cgi_extension = true;
+                req_cgi_ext = cgi_ext;
                 break;
             }
-            it++;
+        }
+    }
+
+    std::cout << "isaccepted: " << is_accepted_cgi_extension << '\n';
+    std::cout << "cgiex: " << req_cgi_ext << '\n';
+
+    if (is_accepted_cgi_extension)
+    {
+        request_type = EXECUTABLE;
+
+        // extract executable name
+        for (std::string comp : tokenize(uri_comps.path, DIR_SEP))
+        {
+            if (comp.find(req_cgi_ext) != NPOS)
+            {
+                uri_comps.executable_name = comp;
+                break;
+            }
         }
 
+        // extract path_info
         std::size_t qstr_sep_pos = uri.find(QSTR_SEP);
         std::size_t path_info_start = uri.find(uri_comps.executable_name) + uri_comps.executable_name.length();
         if (qstr_sep_pos != NPOS)
@@ -85,8 +106,10 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         else
             uri_comps.path_info = uri.substr(path_info_start);
     }
-    else
+    else if (uri_comps.www_path.back() == '/')
         request_type = RESOURCE;
+    else
+        request_type = DIRECTORY;
 }
 
 bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_received)
@@ -221,33 +244,27 @@ void HttpRequest::printParsedContent() const
               << std::endl;
 
     std::cout << "path: |" << uri_comps.path << "|" << '\n';
+    std::cout << "www_path: |" << uri_comps.www_path << "|" << '\n';
     std::cout << "executable_name: |" << uri_comps.executable_name << "|" << '\n';
     std::cout << "path_info: |" << uri_comps.path_info << "|" << '\n';
     std::cout << "query_string: |" << uri_comps.query_str << "|" << '\n';
+    std::cout << "request type: " << request_type << '\n';
 
-    std::map<std::string, std::string>::const_iterator it = request_line.begin();
-    std::map<std::string, std::string>::const_iterator ite = request_line.end();
-
-    while (it != ite)
+    for (std::pair<std::string, std::string> line : request_line)
     {
-        std::cout << it->first;
+        std::cout << line.first;
         std::cout << ": ";
-        std::cout << it->second;
+        std::cout << line.second;
         std::cout << " ";
-        it++;
     }
     std::cout << '\n';
 
-    it = request_headers.begin();
-    ite = request_headers.end();
-
-    while (it != ite)
+    for (std::pair<std::string, std::string> header : request_headers)
     {
-        std::cout << it->first;
+        std::cout << header.first;
         std::cout << ": ";
-        std::cout << it->second;
+        std::cout << header.second;
         std::cout << "\n";
-        it++;
     }
 
     std::cout << "\n\n";

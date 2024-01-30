@@ -100,14 +100,11 @@ private:
 	~Config();
 	static Config *instance;
 	static ServerBlock *server_config;
-	// Config(const char *file_path) = default;
-	// Config(int argc, char *argv[]) = default;
 
 private:
 	const char *_file_path;
 	std::fstream _config_file;
 	std::vector<ServerBlock> _servers;
-	// std::map<std::string, ConfigType *> _config_data; // old
 
 	void openFile();
 	void readFile();
@@ -117,10 +114,8 @@ private:
 
 public:
 	static Config &get();
-	// static void setConfig(int port);
 	static void setConfig(ServerBlock *server_block);
 	static ServerBlock &getConfig();
-
 	void parse(const char *file_path);
 	void parse(int argc, char *argv[]);
 	static void destruct();
