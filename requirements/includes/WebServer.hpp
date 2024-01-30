@@ -13,6 +13,9 @@
 #include <vector>
 #include <map>
 
+
+Config *g_config;
+
 class WebServer : public ServerSocket, public PollManager
 {
 
@@ -24,11 +27,11 @@ private:
     // constructor & destructo
 public:
     WebServer();
+    // WebServer(Config *config_data);
     ~WebServer();
 
     // main member functions
 public:
-    void loadConfig(Config & config);
     void startService();
 };
 

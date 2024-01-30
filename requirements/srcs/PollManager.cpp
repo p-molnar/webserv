@@ -9,9 +9,10 @@ PollManager::PollManager()
 {
 }
 
-PollManager::~PollManager()
-{
-}
+// PollManager::PollManager(Config *config_data) : config(config_data)
+// {
+// 	std::cout << "construct PollManager(Config *config_data)" << std::endl;
+// }
 
 void PollManager::addSocket(std::shared_ptr<Socket> socket)
 {
@@ -65,6 +66,7 @@ bool PollManager::shouldCloseConnection(std::shared_ptr<ClientSocket> client_soc
 void PollManager::processEvents()
 {
 	Log::logMsg("Server is processing events");
+	// config->display();
 	while (RUNNING)
 	{
 		updatePollfd();
