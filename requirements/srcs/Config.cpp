@@ -7,6 +7,26 @@ Config &Config::get()
 	return *instance;
 }
 
+void Config::setConfig(int port)
+{
+	if (server_config == nullptr)
+	{
+		for (ServerBlock config : Config::get().getServers())
+		{
+			if (config.getListenPort() == port)
+			{
+				server_config = &config;
+				break;
+			}
+		}
+	}
+}
+
+ServerBlock &Config::getConfig()
+{
+	return *server_config;
+}
+
 void Config::destruct()
 {
 	delete instance;
