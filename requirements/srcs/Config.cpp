@@ -7,19 +7,26 @@ Config &Config::get()
 	return *instance;
 }
 
-void Config::setConfig(int port)
+void Config::setConfig(ServerBlock *server_block)
 {
-	if (server_config == nullptr)
-	{
-		for (ServerBlock config : Config::get().getServers())
-		{
-			if (config.getListenPort() == port)
-			{
-				server_config = &config;
-				break;
-			}
-		}
-	}
+	// for (int i = 0; i < Config::get().getServers().size(); i++)
+	// {
+	// 	ServerBlock srv =
+	// 	if (getListenPort() == port)
+	// 	{
+	// 		server_config = &config;
+	// 		break;
+	// 	}
+	// }
+	// for (ServerBlock config : Config::get().getServers())
+	// {
+	// 	if (config.getListenPort() == port)
+	// 	{
+	// 		server_config = &config;
+	// 		break;
+	// 	}
+	// }
+	server_config = server_block;
 }
 
 ServerBlock &Config::getConfig()

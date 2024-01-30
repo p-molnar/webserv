@@ -30,8 +30,6 @@ public:
 public:
     void loadConfig(Config *config);
     void startService();
-
-    static int getServerFd();
 };
 
 #endif

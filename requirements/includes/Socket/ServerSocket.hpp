@@ -14,9 +14,6 @@
 
 class ServerSocket : public Socket
 {
-private:
-    Config *config;
-
 public:
     ServerSocket();
     ServerSocket(const Socket &obj);

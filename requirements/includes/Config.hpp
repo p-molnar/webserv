@@ -117,7 +117,8 @@ private:
 
 public:
 	static Config &get();
-	static void setConfig(int port);
+	// static void setConfig(int port);
+	static void setConfig(ServerBlock *server_block);
 	static ServerBlock &getConfig();
 
 	void parse(const char *file_path);

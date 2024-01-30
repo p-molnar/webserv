@@ -19,10 +19,10 @@ void WebServer::startService()
         int port = config.getListenPort();
         int backlog = 10;
 
-        Config::setConfig(port);
         pid_t pid = SysCall::fork();
         if (pid == 0)
         {
+            Config::setConfig(&config);
             std::shared_ptr<ServerSocket> server_socket = std::shared_ptr<ServerSocket>(new ServerSocket());
             server_socket->createSocket();
             server_socket->bindPort(port);
