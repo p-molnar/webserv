@@ -4,9 +4,9 @@
 
 WebServer::WebServer(){};
 
-void WebServer::loadConfig(Config *config_data)
+void WebServer::loadConfig(Config& config_data)
 {
-    config = config_data;
+    config = &config_data;
 }
 
 void WebServer::startService()
