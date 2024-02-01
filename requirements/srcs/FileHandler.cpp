@@ -60,7 +60,7 @@ void     handleGetRequest(const HttpRequest *reg, HttpResponse *res)
         {
             Log::logMsg("File exists");
             std::string content = fileHandler::readFileContent(filePath);
-            httpStatus status(statusCode::OK);
+            httpStatus status(statusCode::NotFound);
             res->setStatusLine(status.getStatusLine());
             res->setBody(content);
         }
