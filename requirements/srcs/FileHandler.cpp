@@ -34,12 +34,12 @@ std::string fileHandler::readFileContent(const std::string& filePath)
     return std::string(std::istreambuf_iterator<char>(fileStream), std::istreambuf_iterator<char>());
 }
 
-void     handleGetRequest(const HttpRequest */*  */, HttpResponse *res) 
+void     handleGetRequest(const HttpRequest *reg, HttpResponse *res) 
 {
     Log::logMsg("Handling GET request");
-    // std::string uri = req->getHeader("request_uri"); // NOT WORKINGGGGG
-    // if (uri.empty() || uri == "/")
-    std::string uri = "/index.html";
+    std::string uri = reg->getUriComps().path;
+    if (uri.empty() || uri == "/")
+        uri = "/index.html";
 
     // if (req->getHeader("connection") == "close") check getHeader function not working correctly. 
     //     res->setHeaders("connection", "close");
