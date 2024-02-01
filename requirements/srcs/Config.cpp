@@ -96,13 +96,14 @@ ServerBlock::ServerBlock()
 	_clientMaxBodySize = 1024;
 	_index = "index.html";
 	_root = "/var/www/html";
-	_errorPage = "error.html";
+	_errorPages[403] = "/error/403.html";
+	_errorPages[404] = "/error/404.html";
 }
 
 ServerBlock::~ServerBlock() {}
 
-void ServerBlock::setErrorPage(const std::string& errorPage) {
-	_errorPage = errorPage;
+void ServerBlock::setErrorPage(int errorCode, const std::string& errorPage) {
+	_errorPages[errorCode] = errorPage;
 }
 
 void ServerBlock::setClientMaxBodySize(int size) {
@@ -129,16 +130,16 @@ void ServerBlock::setServerName(const std::string& serverName) {
 	_serverName = serverName;
 }
 
-// std::vector<LocationBlock>& ServerBlock::getLocations() {
-// 	return _locations;
-// }
-
 std::map<std::string, LocationBlock>& ServerBlock::getLocations() {
 	return _locations;
 }
 
-std::string ServerBlock::getErrorPage() const {
-	return _errorPage;
+std::string ServerBlock::getErrorPage(int errorCode) const {
+	return _errorPages.at(errorCode);
+}
+
+std::map<int, std::string> ServerBlock::getErrorPages() const {
+	return _errorPages;
 }
 
 int ServerBlock::getClientMaxBodySize() const {
@@ -164,10 +165,6 @@ int ServerBlock::getListenPort() const {
 std::string ServerBlock::getServerName() const {
 	return _serverName;
 }
-
-// void ServerBlock::addLocation(const LocationBlock& location) {
-// 	_locations.push_back(location);
-// }
 
 void	ServerBlock::addLocation(const std::string& locationPath, const LocationBlock& location)
 {
@@ -206,49 +203,29 @@ void	Config::display()
 		std::cout << "Server Port: " << server.getListenPort() << std::endl;
 		std::cout << "Server IP Address: " << server.getListenIpAddress() << std::endl;
 		std::cout << "Server Name: " << server.getServerName() << std::endl;
-		std::cout << "Server Error Page: " << server.getErrorPage() << std::endl;
+		for (const auto& errorPage : server.getErrorPages())
+			std::cout << "Server Error Page: " << errorPage.first << " " << errorPage.second << std::endl;
 		std::cout << "Server client max body size: " << server.getClientMaxBodySize() << std::endl;
 		std::cout << "Server Root: " << server.getRoot() << std::endl;
 		std::cout << "Server Index: " << server.getIndex() << std::endl;
 
-		// for (const auto& location : server.getLocations())
-		// {
-		// 	std::cout << "\n";
-		// 	std::cout << "Location path: " << location.getPath() << std::endl;
-		// 	std::cout << "Location root: " << location.getRoot() << std::endl;
-		// 	std::cout << "Location autoindex: " << location.getAutoIndex() << std::endl;
-		// 	for (const auto& method : location.getAllowedMethods())
-		// 		std::cout << "Location allowed method: " << method << std::endl;
-		// 	std::cout << "Location index: " << location.getIndex() << std::endl;
-		// 	std::cout << "Location return: " << location.getReturn() << std::endl;
-		// 	std::cout << "Location alias: " << location.getAlias() << std::endl;
-		// 	for (const auto& cgi_path : location.getCgiPath())
-		// 		std::cout << "Location cgi_path: " << cgi_path << std::endl;
-		// 	for (const auto& cgi_ext : location.getCgiExt())
-		// 		std::cout << "Location cgi_ext: " << cgi_ext << std::endl;
-		// }
-
-		std::map<std::string, LocationBlock>::iterator it = server.getLocations().begin();
-		std::map<std::string, LocationBlock>::iterator ite = server.getLocations().end();
-		while (it != ite)
+		for (const auto& location : server.getLocations())
 		{
 			std::cout << "\n";
-			std::cout << "Location path: " << it->first << std::endl;
-			std::cout << "Location root: " << it->second.getRoot() << std::endl;
-			std::cout << "Location autoindex: " << it->second.getAutoIndex() << std::endl;
-			for (const auto& method : it->second.getAllowedMethods())
+			std::cout << "Location path: " << location.first << std::endl;
+			std::cout << "Location root: " << location.second.getRoot() << std::endl;
+			std::cout << "Location autoindex: " << location.second.getAutoIndex() << std::endl;
+			for (const auto& method : location.second.getAllowedMethods())
 				std::cout << "Location allowed method: " << method << std::endl;
-			std::cout << "Location index: " << it->second.getIndex() << std::endl;
-			std::cout << "Location return: " << it->second.getReturn() << std::endl;
-			std::cout << "Location alias: " << it->second.getAlias() << std::endl;
-			for (const auto& cgi_path : it->second.getCgiPath())
+			std::cout << "Location index: " << location.second.getIndex() << std::endl;
+			std::cout << "Location return: " << location.second.getReturn() << std::endl;
+			std::cout << "Location alias: " << location.second.getAlias() << std::endl;
+			for (const auto& cgi_path : location.second.getCgiPath())
 				std::cout << "Location cgi_path: " << cgi_path << std::endl;
-			for (const auto& cgi_ext : it->second.getCgiExt())
+			for (const auto& cgi_ext : location.second.getCgiExt())
 				std::cout << "Location cgi_ext: " << cgi_ext << std::endl;
-			it++;
 		}
 	}
-	// std::cout << "The index of the location www = " << getServers()[0].getLocations()["/www"].getIndex() << std::endl;
 }
 
 void	Config::openFile()
@@ -281,7 +258,6 @@ void	Config::readFile()
 				break;
 			if (key == "server")
 			{
-				// std::cout << CGRN << "Block " << key << NC << std::endl;
 				lineStream >> key;
 				if (key == "{")
 				{
@@ -294,17 +270,13 @@ void	Config::readFile()
 			}
 			else if (key == "location")
 			{
-				// std::cout << CGRN << "Block " << key << NC << " ";
 				path = "";
 				lineStream >> path;
-				// std::cout << path  << std::endl;
 				lineStream >> key;
 				if (key == "{")
 				{
 					block.push("location");
 					LocationBlock locationBlock;
-					// getServers().back().addLocation(locationBlock);
-					// getServers().back().getLocations().back().setPath(path);
 					getServers().back().addLocation(path, locationBlock);
 					getServers().back().getLocations()[path].setPath(path);
 				}
@@ -314,10 +286,7 @@ void	Config::readFile()
 			else if (key == "}")
 			{
 				if (!block.empty())
-				{
-					// std::cout << CGRN << "End Block " << block.top() << NC << std::endl;
 					block.pop();
-				}
 				else
 					std::cout << CRED << "Error config format, line " << NC << line_nr << ": '" << line << "'" << std::endl;
 			}
@@ -326,7 +295,6 @@ void	Config::readFile()
 				value = "";
 				while (value.back() != ';' && lineStream >> value)
 				{
-					// std::cout << "key = '" << key << "' value = '" << removeSemicolon(value) << "'" << std::endl;
 					if (key == "listen" && is_number(removeSemicolon(value)))
 						getServers().back().setListenPort(std::stoi(removeSemicolon(value)));
 					if (key == "host")
@@ -334,7 +302,18 @@ void	Config::readFile()
 					if (key == "server_name")
 						getServers().back().setServerName(removeSemicolon(value));
 					if (key == "error_page")
-						getServers().back().setErrorPage(removeSemicolon(value));
+					{
+						if (is_number(removeSemicolon(value)))
+						{
+							int errorCode = std::stoi(removeSemicolon(value));
+							if (lineStream >> value)
+								getServers().back().setErrorPage(errorCode, removeSemicolon(value));
+							else
+								std::cout << CRED << "Error config format, line " << NC << line_nr << ": '" << line << "'" << std::endl;
+						}
+						else
+							std::cout << CRED << "Error config format, line " << NC << line_nr << ": '" << line << "'" << std::endl;
+					}
 					if (key == "client_max_body_size" && is_number(removeSemicolon(value)))
 						getServers().back().setClientMaxBodySize(std::stoi(removeSemicolon(value)));
 					if (key == "root")
@@ -342,15 +321,12 @@ void	Config::readFile()
 					if (key == "index")
 						getServers().back().setIndex(removeSemicolon(value));
 				}
-				// if (value == "")
-					// std::cout << "key = '" << key << "' value = ''" << std::endl;
 			}
 			else if (!block.empty() && block.top() == "location")
 			{
 				value = "";
 				while (value.back() != ';' && lineStream >> value)
 				{
-					// std::cout << "key = '" << key << "' value = '" << removeSemicolon(value) << "'" << std::endl;
 					if (key == "root")
 						getServers().back().getLocations()[path].setRoot(removeSemicolon(value));
 					if (key == "autoindex")
@@ -368,19 +344,7 @@ void	Config::readFile()
 					if (key == "cgi_ext")
 						getServers().back().getLocations()[path].addCgiExt(removeSemicolon(value));
 				}
-				// if (value == "")
-					// std::cout << "key = '" << key << "' value = ''" << std::endl;
 			}
-			// else
-			// {
-			// 	value = "";
-			// 	while (value.back() != ';' && lineStream >> value)
-			// 	{
-			// 		std::cout << "key = '" << key << "' value = '" << removeSemicolon(value) << "'" << std::endl;
-			// 	}
-			// 	if (value == "")
-			// 		std::cout << "key = '" << key << "' value = ''" << std::endl;
-			// }
 		}
 		line_nr++;
 	}

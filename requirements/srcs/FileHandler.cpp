@@ -55,7 +55,7 @@ void     handleGetRequest(const HttpRequest *reg, HttpResponse *res)
     else
     {
         Log::logMsg("File does not exist");
-        filePath = "srv/www/error.html";
+        filePath = "srv/www/error/404.html";
         if (fileHandler::fileExists(filePath))
         {
             Log::logMsg("File exists");
