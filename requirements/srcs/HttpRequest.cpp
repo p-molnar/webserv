@@ -68,18 +68,18 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     // determine if the requested cgi is accepted, and if so what type of cgi it is
     bool is_accepted_cgi_extension = false;
     std::string req_cgi_ext;
-    for (LocationBlock loc : Config::getConfig().getLocations())
-    {
-        for (std::string cgi_ext : loc.getCgiExt())
-        {
-            if (!cgi_ext.empty() && uri_comps.path.find(cgi_ext))
-            {
-                is_accepted_cgi_extension = true;
-                req_cgi_ext = cgi_ext;
-                break;
-            }
-        }
-    }
+    // for (LocationBlock loc : Config::getConfig().getLocations())
+    // {
+    //     for (std::string cgi_ext : loc.getCgiExt())
+    //     {
+    //         if (!cgi_ext.empty() && uri_comps.path.find(cgi_ext))
+    //         {
+    //             is_accepted_cgi_extension = true;
+    //             req_cgi_ext = cgi_ext;
+    //             break;
+    //         }
+    //     }
+    // }
 
     std::cout << "isaccepted: " << is_accepted_cgi_extension << '\n';
     std::cout << "cgiex: " << req_cgi_ext << '\n';
