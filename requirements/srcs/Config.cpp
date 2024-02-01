@@ -129,7 +129,11 @@ void ServerBlock::setServerName(const std::string& serverName) {
 	_serverName = serverName;
 }
 
-std::vector<LocationBlock>& ServerBlock::getLocations() {
+// std::vector<LocationBlock>& ServerBlock::getLocations() {
+// 	return _locations;
+// }
+
+std::map<std::string, LocationBlock>& ServerBlock::getLocations() {
 	return _locations;
 }
 
@@ -161,8 +165,13 @@ std::string ServerBlock::getServerName() const {
 	return _serverName;
 }
 
-void ServerBlock::addLocation(const LocationBlock& location) {
-	_locations.push_back(location);
+// void ServerBlock::addLocation(const LocationBlock& location) {
+// 	_locations.push_back(location);
+// }
+
+void	ServerBlock::addLocation(const std::string& locationPath, const LocationBlock& location)
+{
+	_locations[locationPath] = location;
 }
 
 Config::Config(): _file_path(DEFAULT_CONFIG_PATH)
@@ -202,23 +211,44 @@ void	Config::display()
 		std::cout << "Server Root: " << server.getRoot() << std::endl;
 		std::cout << "Server Index: " << server.getIndex() << std::endl;
 
-		for (const auto& location : server.getLocations())
+		// for (const auto& location : server.getLocations())
+		// {
+		// 	std::cout << "\n";
+		// 	std::cout << "Location path: " << location.getPath() << std::endl;
+		// 	std::cout << "Location root: " << location.getRoot() << std::endl;
+		// 	std::cout << "Location autoindex: " << location.getAutoIndex() << std::endl;
+		// 	for (const auto& method : location.getAllowedMethods())
+		// 		std::cout << "Location allowed method: " << method << std::endl;
+		// 	std::cout << "Location index: " << location.getIndex() << std::endl;
+		// 	std::cout << "Location return: " << location.getReturn() << std::endl;
+		// 	std::cout << "Location alias: " << location.getAlias() << std::endl;
+		// 	for (const auto& cgi_path : location.getCgiPath())
+		// 		std::cout << "Location cgi_path: " << cgi_path << std::endl;
+		// 	for (const auto& cgi_ext : location.getCgiExt())
+		// 		std::cout << "Location cgi_ext: " << cgi_ext << std::endl;
+		// }
+
+		std::map<std::string, LocationBlock>::iterator it = server.getLocations().begin();
+		std::map<std::string, LocationBlock>::iterator ite = server.getLocations().end();
+		while (it != ite)
 		{
 			std::cout << "\n";
-			std::cout << "Location path: " << location.getPath() << std::endl;
-			std::cout << "Location root: " << location.getRoot() << std::endl;
-			std::cout << "Location autoindex: " << location.getAutoIndex() << std::endl;
-			for (const auto& method : location.getAllowedMethods())
+			std::cout << "Location path: " << it->first << std::endl;
+			std::cout << "Location root: " << it->second.getRoot() << std::endl;
+			std::cout << "Location autoindex: " << it->second.getAutoIndex() << std::endl;
+			for (const auto& method : it->second.getAllowedMethods())
 				std::cout << "Location allowed method: " << method << std::endl;
-			std::cout << "Location index: " << location.getIndex() << std::endl;
-			std::cout << "Location return: " << location.getReturn() << std::endl;
-			std::cout << "Location alias: " << location.getAlias() << std::endl;
-			for (const auto& cgi_path : location.getCgiPath())
+			std::cout << "Location index: " << it->second.getIndex() << std::endl;
+			std::cout << "Location return: " << it->second.getReturn() << std::endl;
+			std::cout << "Location alias: " << it->second.getAlias() << std::endl;
+			for (const auto& cgi_path : it->second.getCgiPath())
 				std::cout << "Location cgi_path: " << cgi_path << std::endl;
-			for (const auto& cgi_ext : location.getCgiExt())
+			for (const auto& cgi_ext : it->second.getCgiExt())
 				std::cout << "Location cgi_ext: " << cgi_ext << std::endl;
+			it++;
 		}
 	}
+	// std::cout << "The index of the location www = " << getServers()[0].getLocations()["/www"].getIndex() << std::endl;
 }
 
 void	Config::openFile()
@@ -239,6 +269,7 @@ void	Config::readFile()
 	int			line_nr = 1;
 	std::string	line;
 	std::string key, value;
+	std::string path;
 	std::stack<std::string> block;
 
 	while (getline(_config_file, line))
@@ -264,7 +295,7 @@ void	Config::readFile()
 			else if (key == "location")
 			{
 				// std::cout << CGRN << "Block " << key << NC << " ";
-				std::string path;
+				path = "";
 				lineStream >> path;
 				// std::cout << path  << std::endl;
 				lineStream >> key;
@@ -272,8 +303,10 @@ void	Config::readFile()
 				{
 					block.push("location");
 					LocationBlock locationBlock;
-					getServers().back().addLocation(locationBlock);
-					getServers().back().getLocations().back().setPath(path);
+					// getServers().back().addLocation(locationBlock);
+					// getServers().back().getLocations().back().setPath(path);
+					getServers().back().addLocation(path, locationBlock);
+					getServers().back().getLocations()[path].setPath(path);
 				}
 				else
 					std::cout << CRED << "Error config format, line " << NC << line_nr << ": '" << line << "'" << std::endl;
@@ -319,21 +352,21 @@ void	Config::readFile()
 				{
 					// std::cout << "key = '" << key << "' value = '" << removeSemicolon(value) << "'" << std::endl;
 					if (key == "root")
-						getServers().back().getLocations().back().setRoot(removeSemicolon(value));
+						getServers().back().getLocations()[path].setRoot(removeSemicolon(value));
 					if (key == "autoindex")
-						getServers().back().getLocations().back().setAutoIndex(removeSemicolon(value));
+						getServers().back().getLocations()[path].setAutoIndex(removeSemicolon(value));
 					if (key == "index")
-						getServers().back().getLocations().back().setIndex(removeSemicolon(value));
+						getServers().back().getLocations()[path].setIndex(removeSemicolon(value));
 					if (key == "allow_methods")
-						getServers().back().getLocations().back().addAllowedMethod(removeSemicolon(value));
+						getServers().back().getLocations()[path].addAllowedMethod(removeSemicolon(value));
 					if (key == "return")
-						getServers().back().getLocations().back().setReturn(removeSemicolon(value));
+						getServers().back().getLocations()[path].setReturn(removeSemicolon(value));
 					if (key == "alias")
-						getServers().back().getLocations().back().setAlias(removeSemicolon(value));
+						getServers().back().getLocations()[path].setAlias(removeSemicolon(value));
 					if (key == "cgi_path")
-						getServers().back().getLocations().back().addCgiPath(removeSemicolon(value));
+						getServers().back().getLocations()[path].addCgiPath(removeSemicolon(value));
 					if (key == "cgi_ext")
-						getServers().back().getLocations().back().addCgiExt(removeSemicolon(value));
+						getServers().back().getLocations()[path].addCgiExt(removeSemicolon(value));
 				}
 				// if (value == "")
 					// std::cout << "key = '" << key << "' value = ''" << std::endl;

@@ -67,7 +67,8 @@ private:
 	std::string _errorPage;
 	std::string _root;
 	std::string _index;
-	std::vector<LocationBlock> _locations;
+	// std::vector<LocationBlock> _locations;
+	std::map<std::string, LocationBlock> _locations;
 
 public:
 	ServerBlock();
@@ -80,7 +81,8 @@ public:
 	void setErrorPage(const std::string &errorPage);
 	void setRoot(const std::string &root);
 	void setIndex(const std::string &index);
-	void addLocation(const LocationBlock &location);
+	// void addLocation(const LocationBlock &location);
+	void addLocation(const std::string &locationPath, const LocationBlock &location);
 
 	int getListenPort() const;
 	int getClientMaxBodySize() const;
@@ -89,7 +91,8 @@ public:
 	std::string getErrorPage() const;
 	std::string getRoot() const;
 	std::string getIndex() const;
-	std::vector<LocationBlock> &getLocations();
+	// std::vector<LocationBlock> &getLocations();
+	std::map<std::string, LocationBlock> &getLocations();
 };
 
 class Config
