@@ -43,7 +43,7 @@ void     handleGetRequest(const HttpRequest *reg, HttpResponse *res)
 
     // if (req->getHeader("connection") == "close") check getHeader function not working correctly. 
     //     res->setHeaders("connection", "close");
-    std::string filePath = "www" + uri;
+    std::string filePath = "srv/www" + uri;
     if (fileHandler::fileExists(filePath))
     {
         Log::logMsg("File exists");
