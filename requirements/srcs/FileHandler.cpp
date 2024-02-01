@@ -20,7 +20,7 @@
 
 bool fileHandler::fileExists(std::string& filePath)
 {
-    return std::filesystem::exists(filePath);
+    return std::filesystem::exists(filePath); // Toto: return false if filePath is a directory
 }
 
 std::string fileHandler::readFileContent(const std::string& filePath)
@@ -51,5 +51,20 @@ void     handleGetRequest(const HttpRequest *reg, HttpResponse *res)
         httpStatus status(statusCode::OK);
         res->setStatusLine(status.getStatusLine());
         res->setBody(content);
+    }
+    else
+    {
+        Log::logMsg("File does not exist");
+        filePath = "srv/www/error.html";
+        if (fileHandler::fileExists(filePath))
+        {
+            Log::logMsg("File exists");
+            std::string content = fileHandler::readFileContent(filePath);
+            httpStatus status(statusCode::OK);
+            res->setStatusLine(status.getStatusLine());
+            res->setBody(content);
+        }
+        else
+            Log::logMsg("Error file does not exist");
     }
 }
