@@ -8,8 +8,12 @@ int main(int argc, char *argv[])
     try
     {
         WebServer server;
-        // server.loadConfig(config);
         Config::get().parse(argc, argv);
+
+        // no need to load a config file anymore, because it is a global class
+        // and every function has access to it
+
+        // server.loadConfig(config);
         // Config config(argc, argv);
         // config.display(); // temp for testing
         // server.loadConfig();
