@@ -2,17 +2,13 @@
 #include <stdexcept>
 #include "ServerSocket.hpp"
 
-WebServer::WebServer(){};
-
-void WebServer::loadConfig(Config& config_data)
-{
-    config = &config_data;
-}
+WebServer::WebServer() {}
+// WebServer::WebServer(Config *config_data) : config(config_data) {}
 
 void WebServer::startService()
 {
     Log::logMsg("Server started");
-    for (ServerBlock config : config->getServers())
+    for (ServerBlock config : g_config->getServers())
     {
         int port = config.getListenPort();
         int backlog = 10;
@@ -25,6 +21,7 @@ void WebServer::startService()
         poll_manager.addSocket(server_socket);
         server_sockets.push_back(server_socket);
     }
+    // g_config->display();
     poll_manager.processEvents();
 }
 

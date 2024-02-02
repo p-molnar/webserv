@@ -26,12 +26,14 @@ typedef struct s_pollFds
 
 class PollManager
 {
-private:
+protected:
+    // Config *config;
     std::vector<t_pollfd> pfds;
     std::map<int, std::shared_ptr<Socket>> sockets;
     
 public:
     PollManager();
+    // PollManager(Config *config_data);
     ~PollManager();
 
     Router router;

@@ -1,13 +1,15 @@
 #include "WebServer.hpp"
 
+
 int main(int argc, char *argv[])
 {
+    g_config = nullptr;
     try
     {
         Config config(argc, argv);
-        config.display(); // temp for testing
+        g_config = &config;
+        g_config->display(); // temp for testing
         WebServer server;
-        server.loadConfig(config);
         server.startService();
     }
     catch (const std::exception &e)

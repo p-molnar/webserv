@@ -15,7 +15,7 @@
 class ServerSocket : public Socket
 {
 private:
-    Config *config;
+    // Config *config;
 
 public:
     ServerSocket();
