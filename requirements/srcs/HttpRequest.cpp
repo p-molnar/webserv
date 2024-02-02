@@ -60,6 +60,7 @@ std::string get_cgi_ext(std::string s)
 
 void HttpRequest::parseRequestUri(const std::string &uri)
 {
+    std::cout << "RAW REQUST" << raw_request << "\n";
     std::vector<std ::string> uri_comps_local = tokenize(uri, QSTR_SEP);
 
     // extract path
@@ -71,12 +72,12 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     // extract query string
     if (uri_comps_local.size() == 2)
     {
+        uri_comps.path = uri_comps_local[0];
         uri_comps.query_str = uri_comps_local[1];
     }
 
     // generate www_path based on path
     std::string root = strip(Config::getConfig().getRoot(), "/");
-    std::cout << "ROOT: " << root << "\n";
     std::string default_landing_page = strip(Config::getConfig().getIndex(), "/");
 
     uri_comps.www_path = uri_comps.path == "/"
