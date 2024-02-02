@@ -10,6 +10,7 @@
 #include "consts.hpp"
 #include "string_utils.hpp"
 #include "FormData.hpp"
+#include "Config.hpp"
 
 /*  HTTP Request parser.
     Requirements:
@@ -40,6 +41,7 @@ enum e_request_type
 typedef struct s_uri_comps
 {
     std::string path;
+    std::string www_path;
     std::string query_str;
     std::string executable_name;
     std::string path_info;

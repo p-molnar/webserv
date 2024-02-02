@@ -19,12 +19,6 @@ void PollManager::addSocket(std::shared_ptr<Socket> socket)
 	sockets[socket->getFd()] = socket;
 }
 
-// void PollManager::addSocket(std::unique_ptr<ClientSocket> socket)
-// {
-// 	pfds.push_back(socket->getPfd());
-// 	sockets[socket->getFd()] = socket;
-// }
-
 void PollManager::removeSocket(int fd)
 {
 	std::vector<t_pollfd>::iterator v_it = pfds.begin();
@@ -43,9 +37,9 @@ void PollManager::removeSocket(int fd)
 	sockets.erase(m_it);
 }
 
-void PollManager::updatePollfd() 
+void PollManager::updatePollfd()
 {
-	for (auto& pfd : pfds)
+	for (auto &pfd : pfds)
 	{
 		std::shared_ptr<Socket> socket = sockets.at(pfd.fd);
 
@@ -61,9 +55,9 @@ void PollManager::updatePollfd()
 
 bool PollManager::shouldCloseConnection(std::shared_ptr<ClientSocket> client_socket)
 {
-	const auto& connectionHeader = client_socket->getResponse().getHeader("Connection");
-	
-	if (connectionHeader == "close")	
+	const auto &connectionHeader = client_socket->getResponse().getHeader("Connection");
+
+	if (connectionHeader == "close")
 		return true;
 	return false;
 }
@@ -137,7 +131,7 @@ void PollManager::HandlePollInEvent(std::shared_ptr<Socket> curr_socket)
 	{
 		try
 		{
-			client_socket->recvRequest();			
+			client_socket->recvRequest();
 		}
 		catch (const std::exception &e)
 		{
@@ -146,5 +140,5 @@ void PollManager::HandlePollInEvent(std::shared_ptr<Socket> curr_socket)
 				Log::logMsg(e.what());
 		}
 	}
-	return ;
+	return;
 }

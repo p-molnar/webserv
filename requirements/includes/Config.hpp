@@ -95,6 +95,13 @@ public:
 class Config
 {
 private:
+	// Singleton pattern design
+	Config() = default;
+	~Config();
+	static Config *instance;
+	static ServerBlock *server_config;
+
+private:
 	const char *_file_path;
 	std::fstream _config_file;
 	std::vector<ServerBlock> _servers;
@@ -106,11 +113,12 @@ private:
 	void addServer(const ServerBlock &server);
 
 public:
-	Config();
-	Config(const char *file_path);
-	Config(int argc, char *argv[]);
-	~Config();
-
+	static Config &get();
+	static void setConfig(ServerBlock *server_block);
+	static ServerBlock &getConfig();
+	void parse(const char *file_path);
+	void parse(int argc, char *argv[]);
+	static void destruct();
 	void display();
 	std::vector<ServerBlock> &getServers();
 };
