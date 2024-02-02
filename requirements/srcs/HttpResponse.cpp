@@ -49,6 +49,12 @@ void    HttpResponse::setStatusLine(const std::string& statusline)
     _statusLine = statusline;
 }
 
+ void    HttpResponse::setStatusLineAndBody(const std::string& statusline, const std::string& body)
+ {
+    setStatusLine(statusline);
+    setBody(body);
+ }
+
 std::string HttpResponse::getHeader(const std::string &headerName) const
 {
     return _headers.at(headerName);

@@ -44,6 +44,7 @@ std::string HttpRequest::getMessageBody() const
 
 void HttpRequest::parseRequestUri(const std::string &uri)
 {
+
     // accepted extension name comes from config file
     std::string config_cgi_ext = ".py";
     std::vector<std ::string> uri_comps_local = tokenize(uri, QSTR_SEP);
@@ -55,9 +56,9 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         uri_comps.path = uri_comps_local[0];
         uri_comps.query_str = uri_comps_local[1];
     }
-
     if (uri_comps.path.find(config_cgi_ext) != NPOS)
     {
+        std::cout << "AAA\n";
         request_type = EXECUTABLE;
         std::vector<std::string> path_comps = tokenize(uri_comps.path, DIR_SEP);
         std::vector<std::string>::iterator it = path_comps.begin();
@@ -80,8 +81,10 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         else
             uri_comps.path_info = uri.substr(path_info_start);
     }
-    else
+    else if (uri_comps.path.length() > 1 && request_type != EXECUTABLE)
         request_type = RESOURCE;
+    else
+        request_type = UNDEF;
 }
 
 bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_received)
@@ -161,7 +164,7 @@ void HttpRequest::parseRequestLine(const std::string &raw_request)
     request_line["request_uri"] = *curr_field++;
     request_line["http_version"] = *curr_field++;
 
-    parseRequestUri(request_line["request_uri"]);
+    parseRequestUri(request_line.at("request_uri"));
 }
 
 void HttpRequest::parseMessageBody(const std::string &raw_request)

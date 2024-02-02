@@ -33,9 +33,10 @@ public:
     HttpResponse operator=(const HttpResponse &obj);
     ~HttpResponse();
 
-    void    setStatusLine(const std::string& statusline);
+    void setStatusLine(const std::string& statusline);
     void setBody(const std::string &body);
     void setHeaders(const std::string &key, const std::string &value);
+    void setStatusLineAndBody(const std::string& statusline, const std::string& body);
 
     std::string getHeader(const std::string &headerName) const;
 

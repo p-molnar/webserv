@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 09:13:36 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/26 11:13:20 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/02 13:57:31 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,8 @@ std::unordered_map<statusCode, std::string> httpStatus::_message = {
 	{statusCode::GatewayTimeout, "Gateway Timeout"}
 };
 
-std::string httpStatus::getStatusLine() const
+std::string httpStatus::getStatusLine(statusCode code)
 {
-	return (version + " " + std::to_string(static_cast<int>(_statusCode)) + 
-		" " + _message.at(_statusCode)) + CRLF;
+	return (version + " " + std::to_string(static_cast<int>(code)) + 
+		" " + _message.at(code)) + CRLF;
 }

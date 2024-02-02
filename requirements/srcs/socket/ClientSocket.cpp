@@ -28,7 +28,11 @@ void ClientSocket::recvRequest()
     is_request_parsed = request.parseRequest(request_buff, bytes_received);
     Log::logMsg("request received", fd);
     if (is_request_parsed)
+    {
+request.printParsedContent();
         setState(State::Writing);
+    }
+        
 }
 
 void ClientSocket::sendResponse()

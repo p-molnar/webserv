@@ -25,7 +25,7 @@ all: $(NAME)
 
 $(NAME): $(OBJDIR) $(OBJ)
 	@printf "$(GREEN)compiling '$(NAME)'...$(RESET)\n"
-	c++ $(CPP_FLAGS) $(OBJ) -o $(NAME)
+	c++ $(CPP_FLAGS) $(OBJ) -o $(NAME) -lstdc++fs
 	@printf "$(GREEN)compilation completed$(RESET)\n"
 
 $(OBJDIR)/%.o: %.cpp
