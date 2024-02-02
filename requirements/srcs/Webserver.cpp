@@ -19,7 +19,6 @@ void WebServer::startService()
         int port = config.getListenPort();
         int backlog = 10;
 
-<<<<<<< HEAD
         // pid_t pid = SysCall::fork();
         pid_t pid = fork();
         if (pid == 0)
@@ -40,48 +39,12 @@ void WebServer::startService()
                 std::cerr << e.what() << '\n';
                 exit(EXIT_FAILURE); // rewrite with another function
             }
-            sleep(10);
-            std::cout << "abc\n";
-=======
-        Config::setConfig(port);
-        pid_t pid = SysCall::fork();
-        if (pid == 0)
-        {
-            std::shared_ptr<ServerSocket> server_socket = std::shared_ptr<ServerSocket>(new ServerSocket());
-            server_socket->createSocket();
-            server_socket->bindPort(port);
-            server_socket->listenPort(backlog, port);
-            poll_manager.addSocket(server_socket);
-            server_sockets.push_back(server_socket);
-            poll_manager.processEvents();
->>>>>>> 9dd3476 (Add multiprocessed polling)
         }
         else if (pid > 0)
             pids.push_back(pid);
         else
             throw std::runtime_error("fork error: " + STRERR);
-<<<<<<< HEAD
     }
-
-    int status;
-    while (pids.size() > 0)
-    {
-        // pid_t child_pid = SysCall::waitpid(-1, &status, 0);
-        pid_t child_pid = waitpid(-2, &status, 0);
-        if (child_pid > 0)
-        {
-            std::cout << "this: " << WIFEXITED(status) << "\n";
-            if (WIFEXITED(status))
-                Log::logMsg("Child process exit: " + std::to_string(WEXITSTATUS(status)));
-            else
-                Log::logMsg("Child process abnormal exit: " + std::to_string(child_pid));
-            pids.pop_back();
-        }
-    }
-}
-=======
-    }
->>>>>>> 9dd3476 (Add multiprocessed polling)
 
     int status;
     for (pid_t pid : pids)
@@ -97,6 +60,7 @@ void WebServer::startService()
         }
     }
 }
+
 WebServer::~WebServer()
 {
     Log::logMsg("Server(s) shutdown");

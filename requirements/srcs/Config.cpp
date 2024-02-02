@@ -7,7 +7,6 @@ Config &Config::get()
 	return *instance;
 }
 
-<<<<<<< HEAD
 void Config::setConfig(ServerBlock *server_block)
 {
 	// for (int i = 0; i < Config::get().getServers().size(); i++)
@@ -28,21 +27,6 @@ void Config::setConfig(ServerBlock *server_block)
 	// 	}
 	// }
 	server_config = server_block;
-=======
-void Config::setConfig(int port)
-{
-	if (server_config == nullptr)
-	{
-		for (ServerBlock config : Config::get().getServers())
-		{
-			if (config.getListenPort() == port)
-			{
-				server_config = &config;
-				break;
-			}
-		}
-	}
->>>>>>> 9dd3476 (Add multiprocessed polling)
 }
 
 ServerBlock &Config::getConfig()
@@ -177,7 +161,8 @@ ServerBlock::ServerBlock()
 
 ServerBlock::~ServerBlock() {}
 
-void ServerBlock::setErrorPage(int errorCode, const std::string& errorPage) {
+void ServerBlock::setErrorPage(int errorCode, const std::string &errorPage)
+{
 	_errorPages[errorCode] = errorPage;
 }
 
@@ -211,15 +196,18 @@ void ServerBlock::setServerName(const std::string &serverName)
 	_serverName = serverName;
 }
 
-std::map<std::string, LocationBlock>& ServerBlock::getLocations() {
+std::map<std::string, LocationBlock> &ServerBlock::getLocations()
+{
 	return _locations;
 }
 
-std::string ServerBlock::getErrorPage(int errorCode) const {
+std::string ServerBlock::getErrorPage(int errorCode) const
+{
 	return _errorPages.at(errorCode);
 }
 
-std::map<int, std::string> ServerBlock::getErrorPages() const {
+std::map<int, std::string> ServerBlock::getErrorPages() const
+{
 	return _errorPages;
 }
 
@@ -253,7 +241,7 @@ std::string ServerBlock::getServerName() const
 	return _serverName;
 }
 
-void	ServerBlock::addLocation(const std::string& locationPath, const LocationBlock& location)
+void ServerBlock::addLocation(const std::string &locationPath, const LocationBlock &location)
 {
 	_locations[locationPath] = location;
 }
@@ -291,7 +279,7 @@ void Config::display()
 		std::cout << "Server Port: " << server.getListenPort() << std::endl;
 		std::cout << "Server IP Address: " << server.getListenIpAddress() << std::endl;
 		std::cout << "Server Name: " << server.getServerName() << std::endl;
-		for (const auto& errorPage : server.getErrorPages())
+		for (const auto &errorPage : server.getErrorPages())
 			std::cout << "Server Error Page: " << errorPage.first << " " << errorPage.second << std::endl;
 		std::cout << "Server client max body size: " << server.getClientMaxBodySize() << std::endl;
 		std::cout << "Server Root: " << server.getRoot() << std::endl;
@@ -303,14 +291,14 @@ void Config::display()
 			std::cout << "Location path: " << location.first << std::endl;
 			std::cout << "Location root: " << location.second.getRoot() << std::endl;
 			std::cout << "Location autoindex: " << location.second.getAutoIndex() << std::endl;
-			for (const auto& method : location.second.getAllowedMethods())
+			for (const auto &method : location.second.getAllowedMethods())
 				std::cout << "Location allowed method: " << method << std::endl;
 			std::cout << "Location index: " << location.second.getIndex() << std::endl;
 			std::cout << "Location return: " << location.second.getReturn() << std::endl;
 			std::cout << "Location alias: " << location.second.getAlias() << std::endl;
-			for (const auto& cgi_path : location.second.getCgiPath())
+			for (const auto &cgi_path : location.second.getCgiPath())
 				std::cout << "Location cgi_path: " << cgi_path << std::endl;
-			for (const auto& cgi_ext : location.second.getCgiExt())
+			for (const auto &cgi_ext : location.second.getCgiExt())
 				std::cout << "Location cgi_ext: " << cgi_ext << std::endl;
 		}
 	}

@@ -100,11 +100,8 @@ private:
 	~Config();
 	static Config *instance;
 	static ServerBlock *server_config;
-<<<<<<< HEAD
-=======
 	// Config(const char *file_path) = default;
 	// Config(int argc, char *argv[]) = default;
->>>>>>> 9dd3476 (Add multiprocessed polling)
 
 private:
 	const char *_file_path;
@@ -119,14 +116,10 @@ private:
 
 public:
 	static Config &get();
-<<<<<<< HEAD
 	static void setConfig(ServerBlock *server_block);
 	static ServerBlock &getConfig();
-=======
 	static void setConfig(int port);
-	static ServerBlock &getConfig();
 
->>>>>>> 9dd3476 (Add multiprocessed polling)
 	void parse(const char *file_path);
 	void parse(int argc, char *argv[]);
 	static void destruct();

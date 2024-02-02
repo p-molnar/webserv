@@ -9,6 +9,10 @@ PollManager::PollManager()
 {
 }
 
+PollManager::~PollManager()
+{
+}
+
 // PollManager::PollManager(Config *config_data) : config(config_data)
 // {
 // 	std::cout << "construct PollManager(Config *config_data)" << std::endl;

@@ -13,14 +13,10 @@
 #include <vector>
 #include <map>
 
-
-Config *g_config;
-
 class WebServer : public ServerSocket, public PollManager
 {
 
 private:
-    // Config *config;
     std::vector<std::shared_ptr<ServerSocket>> server_sockets;
     PollManager poll_manager;
 
