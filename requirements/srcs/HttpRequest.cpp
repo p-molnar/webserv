@@ -60,7 +60,6 @@ std::string get_cgi_ext(std::string s)
 
 void HttpRequest::parseRequestUri(const std::string &uri)
 {
-    std::cout << "RAW REQUST" << raw_request << "\n";
     std::vector<std ::string> uri_comps_local = tokenize(uri, QSTR_SEP);
 
     // extract path
