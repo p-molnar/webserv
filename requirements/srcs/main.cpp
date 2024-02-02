@@ -1,6 +1,7 @@
 #include "WebServer.hpp"
 
-Config *Config::instance = nullptr; // singleton design pattern
+Config *Config::instance = nullptr;           // singleton design pattern
+ServerBlock *Config::server_config = nullptr; // singleton design pattern
 
 Config *Config::instance = nullptr;           // singleton design pattern
 ServerBlock *Config::server_config = nullptr; // singleton design pattern

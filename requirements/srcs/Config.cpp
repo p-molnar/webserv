@@ -7,6 +7,7 @@ Config &Config::get()
 	return *instance;
 }
 
+<<<<<<< HEAD
 void Config::setConfig(ServerBlock *server_block)
 {
 	// for (int i = 0; i < Config::get().getServers().size(); i++)
@@ -27,6 +28,21 @@ void Config::setConfig(ServerBlock *server_block)
 	// 	}
 	// }
 	server_config = server_block;
+=======
+void Config::setConfig(int port)
+{
+	if (server_config == nullptr)
+	{
+		for (ServerBlock config : Config::get().getServers())
+		{
+			if (config.getListenPort() == port)
+			{
+				server_config = &config;
+				break;
+			}
+		}
+	}
+>>>>>>> 9dd3476 (Add multiprocessed polling)
 }
 
 ServerBlock &Config::getConfig()
