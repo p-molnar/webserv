@@ -38,9 +38,8 @@ void WebServer::startService()
     }
 
     int status;
-    for (pid_t pid : pids)
+    while (pids.size() > 0)
     {
-        (void)pid;
         pid_t child_pid = SysCall::waitpid(-1, &status, 0);
         if (child_pid > 0)
         {
@@ -49,6 +48,7 @@ void WebServer::startService()
             else
                 Log::logMsg("Child process abnormal exit: " + std::to_string(child_pid));
         }
+        pids.pop_back();
     }
 }
 
