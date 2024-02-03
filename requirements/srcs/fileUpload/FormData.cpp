@@ -62,7 +62,7 @@ std::vector<std::string> FormData::tokenizeFormData(const std::string &data, std
 	std::vector<std::string>::iterator it;
 	for (it = form_data_comps.begin(); it != form_data_comps.end(); it++)
 	{
-		if ((*it).find("Content-Disposition") == NPOS)
+		if (it->find("Content-Disposition") == NPOS)
 			it = form_data_comps.erase(it);
 	}
 	return form_data_comps;
@@ -76,7 +76,6 @@ const std::vector<t_form_data> &FormData::getFormData() const
 FormData::FormData(const std::string &data, const std::map<std::string, std::string> &headers)
 {
 	raw_data = data;
-	// std::cout << "raw form data: " << data << "\n";
 	std::string content_type_field_val = headers.at("Content-Type");
 	const std::string boundary_key = "boundary=";
 	std::size_t boundary_pos = content_type_field_val.find(boundary_key);
@@ -94,7 +93,6 @@ FormData::FormData(const std::string &data, const std::map<std::string, std::str
 			std::vector<std::string> raw_form_comps = tokenize(raw_form_data, TWO_CRLF);
 			if (raw_form_comps.size() != 2)
 				throw std::runtime_error("form parse error\n");
-			// std::cout << "|" << raw_form_data << "|\n";
 
 			t_form_overhead overhead = parseFormOverhead(raw_form_comps[0]);
 			std::string payload = raw_form_comps[1];
@@ -111,7 +109,6 @@ FormData::FormData(const std::string &data, const std::map<std::string, std::str
 				std::cout << cd.first << ": " << cd.second << "\n";
 			}
 			std::cout << "content_type: " << overhead.content_type << "\n\n";
-			// std::cout << "payload: " << payload << '\n';
 
 			form_data.push_back((t_form_data){overhead, payload});
 		}

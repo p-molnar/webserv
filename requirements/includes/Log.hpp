@@ -7,6 +7,8 @@
 #include <ctime>
 #include <cstdio>
 
+#include "Config.hpp"
+
 enum e_fd_id
 {
 	FD_UNDEF = -2

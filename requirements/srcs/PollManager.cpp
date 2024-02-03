@@ -13,11 +13,6 @@ PollManager::~PollManager()
 {
 }
 
-// PollManager::PollManager(Config *config_data) : config(config_data)
-// {
-// 	std::cout << "construct PollManager(Config *config_data)" << std::endl;
-// }
-
 void PollManager::addSocket(std::shared_ptr<Socket> socket)
 {
 	pfds.push_back(socket->getPfd());

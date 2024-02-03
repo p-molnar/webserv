@@ -60,10 +60,10 @@ std::string HttpRequest::getCgiExtension(const std::string &s)
 
 void HttpRequest::parseRequestType()
 {
-    if (!uri_comps.executable_name.empty())
-        request_type = EXECUTABLE;
-    else if (uri_comps.www_path.back() == '/')
+    if (uri_comps.www_path.back() == '/')
         request_type = DIRECTORY;
+    else if (!uri_comps.executable_name.empty())
+        request_type = EXECUTABLE;
     else
         request_type = RESOURCE;
 }
@@ -108,9 +108,11 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     // determine if the requested cgi is accepted, and if so what type of cgi it is
 
     std::string cgi_ext;
-    if (!(cgi_ext = getCgiExtension(uri_comps.path)).empty())
+    if ((cgi_ext = getCgiExtension(uri_comps.path)).empty() == false)
     {
+        // populate executable name from file path
         uri_comps.executable_name = getExecutableName(cgi_ext, uri_comps.path);
+
         // extract path_info
         std::size_t qstr_sep_pos = uri.find(QSTR_SEP);
         std::size_t path_info_start = uri.find(uri_comps.executable_name) + uri_comps.executable_name.length();
@@ -137,6 +139,9 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
         {
             std::string raw_request_line = raw_request.substr(0, clrf_pos);
             parseRequestLine(raw_request_line);
+            parseRequestUri(request_line.at("request_uri"));
+            parseRequestType();
+
             request_line_parse_status = COMPLETE;
         }
     }
@@ -148,6 +153,7 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
         {
             std::string raw_headers = raw_request.substr(clrf_pos, dbl_clrf_pos - clrf_pos);
             parseHeaders(raw_headers);
+
             request_headers_parse_status = COMPLETE;
         }
     }
@@ -174,6 +180,7 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
             request_msg_body_parse_status = NA;
         }
     }
+
     return (request_line_parse_status == COMPLETE &&
             request_headers_parse_status == COMPLETE &&
             (request_msg_body_parse_status == NA ||
@@ -193,8 +200,6 @@ void HttpRequest::parseRequestLine(const std::string &raw_request)
     request_line["method"] = *curr_field++;
     request_line["request_uri"] = *curr_field++;
     request_line["http_version"] = *curr_field++;
-
-    parseRequestUri(request_line.at("request_uri"));
 }
 
 void HttpRequest::parseMessageBody(const std::string &raw_request)
@@ -224,21 +229,6 @@ void HttpRequest::parseHeaders(const std::string &raw_request_headers)
 
         request_headers[key] = value;
     }
-}
-
-t_uri_comps HttpRequest::getUriComps() const
-{
-    return uri_comps;
-}
-
-std::string HttpRequest::getRequestLineComp(const std::string &key) const
-{
-    return request_line.at(key);
-}
-
-std::string HttpRequest::getHeaderComp(const std::string &key) const
-{
-    return request_headers.at(key);
 }
 
 void HttpRequest::printParsedContent() const
@@ -292,17 +282,4 @@ void HttpRequest::flushBuffers()
     uri_comps.executable_name.erase();
     uri_comps.path_info.erase();
     uri_comps.query_str.erase();
-}
-
-bool HttpRequest::isParsed() const
-{
-    return (request_line_parse_status == COMPLETE &&
-            request_headers_parse_status == COMPLETE &&
-            (request_msg_body_parse_status == NA ||
-             request_msg_body_parse_status == COMPLETE));
-}
-
-const FormData &HttpRequest::getFormDataObj() const
-{
-    return form_data;
 }

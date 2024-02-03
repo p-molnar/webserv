@@ -11,7 +11,6 @@ WebServer::WebServer(){};
 
 void WebServer::startService()
 {
-    Log::logMsg("Server started");
 
     std::vector<pid_t> pids;
     for (ServerBlock config : Config::get().getServers())
@@ -19,14 +18,15 @@ void WebServer::startService()
         int port = config.getListenPort();
         int backlog = 10;
 
-        // pid_t pid = SysCall::fork();
-        pid_t pid = fork();
+        pid_t pid = SysCall::fork();
+        // pid_t pid = fork();
         if (pid == 0)
         {
             try
             {
                 Config::setConfig(&config);
                 std::shared_ptr<ServerSocket> server_socket = std::shared_ptr<ServerSocket>(new ServerSocket());
+                Log::logMsg("Server started");
                 server_socket->createSocket();
                 server_socket->bindPort(port);
                 server_socket->listenPort(backlog, port);
@@ -47,9 +47,8 @@ void WebServer::startService()
     }
 
     int status;
-    for (pid_t pid : pids)
+    while (pids.size() > 0)
     {
-        (void)pid;
         pid_t child_pid = SysCall::waitpid(-1, &status, 0);
         if (child_pid > 0)
         {
@@ -57,6 +56,7 @@ void WebServer::startService()
                 Log::logMsg("Child process exit: " + std::to_string(WEXITSTATUS(status)));
             else
                 Log::logMsg("Child process abnormal exit: " + std::to_string(child_pid));
+            pids.pop_back();
         }
     }
 }

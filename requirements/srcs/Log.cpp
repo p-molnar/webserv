@@ -8,8 +8,8 @@ const std::string Log::getMsec()
 
 	switch (msec.length())
 	{
-		case 1:
-			msec = "0" + msec;
+	case 1:
+		msec = "0" + msec;
 		// case 2:
 		// 	msec = "0" + msec;
 	}
@@ -38,13 +38,15 @@ void Log::logMsg(std::string msg, int fd)
 {
 	std::string log_time = Log::getTime();
 
+	std::string server_name = Config::getConfig().getServerName();
+
 	if (fd == FD_UNDEF)
 	{
-		std::printf("[%s]\t%-4s %s\n", log_time.c_str(), "-", msg.c_str());
+		std::printf("[%s]\t%s\t%-4s %s\n", log_time.c_str(), server_name.c_str(), "-", msg.c_str());
 	}
 	else
 	{
 		std::string s_fd = std::to_string(fd);
-		std::printf("[%s]\t%-4s %s\n", log_time.c_str(), s_fd.c_str(), msg.c_str());
+		std::printf("[%s]\t%s\t%-4s %s\n", log_time.c_str(), server_name.c_str(), s_fd.c_str(), msg.c_str());
 	}
 }
