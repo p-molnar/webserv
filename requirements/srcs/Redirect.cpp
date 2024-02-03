@@ -29,3 +29,13 @@ void Config::parseRedirect(std::string file_path)
 	else
 		std::cout << "Unable to open '" + file_path + "'";
 }
+
+t_redirect Config::applyRedirect(std::string target_path)
+{
+	for (t_redirect redir : redirects)
+	{
+		if (redir.old_path == target_path)
+			return redir;
+	}
+	return (t_redirect){-1, "", ""};
+}

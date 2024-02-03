@@ -97,6 +97,15 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         uri_comps.query_str = uri_comps_local[1];
     }
 
+    // apply redirect
+    t_redirect redir = Config::get().applyRedirect(uri_comps.path);
+
+    if (redir.status_code != -1)
+    {
+        uri_comps.path = redir.new_path;
+        // add redirect status code to response
+    }
+
     // generate www_path based on path
     std::string root = strip(Config::getConfig().getRoot(), "/");
     std::string default_landing_page = strip(Config::getConfig().getIndex(), "/");
@@ -121,8 +130,6 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         else
             uri_comps.path_info = uri.substr(path_info_start);
     }
-
-    parseRequestType();
 }
 
 bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_received)

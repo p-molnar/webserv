@@ -131,6 +131,10 @@ public:
 	void parse(const char *file_path);
 	void parse(int argc, char *argv[]);
 	void parseRedirect(std::string file_path);
+	// std::vector<t_redirect> &getRedirects();
+	t_redirect applyRedirect(std::string target_path);
+
+public:
 	static void destruct();
 	void display();
 	std::vector<ServerBlock> &getServers();
