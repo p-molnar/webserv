@@ -13,6 +13,13 @@
 #define CGRN "\x1B[32m"
 #define DEFAULT_CONFIG_PATH "../default.conf"
 
+typedef struct s_redirect
+{
+	int status_code;
+	std::string old_path;
+	std::string new_path;
+} t_redirect;
+
 bool is_number(std::string s);
 std::string removeSemicolon(const std::string &str);
 
@@ -107,6 +114,7 @@ private:
 	const char *_file_path;
 	std::fstream _config_file;
 	std::vector<ServerBlock> _servers;
+	std::vector<t_redirect> redirects;
 
 	void openFile();
 	void readFile();
@@ -122,6 +130,7 @@ public:
 
 	void parse(const char *file_path);
 	void parse(int argc, char *argv[]);
+	void parseRedirect(std::string file_path);
 	static void destruct();
 	void display();
 	std::vector<ServerBlock> &getServers();

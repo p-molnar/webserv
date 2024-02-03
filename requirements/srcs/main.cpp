@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
     {
         WebServer server;
         Config::get().parse(argc, argv);
+        Config::get().parseRedirect("redirects");
 
         // no need to load a config file anymore, because it is a global class
         // and every function has access to it
