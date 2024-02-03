@@ -29,9 +29,9 @@ void Config::setConfig(ServerBlock *server_block)
 	server_config = server_block;
 }
 
-ServerBlock &Config::getConfig()
+ServerBlock *Config::getConfig()
 {
-	return *server_config;
+	return server_config;
 }
 
 void Config::destruct()

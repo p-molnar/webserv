@@ -38,7 +38,10 @@ void Log::logMsg(std::string msg, int fd)
 {
 	std::string log_time = Log::getTime();
 
-	std::string server_name = Config::getConfig().getServerName();
+	std::string server_name;
+
+	if (Config::getConfig())
+		server_name = Config::getConfig()->getServerName();
 
 	if (fd == FD_UNDEF)
 	{

@@ -5,7 +5,7 @@ std::string RequestProcessor::executeCgi(const t_uri_comps &uri)
 	std::string raw_html;
 	std::string raw_cgi_output;
 
-	std::string cgi_root = Config::getConfig().getLocations().at("/cgi-bin").getRoot();
+	std::string cgi_root = Config::getConfig()->getLocations().at("/cgi-bin").getRoot();
 	std::string exec_path = cgi_root + uri.executable_name;
 	SysCall::access(exec_path, X_OK);
 

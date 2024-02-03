@@ -45,7 +45,7 @@ std::string HttpRequest::getCgiExtension(const std::string &s)
 {
     try
     {
-        for (std::string ext : Config::getConfig().getLocations()["/cgi-bin"].getCgiExt())
+        for (std::string ext : Config::getConfig()->getLocations()["/cgi-bin"].getCgiExt())
         {
             if (s.find(ext) != NPOS)
                 return ext;
@@ -107,8 +107,8 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     }
 
     // generate www_path based on path
-    std::string root = strip(Config::getConfig().getRoot(), "/");
-    std::string default_landing_page = strip(Config::getConfig().getIndex(), "/");
+    std::string root = strip(Config::getConfig()->getRoot(), "/");
+    std::string default_landing_page = strip(Config::getConfig()->getIndex(), "/");
 
     uri_comps.www_path = uri_comps.path == "/"
                              ? root + "/" + default_landing_page

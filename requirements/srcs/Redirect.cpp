@@ -17,9 +17,12 @@ void Config::parseRedirect(std::string file_path)
 
 			if (redir_comps.size() != 3)
 				throw std::runtime_error("parse error on line: '" + line + "'");
+
 			redir.status_code = std::stoi(redir_comps[0]);
+
 			if ((redir.status_code != 301) && (redir.status_code != 302))
 				throw std::runtime_error("parse error: invalid status code");
+
 			redir.old_path = redir_comps[1];
 			redir.new_path = redir_comps[2];
 			redirects.push_back(redir);
