@@ -1,2 +1,2 @@
-301 index.html index2.html
-302 example_page1.html example_page2.html
+301 /foo /bar
+302 /example_page1.html /example_page2.html
