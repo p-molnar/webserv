@@ -11,8 +11,6 @@ template_path = os.path.join(move_up(__file__, 1), "www/bmi_calculator/bmi_resul
 f = open(template_path, "r")
 html_template = f.read()
 
-cgi_fd = int(os.environ["CGI_FD"])
-
 query_params = {k:v for k, v in [val.split("=") for val in os.environ["QUERY_STRING"].split("&")]}
 
 query_params["result"] = int(query_params["weight"]) / (int(query_params["height"]) / 100) ** 2
@@ -20,7 +18,4 @@ query_params["result"] = int(query_params["weight"]) / (int(query_params["height
 for k, v in query_params.items():
     html_template = html_template.replace(f"%{k.upper()}%", str(v))
 
-b_text = str.encode(html_template)
-
-bytes_written = os.write(cgi_fd, b_text)
-print("bytes written: ", bytes_written)
+print(html_template)

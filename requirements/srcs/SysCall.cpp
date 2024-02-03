@@ -213,3 +213,13 @@ std::vector<struct dirent *> SysCall::listdir(DIR *dirp)
 
 	return dirents;
 }
+
+int SysCall::dup2(int oldfd, int newfd)
+{
+	int ret_val = ::dup2(oldfd, newfd);
+
+	if (ret_val == -1)
+		throw std::runtime_error("dup2 error: " + STRERR);
+
+	return ret_val;
+}

@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include <unistd.h>
-#include <sys/socket.h>	
+#include <sys/socket.h>
 #include <fcntl.h>
 #include <poll.h>
 #include <dirent.h>
@@ -14,8 +14,6 @@
 #include <stdexcept>
 #include <sys/types.h>
 #include <sys/wait.h>
-
-
 
 class SysCall
 {
@@ -41,17 +39,8 @@ public:
 	static DIR *opendir(std::string filename);
 	static struct dirent *readdir(DIR *dirp);
 	static std::vector<struct dirent *> listdir(DIR *dirp);
+	static int dup2(int oldfd, int newfd);
 	static int close(int fd);
-
-	// struct dirent
-	// {
-	// 	ino_t d_ino;			 /* Inode number */
-	// 	off_t d_off;			 /* Not an offset; see below */
-	// 	unsigned short d_reclen; /* Length of this record */
-	// 	unsigned char d_type;	 /* Type of file; not supported
-	// 								by all filesystem types */
-	// 	char d_name[256];		 /* Null-terminated filename */
-	// };
 };
 
 #endif

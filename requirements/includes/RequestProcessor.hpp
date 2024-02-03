@@ -6,6 +6,7 @@
 
 #include <string>
 #include <csignal>
+#include <iostream>
 
 #include "errors.hpp"
 #include "consts.hpp"
@@ -13,6 +14,8 @@
 #include "SysCall.hpp"
 #include "HttpRequest.hpp"
 #include "errors.hpp"
+#include "Config.hpp"
+#include "Log.hpp"
 
 class RequestProcessor
 {
