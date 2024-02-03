@@ -41,7 +41,7 @@ std::string HttpRequest::getMessageBody() const
     return request_message_body;
 }
 
-std::string get_cgi_ext(std::string s)
+std::string HttpRequest::getCgiExtension(const std::string &s)
 {
     try
     {
@@ -56,6 +56,28 @@ std::string get_cgi_ext(std::string s)
     {
         return "";
     }
+}
+
+void HttpRequest::parseRequestType()
+{
+    if (!uri_comps.executable_name.empty())
+        request_type = EXECUTABLE;
+    else if (uri_comps.www_path.back() == '/')
+        request_type = DIRECTORY;
+    else
+        request_type = RESOURCE;
+}
+
+std::string HttpRequest::getExecutableName(const std::string &file_extension, const std::string &path)
+{
+    std::vector<std::string> path_comps = tokenize(path, DIR_SEP);
+
+    for (std::string comp : path_comps)
+    {
+        if (comp.find(file_extension) != NPOS)
+            return comp;
+    }
+    return "";
 }
 
 void HttpRequest::parseRequestUri(const std::string &uri)
@@ -86,20 +108,9 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     // determine if the requested cgi is accepted, and if so what type of cgi it is
 
     std::string cgi_ext;
-    if ((cgi_ext = get_cgi_ext(uri_comps.path)) != "")
+    if (!(cgi_ext = getCgiExtension(uri_comps.path)).empty())
     {
-        request_type = EXECUTABLE;
-
-        // extract executable name
-        for (std::string comp : tokenize(uri_comps.path, DIR_SEP))
-        {
-            if (comp.find(cgi_ext) != NPOS)
-            {
-                uri_comps.executable_name = comp;
-                break;
-            }
-        }
-
+        uri_comps.executable_name = getExecutableName(cgi_ext, uri_comps.path);
         // extract path_info
         std::size_t qstr_sep_pos = uri.find(QSTR_SEP);
         std::size_t path_info_start = uri.find(uri_comps.executable_name) + uri_comps.executable_name.length();
@@ -108,10 +119,8 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         else
             uri_comps.path_info = uri.substr(path_info_start);
     }
-    else if (uri_comps.www_path.back() == '/')
-        request_type = DIRECTORY;
-    else
-        request_type = RESOURCE;
+
+    parseRequestType();
 }
 
 bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_received)
@@ -149,14 +158,8 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
         {
             std::size_t content_length = atoi(getHeaderComp("Content-Length").c_str());
 
-            // if (content_length > config.allowedUploadSize)
-            // throw file too large exception
-
             std::size_t msg_body_start = dbl_clrf_pos + TWO_CRLF.length();
             std::string raw_msg_body = raw_request.substr(msg_body_start);
-
-            // std::cout << "exp content_lenght: " << content_length << '\n';
-            // std::cout << "content_lenght: " << raw_msg_body.length() << '\n';
 
             if (content_length != raw_msg_body.length())
                 request_msg_body_parse_status = INCOMPLETE;
@@ -189,8 +192,9 @@ void HttpRequest::parseRequestLine(const std::string &raw_request)
 
     request_line["method"] = *curr_field++;
     request_line["request_uri"] = *curr_field++;
-    parseRequestUri(request_line.at("request_uri"));
     request_line["http_version"] = *curr_field++;
+
+    parseRequestUri(request_line.at("request_uri"));
 }
 
 void HttpRequest::parseMessageBody(const std::string &raw_request)
@@ -252,25 +256,25 @@ void HttpRequest::printParsedContent() const
     std::cout << "query_string: |" << uri_comps.query_str << "|" << '\n';
     std::cout << "request type: " << request_type << '\n';
 
-    for (std::pair<std::string, std::string> line : request_line)
-    {
-        std::cout << line.first;
-        std::cout << ": ";
-        std::cout << line.second;
-        std::cout << " ";
-    }
-    std::cout << '\n';
+    // for (std::pair<std::string, std::string> line : request_line)
+    // {
+    //     std::cout << line.first;
+    //     std::cout << ": ";
+    //     std::cout << line.second;
+    //     std::cout << " ";
+    // }
+    // std::cout << '\n';
 
-    for (std::pair<std::string, std::string> header : request_headers)
-    {
-        std::cout << header.first;
-        std::cout << ": ";
-        std::cout << header.second;
-        std::cout << "\n";
-    }
+    // for (std::pair<std::string, std::string> header : request_headers)
+    // {
+    //     std::cout << header.first;
+    //     std::cout << ": ";
+    //     std::cout << header.second;
+    //     std::cout << "\n";
+    // }
 
-    std::cout << "\n\n";
-    std::cout << request_message_body << '\n';
+    // std::cout << "\n\n";
+    // std::cout << request_message_body << '\n';
 }
 
 void HttpRequest::flushBuffers()

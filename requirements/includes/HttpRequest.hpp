@@ -79,6 +79,9 @@ private:
     void parseRequestUri(const std::string &uri);
     void parseHeaders(const std::string &raw_request);
     void parseMessageBody(const std::string &raw_request);
+    std::string getCgiExtension(const std::string &s);
+    void parseRequestType();
+    std::string getExecutableName(const std::string &file_extension, const std::string &path);
 
 public:
     std::string getRequestLineComp(const std::string &request_line_el) const;
