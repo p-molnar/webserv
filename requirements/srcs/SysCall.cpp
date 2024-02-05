@@ -182,10 +182,12 @@ int SysCall::open(const char *path, int oflag, int permission_flags)
 	return ret_val;
 }
 
+#include <iostream>
+
 DIR *SysCall::opendir(std::string filename)
 {
 	DIR *dir_stream = ::opendir(filename.c_str());
-
+	std::cout << "fname: " << filename << "\n";
 	if (dir_stream == NULL)
 		throw std::runtime_error("opendir error: " + STRERR);
 

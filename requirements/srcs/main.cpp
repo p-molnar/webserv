@@ -5,6 +5,9 @@ ServerBlock *Config::server_config = nullptr; // singleton design pattern
 
 int main(int argc, char *argv[])
 {
+	// Config config(argc, argv);
+	// config.display();	// temp for testing
+
     try
     {
         WebServer server;

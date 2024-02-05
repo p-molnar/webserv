@@ -2,7 +2,9 @@
 #define HTTPSTATUS_HPP
 
 #include <string>
+#include <exception>
 #include <unordered_map>
+#include <stdexcept>
 
 enum class statusCode
 {
@@ -30,15 +32,28 @@ enum class statusCode
 };
 
 class httpStatus {
+
+	class httpStatusException : public std::runtime_error 
+	{
+		public:
+			httpStatusException(statusCode code) : std::runtime_error(getStatusLine(code)), _code(code) {};
+			statusCode code() const {return _code;}
+			const char* what() const noexcept override {
+				auto it = _message.find(_code);
+				if (it != _message.end())
+					return it->second.c_str();
+				else
+					return "HTTP Status Exception";
+			}
+		private:
+			statusCode _code;
+
+	};
 	private:
-		statusCode _statusCode;
 		static std::unordered_map<statusCode, std::string> _message;
 
 	public:
-		httpStatus(statusCode statuscode) : _statusCode(statuscode) {};
-		~httpStatus() {};
-
-		std::string getStatusLine() const;
+		static std::string getStatusLine(statusCode code);
 };
 
 #endif

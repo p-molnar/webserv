@@ -130,6 +130,10 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         else
             uri_comps.path_info = uri.substr(path_info_start);
     }
+    else if (uri_comps.path.length() > 1 && request_type != EXECUTABLE)
+        request_type = RESOURCE;
+    else
+        request_type = UNDEF;
 }
 
 bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_received)
@@ -289,4 +293,22 @@ void HttpRequest::flushBuffers()
     uri_comps.executable_name.erase();
     uri_comps.path_info.erase();
     uri_comps.query_str.erase();
+}
+
+// bool HttpRequest::isParsed() const
+// {
+//     return (request_line_parse_status == COMPLETE &&
+//             request_headers_parse_status == COMPLETE &&
+//             (request_msg_body_parse_status == NA ||
+//              request_msg_body_parse_status == COMPLETE));
+// }
+
+// const FormData &HttpRequest::getFormDataObj() const
+// {
+//     return form_data;
+// }
+
+e_request_type HttpRequest::getType() const
+{
+    return request_type;
 }

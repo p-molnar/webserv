@@ -106,8 +106,8 @@ void PollManager::HandlePollOutEvent(std::shared_ptr<Socket> curr_socket)
 		{
 			router.routeRequest(client_socket->getRequest(), client_socket->getResponse());
 			client_socket->sendResponse();
-			if (shouldCloseConnection(client_socket)) // REFACTOR CONNECTION STATUS / HANDLING
-				removeSocket(client_socket->getFd());
+			// if (shouldCloseConnection(client_socket)) // REFACTOR CONNECTION STATUS / HANDLING
+			// 	removeSocket(client_socket->getFd());
 		}
 		catch (const ClientSocket::HungUpException &e)
 		{
