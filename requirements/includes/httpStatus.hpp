@@ -50,10 +50,11 @@ class httpStatus {
 
 	};
 	private:
-		static std::unordered_map<statusCode, std::string> _message;
 
 	public:
+		static std::unordered_map<statusCode, std::string> _message;
 		static std::string getStatusLine(statusCode code);
+		static std::string generateErrResponse(statusCode code);
 };
 
 #endif
