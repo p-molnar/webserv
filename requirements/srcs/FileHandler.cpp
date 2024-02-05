@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/05 10:04:57 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/05 13:47:23 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void     handleGetRequest(const HttpRequest *req, HttpResponse *res)
         file_path += ".html";
     }
     if (!fileHandler::fileExists(file_path) && req->getType() != EXECUTABLE) {
-        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::NotFound), 
+        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found), 
             fileHandler::readFileContent(root_dir + "/error.html"));
         return ;
     }

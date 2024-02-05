@@ -37,6 +37,7 @@ void WebServer::startService()
             catch (const std::exception &e)
             {
                 std::cerr << e.what() << '\n';
+                //httpStatus::generateErrResponse(statusCode::internal_server_error);
                 exit(EXIT_FAILURE); // rewrite with another function
             }
         }

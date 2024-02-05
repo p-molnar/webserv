@@ -9,26 +9,26 @@
 enum class statusCode
 {
 	OK = 200,
-	Created = 201,
-	Accepted = 202,
-	NoContent = 204,
-	Found = 302,
-	NotModified = 304,
-	BadRequest = 400,
-	UnAuthorized = 401,
-	Forbidden = 403,
-	NotFound = 404,
-	MethodNotAllowed = 405,
-	RequestTimeout = 408,
-	LengthRequired = 411,
-	PayloadToLarge = 413,
-	URIToLong = 414,
-	UnsupportedMediaType = 415,
-	InternalServerError = 500,
-	NotImplemented = 501,
-	BadGateway = 502,
-	ServiceUnavailable = 503,
-	GatewayTimeout = 504
+	created = 201,
+	accepted = 202,
+	no_content = 204,
+	temp_redir = 302,
+	not_modified = 304,
+	bad_request = 400,
+	unauthorized = 401,
+	forbidden = 403,
+	not_found = 404,
+	method_not_allowed = 405,
+	request_timeout = 408,
+	length_required = 411,
+	payload_too_large = 413,
+	uri_too_long = 414,
+	unsupported_type = 415,
+	internal_server_error = 500,
+	not_implemented = 501,
+	bad_gateway = 502,
+	service_unavailable = 503,
+	gateway_timeout = 504
 };
 
 class httpStatus {
@@ -50,10 +50,11 @@ class httpStatus {
 
 	};
 	private:
-		static std::unordered_map<statusCode, std::string> _message;
 
 	public:
+		static std::unordered_map<statusCode, std::string> _message;
 		static std::string getStatusLine(statusCode code);
+		static std::string generateErrResponse(statusCode code);
 };
 
 #endif
