@@ -143,6 +143,8 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
 
     raw_request += std::string(raw_request_data, bytes_received);
 
+    std::cout << "raw_request\n" << raw_request << "\nend raw_request" << std::endl; // Todo comment out
+
     if (request_line_parse_status == INCOMPLETE)
     {
         clrf_pos = raw_request.find(CRLF);
@@ -237,7 +239,8 @@ void HttpRequest::parseHeaders(const std::string &raw_request_headers)
 
         std::string key = header_parts[0];
         std::string value = header_parts[1];
-
+        if (key == "Cookie") // Todo check if this is correct
+            cookie = value;
         request_headers[key] = value;
     }
 }
@@ -256,6 +259,7 @@ void HttpRequest::printParsedContent() const
     std::cout << "path_info: |" << uri_comps.path_info << "|" << '\n';
     std::cout << "query_string: |" << uri_comps.query_str << "|" << '\n';
     std::cout << "request type: " << request_type << '\n';
+    std::cout << "cookie: |" << cookie << "|\n";
 
     // for (std::pair<std::string, std::string> line : request_line)
     // {

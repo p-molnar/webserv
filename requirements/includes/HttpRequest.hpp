@@ -58,6 +58,7 @@ private:
 private:
     std::string raw_request;
     t_uri_comps uri_comps;
+    std::string cookie;
     std::map<std::string, std::string> request_line;
     std::map<std::string, std::string> request_headers;
     std::string request_message_body;

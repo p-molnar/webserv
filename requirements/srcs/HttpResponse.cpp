@@ -68,6 +68,7 @@ std::string    HttpResponse::generateResponse(bool includeBody)
     response += _statusLine;
     if (includeBody)
     {
+        setHeaders("Set-Cookie", "my_cookie=42"); // Todo cooie
         setHeaders("Content-Length", std::to_string(_body.size()));
         setHeaders("Content-Type", "text/html");
     }
