@@ -223,6 +223,20 @@ void HttpRequest::parseMessageBody(const std::string &raw_request)
     }
 }
 
+std::map<std::string, std::string> getCookies(std::string cookieLine)
+{
+    std::map<std::string, std::string> cookies;
+    std::vector<std::string> cookie_comps = tokenize(cookieLine, ";");
+
+    for (std::string cookie_comp : cookie_comps)
+    {
+        std::vector<std::string> cookie_key_val = tokenize(cookie_comp, "=");
+        if (cookie_key_val.size() == 2)
+            cookies[strip(cookie_key_val[0], WHTSPC)] = strip(cookie_key_val[1], WHTSPC);
+    }
+    return cookies;
+}
+
 void HttpRequest::parseHeaders(const std::string &raw_request_headers)
 {
 
@@ -239,8 +253,8 @@ void HttpRequest::parseHeaders(const std::string &raw_request_headers)
 
         std::string key = header_parts[0];
         std::string value = header_parts[1];
-        if (key == "Cookie") // Todo check if this is correct
-            cookie = value;
+        if (key == "Cookie")
+            cookies = getCookies(value);
         request_headers[key] = value;
     }
 }
@@ -259,7 +273,8 @@ void HttpRequest::printParsedContent() const
     std::cout << "path_info: |" << uri_comps.path_info << "|" << '\n';
     std::cout << "query_string: |" << uri_comps.query_str << "|" << '\n';
     std::cout << "request type: " << request_type << '\n';
-    std::cout << "cookie: |" << cookie << "|\n";
+    for (std::pair<std::string, std::string> cookie : cookies)
+        std::cout << "cookie: |" << cookie.first << "| = |" << cookie.second << "|\n";
 
     // for (std::pair<std::string, std::string> line : request_line)
     // {

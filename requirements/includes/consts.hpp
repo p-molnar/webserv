@@ -15,6 +15,7 @@
 #define QPARAM_KV_SEP std::string("=")	 // query param's key-value separator
 #define SEMICOL std::string(";")
 #define WHTSPC std::string(" \r\n\t")
+#define CHARSET std::string("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 
 #define NPOS std::string::npos
 
