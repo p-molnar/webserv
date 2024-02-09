@@ -143,6 +143,8 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
 
     raw_request += std::string(raw_request_data, bytes_received);
 
+    std::cout << "raw_request\n" << CGRY << raw_request << NC << "\nend raw_request" << std::endl; // Todo comment out
+
     if (request_line_parse_status == INCOMPLETE)
     {
         clrf_pos = raw_request.find(CRLF);
@@ -221,11 +223,36 @@ void HttpRequest::parseMessageBody(const std::string &raw_request)
     }
 }
 
+std::map<std::string, std::string> getCookies(std::string cookieLine)
+{
+    std::map<std::string, std::string> cookies;
+    std::vector<std::string> cookie_comps = tokenize(cookieLine, ";");
+
+    for (std::string cookie_comp : cookie_comps)
+    {
+        std::vector<std::string> cookie_key_val = tokenize(cookie_comp, "=");
+        if (cookie_key_val.size() == 2)
+            cookies[strip(cookie_key_val[0], WHTSPC)] = strip(cookie_key_val[1], WHTSPC);
+    }
+    return cookies;
+}
+
+bool HttpRequest::hadSessionId() const
+{
+    for (std::pair<std::string, std::string> cookie : cookies)
+    {
+        if (cookie.first == "sessionID")
+            return true;
+    }
+    return false;
+}
+
 void HttpRequest::parseHeaders(const std::string &raw_request_headers)
 {
 
     std::vector<std::string> headers = tokenize(raw_request_headers, CRLF);
 
+    cookies.clear();
     for (size_t i = 0; i < headers.size(); i++)
     {
         if (headers[i].size() == 0)
@@ -237,7 +264,8 @@ void HttpRequest::parseHeaders(const std::string &raw_request_headers)
 
         std::string key = header_parts[0];
         std::string value = header_parts[1];
-
+        if (key == "Cookie")
+            cookies = getCookies(value);
         request_headers[key] = value;
     }
 }
@@ -256,6 +284,8 @@ void HttpRequest::printParsedContent() const
     std::cout << "path_info: |" << uri_comps.path_info << "|" << '\n';
     std::cout << "query_string: |" << uri_comps.query_str << "|" << '\n';
     std::cout << "request type: " << request_type << '\n';
+    for (std::pair<std::string, std::string> cookie : cookies)
+        std::cout << "cookie: |" << cookie.first << "| = |" << CGRN << cookie.second << NC << "|\n";
 
     // for (std::pair<std::string, std::string> line : request_line)
     // {

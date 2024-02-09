@@ -58,6 +58,7 @@ private:
 private:
     std::string raw_request;
     t_uri_comps uri_comps;
+    std::map<std::string, std::string> cookies;
     std::map<std::string, std::string> request_line;
     std::map<std::string, std::string> request_headers;
     std::string request_message_body;
@@ -91,7 +92,8 @@ public:
     e_request_type getType() const;
     const FormData &getFormDataObj() const;
     bool isParsed() const;
-};
+    bool hadSessionId() const;
+    };
 
 std::ostream &operator<<(std::ostream &os, const HttpRequest &obj);
 

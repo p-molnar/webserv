@@ -60,12 +60,38 @@ std::string HttpResponse::getHeader(const std::string &headerName) const
     return _headers.at(headerName);
 }
 
-std::string    HttpResponse::generateResponse(bool includeBody)
+std::string setCookie(const std::string &cookie_name, const std::string &cookie_value, const std::string &path)
+{
+    if (path == "")
+        return "Set-Cookie: " + cookie_name + "=" + cookie_value + "; Secure; HttpOnly" + CRLF;
+    else
+        return "Set-Cookie: " + cookie_name + "=" + cookie_value  + "; Path=" + path + "; Secure; HttpOnly" + CRLF;
+}
+
+std::string generateSessionID(int length)
+{
+    std::string result;
+
+    srand(time(nullptr));
+    result.reserve(length);
+    for (int i = 0; i < length; ++i) {
+        result += CHARSET[rand() % CHARSET.length()];
+    }
+    return result;
+}
+
+std::string    HttpResponse::generateResponse(HttpRequest &request, bool includeBody)
 {
     Log::logMsg("Response generated, ready to sent");
     std::string response;
 
     response += _statusLine;
+    // if sesionID cookie is not set, set it
+    if (!request.hadSessionId())
+        response += setCookie("sessionID", generateSessionID(64), "/");
+    // response += setCookie("all", "Hello cookie world!", "");
+    // response += setCookie("bmi", "bmi calculator", "/bmi_calculator");
+    // response += setCookie("Error", "ERROR", "/error");
     if (includeBody)
     {
         setHeaders("Content-Length", std::to_string(_body.size()));

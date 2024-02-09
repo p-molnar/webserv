@@ -41,7 +41,9 @@ public:
     std::string getHeader(const std::string &headerName) const;
 
     static HttpResponse generateResponse2(HttpRequest &request);
-    std::string    generateResponse(bool includeBody);
+    // std::string    generateResponse(bool includeBody);
+    std::string    generateResponse(HttpRequest &request, bool includeBody);
+
 };
 
 #endif

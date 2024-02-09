@@ -11,6 +11,7 @@
 #define NC "\x1B[0m"
 #define CRED "\x1B[31m"
 #define CGRN "\x1B[32m"
+#define CGRY "\x1B[90m"
 #define DEFAULT_CONFIG_PATH "../default.conf"
 
 typedef struct s_redirect
