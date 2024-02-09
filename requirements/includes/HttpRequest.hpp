@@ -92,7 +92,8 @@ public:
     e_request_type getType() const;
     const FormData &getFormDataObj() const;
     bool isParsed() const;
-};
+    bool hadSessionId() const;
+    };
 
 std::ostream &operator<<(std::ostream &os, const HttpRequest &obj);
 

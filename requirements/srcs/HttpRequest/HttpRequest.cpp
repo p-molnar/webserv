@@ -143,7 +143,7 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
 
     raw_request += std::string(raw_request_data, bytes_received);
 
-    std::cout << "raw_request\n" << raw_request << "\nend raw_request" << std::endl; // Todo comment out
+    std::cout << "raw_request\n" << CGRY << raw_request << NC << "\nend raw_request" << std::endl; // Todo comment out
 
     if (request_line_parse_status == INCOMPLETE)
     {
@@ -237,11 +237,22 @@ std::map<std::string, std::string> getCookies(std::string cookieLine)
     return cookies;
 }
 
+bool HttpRequest::hadSessionId() const
+{
+    for (std::pair<std::string, std::string> cookie : cookies)
+    {
+        if (cookie.first == "sessionID")
+            return true;
+    }
+    return false;
+}
+
 void HttpRequest::parseHeaders(const std::string &raw_request_headers)
 {
 
     std::vector<std::string> headers = tokenize(raw_request_headers, CRLF);
 
+    cookies.clear();
     for (size_t i = 0; i < headers.size(); i++)
     {
         if (headers[i].size() == 0)
@@ -274,7 +285,7 @@ void HttpRequest::printParsedContent() const
     std::cout << "query_string: |" << uri_comps.query_str << "|" << '\n';
     std::cout << "request type: " << request_type << '\n';
     for (std::pair<std::string, std::string> cookie : cookies)
-        std::cout << "cookie: |" << cookie.first << "| = |" << cookie.second << "|\n";
+        std::cout << "cookie: |" << cookie.first << "| = |" << CGRN << cookie.second << NC << "|\n";
 
     // for (std::pair<std::string, std::string> line : request_line)
     // {

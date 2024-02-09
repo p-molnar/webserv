@@ -40,9 +40,10 @@ void ClientSocket::sendResponse()
     {
         return;
     }
-    std::string _response = response.generateResponse(true);
-    std::cout << _response << std::endl; // Todo commend out
-    std::cout << _response.size() << std::endl; // Todo commend out
+    std::string _response = response.generateResponse(request, true);
+    std::cout << "raw response: " << std::endl; // Todo commend out
+    std::cout << CGRY << _response << NC << std::endl; // Todo commend out
+    std::cout << "end raw response" << std::endl; // Todo commend out
     int bytes_sent = send(fd, _response.c_str(), _response.size(), 0);
     if (bytes_sent < 0)
     {

@@ -80,17 +80,18 @@ std::string generateSessionID(int length)
     return result;
 }
 
-std::string    HttpResponse::generateResponse(bool includeBody)
+std::string    HttpResponse::generateResponse(HttpRequest &request, bool includeBody)
 {
     Log::logMsg("Response generated, ready to sent");
     std::string response;
 
     response += _statusLine;
     // if sesionID cookie is not set, set it
-    response += setCookie("sessionID", generateSessionID(16), "/");
-    response += setCookie("all", "Hello cookie world!", "");
-    response += setCookie("bmi", "bmi calculator", "/bmi_calculator");
-    response += setCookie("Error", "ERROR", "/error");
+    if (!request.hadSessionId())
+        response += setCookie("sessionID", generateSessionID(64), "/");
+    // response += setCookie("all", "Hello cookie world!", "");
+    // response += setCookie("bmi", "bmi calculator", "/bmi_calculator");
+    // response += setCookie("Error", "ERROR", "/error");
     if (includeBody)
     {
         setHeaders("Content-Length", std::to_string(_body.size()));
