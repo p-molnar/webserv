@@ -19,7 +19,6 @@ void WebServer::startService()
         int backlog = 10;
 
         pid_t pid = SysCall::fork();
-        // pid_t pid = fork();
         if (pid == 0)
         {
             try
@@ -37,7 +36,6 @@ void WebServer::startService()
             catch (const std::exception &e)
             {
                 std::cerr << e.what() << '\n';
-                //httpStatus::generateErrResponse(statusCode::internal_server_error);
                 exit(EXIT_FAILURE); // rewrite with another function
             }
         }

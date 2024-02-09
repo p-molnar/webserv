@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/05 13:47:23 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/09 11:35:09 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ std::string fileHandler::readFileContent(const std::string& file_path)
     std::ifstream fileStream(file_path);
     if (!fileStream.is_open())
         throw std::runtime_error("Failed to open file " + file_path);
-    
     return std::string(std::istreambuf_iterator<char>(fileStream), std::istreambuf_iterator<char>());
 }
 
@@ -82,7 +81,6 @@ void     handlePostRequest(const HttpRequest *req, HttpResponse *res)
 {
     Log::logMsg("Handling POST request");
     std::string file_path = req->getUriComps().path;
-    std::cout << file_path << std::endl;
     RequestProcessor::uploadFiles(req->getFormDataObj());
     res->setStatusLine(httpStatus::getStatusLine(statusCode::OK));
 }

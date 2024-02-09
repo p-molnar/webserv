@@ -77,7 +77,6 @@ void PollManager::processEvents()
         {
             auto fd = pfd.fd;
             auto& curr_socket = sockets[fd];
-
             if (pfd.revents & (POLLIN | POLLHUP))
             {
                 Log::logMsg("POLLIN event");
