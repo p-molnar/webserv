@@ -50,15 +50,13 @@ void     handleGetRequest(const HttpRequest *req, HttpResponse *res)
 {
     Log::logMsg("Handling GET request");
 
-    const std::string root_dir = "srv/www";
-    std::string file_path = req->getUriComps().path;
-
+    const std::string root_dir = Config::getConfig()->getRoot();
+    std::string file_path = req->getUriComps().www_path;
     if (file_path.find(".py") != std::string::npos)
     {
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK),
             RequestProcessor::executeCgi(req->getUriComps()));
     }
-    file_path = file_path.empty() || file_path == "/" ? root_dir : root_dir + file_path;
     if (file_path.find(".") == std::string::npos && req->getType() == RESOURCE && !fileHandler::isDirectory(file_path)) {
         file_path += ".html";
     }

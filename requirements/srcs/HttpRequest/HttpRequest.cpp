@@ -143,7 +143,7 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
 
     raw_request += std::string(raw_request_data, bytes_received);
 
-    std::cout << "raw_request\n" << CGRY << raw_request << NC << "\nend raw_request" << std::endl; // Todo comment out
+    std::cout << CGRY << raw_request << NC << std::endl; // Todo comment out
 
     if (request_line_parse_status == INCOMPLETE)
     {
@@ -285,7 +285,7 @@ void HttpRequest::printParsedContent() const
     std::cout << "query_string: |" << uri_comps.query_str << "|" << '\n';
     std::cout << "request type: " << request_type << '\n';
     for (std::pair<std::string, std::string> cookie : cookies)
-        std::cout << "cookie: |" << cookie.first << "| = |" << CGRN << cookie.second << NC << "|\n";
+        std::cout << "cookie: |" << cookie.first << "| = |" << cookie.second << "|\n";
 
     // for (std::pair<std::string, std::string> line : request_line)
     // {
