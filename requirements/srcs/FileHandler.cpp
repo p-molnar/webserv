@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/16 13:41:34 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/16 14:07:34 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <sys/stat.h>
 #include <cstdio>
 
+namespace fs = std::filesystem;
 
 #define ERROR "<html><body><h1>404 Not Found</h1></body></html>"
 
@@ -28,6 +29,30 @@ bool fileHandler::isValidPath(std::string& file_path)
 {
     return std::filesystem::exists(file_path);
 }
+
+
+fs::path getAbsolutePath(const std::string& file_path_input, const std::string& root_input) 
+{
+    std::string file_path = file_path_input;
+    if (!file_path.empty() && file_path[0] == '/')
+        file_path.erase(0, 1);
+
+    std::string root = root_input;
+    if (!root.empty() && root.back() == '/')
+        root.pop_back();
+
+    if (file_path.substr(0, root.length()) == root) {
+        file_path = file_path.substr(root.length());
+        if (!file_path.empty() && file_path[0] == '/')
+            file_path.erase(0, 1);
+    }
+
+    fs::path cwd = fs::current_path();
+    fs::path absolute_path = cwd / root / file_path;
+
+    return absolute_path;
+}
+
 
 bool fileHandler::deleteResource(const std::string& file_path) 
 {
@@ -111,23 +136,18 @@ void     handlePostRequest(const HttpRequest *req, HttpResponse *res)
 
 void handleDeleteRequest(const HttpRequest *req, HttpResponse *res) 
 {
-    std::string file_path = req->getUriComps().path;
-    if (!file_path.empty() && file_path[0] == '/') // absolute path does not concatenate with '/' as fist occurence in str
-        file_path.erase(0, 1);
-
-    std::filesystem::path cwd = std::filesystem::current_path();
-    std::filesystem::path root_path(Config::getConfig()->getRoot());
-    std::filesystem::path relative_path(file_path);
-    std::filesystem::path absolute_path = cwd / root_path / relative_path;
+    fs::path absolute_path = getAbsolutePath
+        (req->getUriComps().path, Config::getConfig()->getRoot());
     try {
         if (std::filesystem::exists(absolute_path)) {
             fileHandler::deleteResource(absolute_path.string());
             res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), "");
         } else {
-            throw std::runtime_error("File not found: " + file_path);
+            throw std::runtime_error("File not found: " + absolute_path.string());
         }
     } catch (const std::runtime_error& e) {
         std::cerr << e.what() << '\n';
-        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found), "<html><body><h1>" + httpStatus::_message.at(statusCode::not_found) + "</h1></body></html>");
+        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found),
+            "<html><body><h1>" + httpStatus::_message.at(statusCode::not_found) + "</h1></body></html>");
     }
 }
