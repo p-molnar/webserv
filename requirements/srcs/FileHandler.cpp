@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/16 10:16:06 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/16 13:41:34 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,25 +19,32 @@
 #include "Log.hpp"
 #include "RequestProcessor.hpp"
 #include <sys/stat.h>
+#include <cstdio>
+
 
 #define ERROR "<html><body><h1>404 Not Found</h1></body></html>"
 
 bool fileHandler::isValidPath(std::string& file_path)
 {
-    struct stat buffer;
-    return (stat(file_path.c_str(), &buffer) == 0);
+    return std::filesystem::exists(file_path);
 }
 
-bool fileHandler::deleteResource(const std::string& file_path)
+bool fileHandler::deleteResource(const std::string& file_path) 
 {
+    Log::logMsg("Handling DELETE request");
+
     try {
-        return std::filesystem::remove(file_path);
-    }
+        std::filesystem::remove_all(file_path);
+    } 
     catch (const std::filesystem::filesystem_error& e) {
-        std::cerr << "Error deleting resource: " << e.what() << "\n";
-        return false; 
+        std::string error_message = "Filesystem error: " + std::string(e.what());
+        Log::logMsg(error_message);
+        throw std::runtime_error(error_message);
     }
-}
+
+    Log::logMsg("File(s) deleted from server: " + file_path);
+    return true;
+    }
 
 bool fileHandler::isDirectory(std::string& file_path)
 {
@@ -102,12 +109,25 @@ void     handlePostRequest(const HttpRequest *req, HttpResponse *res)
     res->setStatusLine(httpStatus::getStatusLine(statusCode::OK));
 }
 
-void    handleDeleteRequest(const HttpRequest *req, HttpResponse *res)
+void handleDeleteRequest(const HttpRequest *req, HttpResponse *res) 
 {
     std::string file_path = req->getUriComps().path;
+    if (!file_path.empty() && file_path[0] == '/') // absolute path does not concatenate with '/' as fist occurence in str
+        file_path.erase(0, 1);
 
-    if (fileHandler::deleteResource(file_path))
-        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), "");
-    else
-        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found), "<html><body><h1>404 Not Found</h1></body></html>");
+    std::filesystem::path cwd = std::filesystem::current_path();
+    std::filesystem::path root_path(Config::getConfig()->getRoot());
+    std::filesystem::path relative_path(file_path);
+    std::filesystem::path absolute_path = cwd / root_path / relative_path;
+    try {
+        if (std::filesystem::exists(absolute_path)) {
+            fileHandler::deleteResource(absolute_path.string());
+            res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), "");
+        } else {
+            throw std::runtime_error("File not found: " + file_path);
+        }
+    } catch (const std::runtime_error& e) {
+        std::cerr << e.what() << '\n';
+        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found), "<html><body><h1>" + httpStatus::_message.at(statusCode::not_found) + "</h1></body></html>");
+    }
 }
