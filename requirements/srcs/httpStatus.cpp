@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 09:13:36 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/05 13:47:04 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/09 14:16:57 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ std::string httpStatus::getStatusLine(statusCode code)
 		" " + _message.at(code)) + CRLF;
 }
 
-std::string generateErrResponse(statusCode code) 
+std::string httpStatus::generateErrResponse(statusCode code) 
 {
 	std::string response = httpStatus::getStatusLine(code);
 
@@ -58,4 +58,33 @@ std::string generateErrResponse(statusCode code)
 
 	response += body;
 	return response;
+}
+
+statusCode httpStatus::errnoToStatusCode(int err) 
+{
+	switch (err) {
+		case 0:
+			return statusCode::OK;
+		case EACCES:
+		case EPERM:
+			return statusCode::forbidden;
+		case ENOENT:
+			return statusCode::not_found;
+		case ETIMEDOUT:
+			return statusCode::request_timeout;
+		case EOVERFLOW:
+			return statusCode::payload_too_large;
+		case ENAMETOOLONG:
+			return statusCode::uri_too_long;
+		case ENOSYS:
+			return statusCode::not_implemented;
+		case ECONNRESET:
+		case EHOSTUNREACH:
+		case ECONNREFUSED:
+			return statusCode::bad_gateway;
+		case EAGAIN:
+			return statusCode::service_unavailable;
+		default:
+			return statusCode::internal_server_error;
+	}
 }

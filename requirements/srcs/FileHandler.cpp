@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/09 11:35:09 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/15 14:43:44 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,16 @@ bool fileHandler::fileExists(std::string& file_path)
     return std::filesystem::exists(file_path);
 }
 
+bool fileHandler::deleteResource(const std::string& file_path)
+{
+    try {
+        return std::filesystem::remove(file_path);
+    }
+    catch (const std::filesystem::filesystem_error& e) {
+        std::cerr << "Error deleting resource: " << e.what() << "\n";
+        return false; 
+    }
+}
 std::string fileHandler::readFileContent(const std::string& file_path)
 {
     std::filesystem::path path{file_path};
@@ -49,10 +59,10 @@ void     handleGetRequest(const HttpRequest *req, HttpResponse *res)
 {
     Log::logMsg("Handling GET request");
 
-    const std::string root_dir = "srv/www";
+    const std::string root_dir = "srv/www"; // CHANGE ROOT DIR
     std::string file_path = req->getUriComps().path;
 
-    if (file_path.find(".py") != std::string::npos)
+    if (file_path.find(".py") != std::string::npos) // CHANGE .PY ext
     {
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK),
             RequestProcessor::executeCgi(req->getUriComps()));
@@ -83,4 +93,14 @@ void     handlePostRequest(const HttpRequest *req, HttpResponse *res)
     std::string file_path = req->getUriComps().path;
     RequestProcessor::uploadFiles(req->getFormDataObj());
     res->setStatusLine(httpStatus::getStatusLine(statusCode::OK));
+}
+
+void    handleDeleteRequest(const HttpRequest *req, HttpResponse *res)
+{
+    std::string file_path = req->getUriComps().path;
+
+    if (fileHandler::deleteResource(file_path))
+        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), "");
+    else
+        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found), "<html><body><h1>404 Not Found</h1></body></html>");
 }

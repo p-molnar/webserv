@@ -7,7 +7,8 @@
 
 
 void    handleGetRequest(const HttpRequest *req, HttpResponse *res);
-void     handlePostRequest(const HttpRequest *req, HttpResponse *res);
+void    handlePostRequest(const HttpRequest *req, HttpResponse *res);
+void    handleDeleteRequest(const HttpRequest *req, HttpResponse *res);
 
 class fileHandler {
     public:
@@ -15,6 +16,7 @@ class fileHandler {
         static std::string  readFileContent(const std::string& filePath);
         static bool         isDirectory(std::string& filePath);
         static bool         isFile(std::string& filePath);
+        static bool         deleteResource(const std::string& file_path);
     private:
 
 

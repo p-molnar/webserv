@@ -8,6 +8,7 @@
 #include "Socket.hpp"
 #include "ServerSocket.hpp"
 #include "ClientSocket.hpp"
+#include "httpStatus.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 #include "Router.hpp"

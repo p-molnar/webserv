@@ -54,6 +54,7 @@ public:
 
     void recvRequest();
     void sendResponse();
+    void sendResponse(std::string response); // Overloading the send response function for error usage. 
 };
 
 #endif

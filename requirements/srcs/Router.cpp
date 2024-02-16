@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/19 10:40:30 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/09 11:34:40 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/15 14:44:42 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ Router::Router()
 {
     registerRoute("GET", &handleGetRequest);
     registerRoute("POST", &handlePostRequest);
+    registerRoute("DELETE", &handleDeleteRequest);
 }
 
 void    Router::registerRoute(std::string request_method,

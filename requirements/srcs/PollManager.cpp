@@ -1,6 +1,4 @@
 #include "PollManager.hpp"
-#include "HttpRequest.hpp"
-#include "Router.hpp"
 #include "Log.hpp"
 
 #define RUNNING 1
@@ -106,10 +104,12 @@ void PollManager::HandlePollOutEvent(std::shared_ptr<Socket> curr_socket)
 		}
 		catch (const ClientSocket::HungUpException &e)
 		{
+			// client_socket->sendResponse(httpStatus::generateErrResponse(httpStatus::errnoToStatusCode(errno)));
 			PollManager::removeSocket(client_socket->getFd());
 		}
 		catch (const std::exception &e)
 		{
+			client_socket->sendResponse(httpStatus::generateErrResponse(httpStatus::errnoToStatusCode(errno)));
 			PollManager::removeSocket(client_socket->getFd());
 			Log::logMsg(e.what());
 		}
@@ -131,6 +131,7 @@ void PollManager::HandlePollInEvent(std::shared_ptr<Socket> curr_socket)
 		}
 		catch (const std::exception &e)
 		{
+			client_socket->sendResponse(httpStatus::generateErrResponse(httpStatus::errnoToStatusCode(errno)));
 			PollManager::removeSocket(client_socket->getFd());
 			if (e.what()[0] != '\0')
 				Log::logMsg(e.what());
