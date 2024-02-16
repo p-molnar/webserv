@@ -32,7 +32,7 @@ void    Router::routeRequest(const HttpRequest& req, HttpResponse& res)
 {
     Log::logMsg("Routing the request");
     std::string method = req.getRequestLineComp("method");
-    std::cout << "METHOD: " << method << std::endl;
+    // std::cout << "METHOD: " << method << std::endl;
 
     // if ((req.getRequestLineComp("method") == "GET" || req.getRequestLineComp("method") == "POST") && req.getType() == EXECUTABLE)
     // {

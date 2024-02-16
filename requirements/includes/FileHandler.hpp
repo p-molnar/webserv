@@ -11,7 +11,7 @@ void     handlePostRequest(const HttpRequest *req, HttpResponse *res);
 
 class fileHandler {
     public:
-        static bool         fileExists(std::string& filePath);
+        static bool         isValidPath(std::string& filePath);
         static std::string  readFileContent(const std::string& filePath);
         static bool         isDirectory(std::string& filePath);
         static bool         isFile(std::string& filePath);

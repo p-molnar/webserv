@@ -18,32 +18,39 @@
 #include <iostream>
 #include "Log.hpp"
 #include "RequestProcessor.hpp"
+#include <sys/stat.h>
 
 #define ERROR "<html><body><h1>404 Not Found</h1></body></html>"
 
-bool fileHandler::fileExists(std::string& file_path)
+bool fileHandler::isValidPath(std::string& file_path)
 {
-    return std::filesystem::exists(file_path);
-}
-
-std::string fileHandler::readFileContent(const std::string& file_path)
-{
-    std::filesystem::path path{file_path};
-    
-    std::ifstream fileStream(file_path);
-    if (!fileStream.is_open())
-        throw std::runtime_error("Failed to open file " + file_path);
-    
-    return std::string(std::istreambuf_iterator<char>(fileStream), std::istreambuf_iterator<char>());
+    struct stat buffer;
+    return (stat(file_path.c_str(), &buffer) == 0);
 }
 
 bool fileHandler::isDirectory(std::string& file_path)
 {
-    return std::filesystem::is_directory(std::filesystem::path(file_path));
+    struct stat buffer;
+    return (stat(file_path.c_str(), &buffer) == 0 && S_ISDIR(buffer.st_mode));
 }
 
-bool fileHandler::isFile(std::string& file_path) {
-       return std::filesystem::is_regular_file(std::filesystem::path(file_path));
+bool fileHandler::isFile(std::string& file_path) 
+{
+    struct stat buffer;
+    return (stat(file_path.c_str(), &buffer) == 0 && S_ISREG(buffer.st_mode));
+}
+
+std::string fileHandler::readFileContent(const std::string& file_path)
+{
+    std::ifstream file(file_path);
+    if (!file.is_open())
+    {
+        Log::logMsg("Error opening file");
+        throw std::runtime_error("Failed to open file " + file_path);
+    }
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    file.close();
+    return content;
 }
 
 void     handleGetRequest(const HttpRequest *req, HttpResponse *res) 
@@ -60,12 +67,12 @@ void     handleGetRequest(const HttpRequest *req, HttpResponse *res)
     if (file_path.find(".") == std::string::npos && req->getType() == RESOURCE && !fileHandler::isDirectory(file_path)) {
         file_path += ".html";
     }
-    if (!fileHandler::fileExists(file_path) && req->getType() != EXECUTABLE) {
+    if (!fileHandler::isValidPath(file_path) && req->getType() != EXECUTABLE) {
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::NotFound), 
             fileHandler::readFileContent(root_dir + "/error.html"));
         return ;
     }
-    if (fileHandler::fileExists(file_path))
+    if (fileHandler::isValidPath(file_path))
     {
         std::string s;
         if (fileHandler::isDirectory(file_path))

@@ -60,12 +60,21 @@ std::string HttpResponse::getHeader(const std::string &headerName) const
     return _headers.at(headerName);
 }
 
-std::string setCookie(const std::string &cookie_name, const std::string &cookie_value, const std::string &path)
+std::string setCookie(const std::string &cookie_name, const std::string &cookie_value, const std::string &path, int lifetimeMinutes = 0)
 {
-    if (path == "")
-        return "Set-Cookie: " + cookie_name + "=" + cookie_value + "; Secure; HttpOnly" + CRLF;
-    else
-        return "Set-Cookie: " + cookie_name + "=" + cookie_value  + "; Path=" + path + "; Secure; HttpOnly" + CRLF;
+    std::string cookie = "Set-Cookie: " + cookie_name + "=" + cookie_value;
+    if (path != "")
+        cookie += "; Path=" + path;
+    cookie += "; Secure; HttpOnly; ";
+    if (lifetimeMinutes > 0)
+    {
+        std::time_t now = std::time(nullptr);
+        std::time_t expiration = now + lifetimeMinutes * 60;
+        std::string expirationStr = std::asctime(std::gmtime(&expiration));
+        expirationStr.pop_back();
+        cookie += "Expires=" + expirationStr + " GMT";
+    }
+    return cookie + CRLF;
 }
 
 std::string generateSessionID(int length)
@@ -80,7 +89,7 @@ std::string generateSessionID(int length)
     return result;
 }
 
-std::string    HttpResponse::generateResponse(HttpRequest &request, bool includeBody)
+std::string    HttpResponse::generateResponse(HttpRequest &request, bool hasBody)
 {
     Log::logMsg("Response generated, ready to sent");
     std::string response;
@@ -88,11 +97,11 @@ std::string    HttpResponse::generateResponse(HttpRequest &request, bool include
     response += _statusLine;
     // if sesionID cookie is not set, set it
     if (!request.hadSessionId())
-        response += setCookie("sessionID", generateSessionID(64), "/");
+        response += setCookie("sessionID", generateSessionID(64), "/", 2);
     // response += setCookie("all", "Hello cookie world!", "");
     // response += setCookie("bmi", "bmi calculator", "/bmi_calculator");
     // response += setCookie("Error", "ERROR", "/error");
-    if (includeBody)
+    if (hasBody)
     {
         setHeaders("Content-Length", std::to_string(_body.size()));
         setHeaders("Content-Type", "text/html");
@@ -101,7 +110,7 @@ std::string    HttpResponse::generateResponse(HttpRequest &request, bool include
         response += header.first + ": " + header.second + CRLF;
     }
     response += CRLF;
-    if (includeBody) {
+    if (hasBody) {
         response += _body;
     }
     return response;
