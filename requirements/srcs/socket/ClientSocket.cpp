@@ -53,3 +53,21 @@ void ClientSocket::sendResponse()
     Log::logMsg("response sent", fd);
     setState(State::Reading);
 }
+
+void ClientSocket::sendResponse(std::string response)
+{
+    if (!is_request_parsed)
+    {
+        return;
+    }
+    int bytes_sent = send(fd, response.c_str(), response.size(), 0);
+    if (bytes_sent < 0)
+    {
+        request.flushBuffers();
+        throw std::runtime_error("accept: " + STRERR);
+    }
+    request.flushBuffers();
+    is_request_parsed = false;
+    Log::logMsg("response sent", fd);
+    setState(State::Reading);
+}

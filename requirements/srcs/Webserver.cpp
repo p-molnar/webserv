@@ -19,7 +19,6 @@ void WebServer::startService()
         int backlog = 10;
 
         pid_t pid = SysCall::fork();
-        // pid_t pid = fork();
         if (pid == 0)
         {
             try

@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/05 10:04:57 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/16 10:16:06 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,17 @@ bool fileHandler::isValidPath(std::string& file_path)
 {
     struct stat buffer;
     return (stat(file_path.c_str(), &buffer) == 0);
+}
+
+bool fileHandler::deleteResource(const std::string& file_path)
+{
+    try {
+        return std::filesystem::remove(file_path);
+    }
+    catch (const std::filesystem::filesystem_error& e) {
+        std::cerr << "Error deleting resource: " << e.what() << "\n";
+        return false; 
+    }
 }
 
 bool fileHandler::isDirectory(std::string& file_path)
@@ -68,7 +79,7 @@ void     handleGetRequest(const HttpRequest *req, HttpResponse *res)
         file_path += ".html";
     }
     if (!fileHandler::isValidPath(file_path) && req->getType() != EXECUTABLE) {
-        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::NotFound), 
+        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found), 
             fileHandler::readFileContent(root_dir + "/error.html"));
         return ;
     }
@@ -87,7 +98,16 @@ void     handlePostRequest(const HttpRequest *req, HttpResponse *res)
 {
     Log::logMsg("Handling POST request");
     std::string file_path = req->getUriComps().path;
-    std::cout << file_path << std::endl;
     RequestProcessor::uploadFiles(req->getFormDataObj());
     res->setStatusLine(httpStatus::getStatusLine(statusCode::OK));
+}
+
+void    handleDeleteRequest(const HttpRequest *req, HttpResponse *res)
+{
+    std::string file_path = req->getUriComps().path;
+
+    if (fileHandler::deleteResource(file_path))
+        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), "");
+    else
+        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found), "<html><body><h1>404 Not Found</h1></body></html>");
 }
