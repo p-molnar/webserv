@@ -17,13 +17,13 @@ class WebServer : public ServerSocket, public PollManager
 {
 
 private:
+    std::shared_ptr<Config> config;
     std::vector<std::shared_ptr<ServerSocket>> server_sockets;
     PollManager poll_manager;
 
     // constructor & destructo
 public:
-    WebServer();
-    // WebServer(Config *config_data);
+    WebServer(std::shared_ptr<Config> config);
     ~WebServer();
 
     // main member functions

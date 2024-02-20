@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/16 14:07:34 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/20 09:56:42 by pmolnar       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ void     handleGetRequest(const HttpRequest *req, HttpResponse *res)
 {
     Log::logMsg("Handling GET request");
 
-    const std::string root_dir = Config::getConfig()->getRoot();
+    const std::string root_dir = req->getConfig()->getRoot();
     std::string file_path = req->getUriComps().www_path;
     if (file_path.find(".py") != std::string::npos)
     {
@@ -137,7 +137,7 @@ void     handlePostRequest(const HttpRequest *req, HttpResponse *res)
 void handleDeleteRequest(const HttpRequest *req, HttpResponse *res) 
 {
     fs::path absolute_path = getAbsolutePath
-        (req->getUriComps().path, Config::getConfig()->getRoot());
+        (req->getUriComps().path, req->getConfig()->getRoot());
     try {
         if (std::filesystem::exists(absolute_path)) {
             fileHandler::deleteResource(absolute_path.string());

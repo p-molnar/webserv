@@ -5,9 +5,9 @@ std::string RequestProcessor::executeCgi(const t_uri_comps &uri)
 	std::string raw_html;
 	std::string raw_cgi_output;
 
-	std::string cgi_root = Config::getConfig()->getLocations().at("/cgi-bin").getRoot();
-	std::string exec_path = cgi_root + uri.executable_name;
-	std::cout << "execpath:" << exec_path << std::endl;
+	// std::string cgi_root = uri.www_path;
+	std::string exec_path = uri.www_path;
+	// std::cout << "execpath:" << exec_path << std::endl;
 	SysCall::access(exec_path, X_OK);
 
 	int filedes[2];

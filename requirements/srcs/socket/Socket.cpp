@@ -23,13 +23,3 @@ Socket::~Socket()
 int Socket::getFd() const { return fd; }
 
 t_pollfd Socket::getPfd() const { return pfd; }
-
-void Socket::setFd(int fd)
-{
-	this->fd = fd;
-}
-
-void Socket::setPfd(t_pollfd pfd)
-{
-	this->pfd = pfd;
-}

@@ -50,6 +50,9 @@ typedef struct s_uri_comps
 class HttpRequest
 {
 private:
+    std::shared_ptr<ServerBlock> config;
+
+private:
     e_parse_status request_line_parse_status;
     e_parse_status request_headers_parse_status;
     e_parse_status request_msg_body_parse_status;
@@ -66,6 +69,7 @@ private:
 
 public:
     HttpRequest();
+    HttpRequest(std::shared_ptr<ServerBlock> config);
     HttpRequest(const HttpRequest &obj);
     HttpRequest operator=(const HttpRequest &obj);
     ~HttpRequest();
@@ -89,11 +93,12 @@ public:
     t_uri_comps getUriComps() const;
     std::string getHeaderComp(const std::string &header_name) const;
     std::string getMessageBody() const;
+    std::shared_ptr<ServerBlock> getConfig() const;
     e_request_type getType() const;
     const FormData &getFormDataObj() const;
     bool isParsed() const;
     bool hadSessionId() const;
-    };
+};
 
 std::ostream &operator<<(std::ostream &os, const HttpRequest &obj);
 

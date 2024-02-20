@@ -2,10 +2,11 @@
 #include "consts.hpp"
 #include <iostream>
 
-ClientSocket::ClientSocket(int fd)
+ClientSocket::ClientSocket(int fd, std::shared_ptr<ServerBlock> config)
 {
-    this->setFd(fd);
-    this->setPfd((t_pollfd){fd, POLLIN, 0});
+    this->fd = fd;
+    this->pfd = (t_pollfd){fd, POLLIN, 0};
+    this->config = config;
 }
 
 ClientSocket::~ClientSocket()

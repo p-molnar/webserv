@@ -1,45 +1,5 @@
 #include "Config.hpp"
 
-Config &Config::get()
-{
-	if (instance == nullptr)
-		instance = new Config;
-	return *instance;
-}
-
-void Config::setConfig(ServerBlock *server_block)
-{
-	// for (int i = 0; i < Config::get().getServers().size(); i++)
-	// {
-	// 	ServerBlock srv =
-	// 	if (getListenPort() == port)
-	// 	{
-	// 		server_config = &config;
-	// 		break;
-	// 	}
-	// }
-	// for (ServerBlock config : Config::get().getServers())
-	// {
-	// 	if (config.getListenPort() == port)
-	// 	{
-	// 		server_config = &config;
-	// 		break;
-	// 	}
-	// }
-	server_config = server_block;
-}
-
-ServerBlock *Config::getConfig()
-{
-	return server_config;
-}
-
-void Config::destruct()
-{
-	delete instance;
-	instance = nullptr;
-}
-
 LocationBlock::LocationBlock()
 {
 	_path = "/";
@@ -251,13 +211,19 @@ void ServerBlock::addLocation(const std::string &locationPath, const LocationBlo
 // 	parseFile();
 // }
 
-void Config::parse(const char *file_path)
+Config::Config(const Config &obj) : _file_path(obj._file_path),
+									_servers(obj._servers),
+									redirects(obj.redirects)
+{
+}
+
+Config::Config(const char *file_path)
 {
 	_file_path = file_path;
 	parseFile();
 }
 
-void Config::parse(int argc, char *argv[])
+Config::Config(int argc, char *argv[])
 {
 	if (argc > 1 && argv[1] != NULL)
 		_file_path = argv[1];

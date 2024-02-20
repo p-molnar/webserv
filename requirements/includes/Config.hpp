@@ -103,15 +103,6 @@ public:
 class Config
 {
 private:
-	// Singleton pattern design
-	Config() = default;
-	~Config();
-	static Config *instance;
-	static ServerBlock *server_config;
-	// Config(const char *file_path) = default;
-	// Config(int argc, char *argv[]) = default;
-
-private:
 	const char *_file_path;
 	std::fstream _config_file;
 	std::vector<ServerBlock> _servers;
@@ -124,18 +115,15 @@ private:
 	void addServer(const ServerBlock &server);
 
 public:
-	static Config &get();
-	static void setConfig(ServerBlock *server_block);
-	static ServerBlock *getConfig();
-	static void setConfig(int port);
-
-	void parse(const char *file_path);
-	void parse(int argc, char *argv[]);
+	Config();
+	Config(const Config &obj);
+	Config(const char *file_path);
+	Config(int argc, char *argv[]);
+	~Config();
 	void parseRedirect(std::string file_path);
 	t_redirect applyRedirect(std::string target_path);
 
 public:
-	static void destruct();
 	void display();
 	std::vector<ServerBlock> &getServers();
 };

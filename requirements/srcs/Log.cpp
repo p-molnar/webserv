@@ -40,8 +40,8 @@ void Log::logMsg(std::string msg, int fd)
 
 	std::string server_name;
 
-	if (Config::getConfig())
-		server_name = Config::getConfig()->getServerName();
+	// if (Config::getConfig())
+	// 	server_name = Config::getConfig()->getServerName();
 
 	if (fd == FD_UNDEF)
 	{

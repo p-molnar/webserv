@@ -1,23 +1,26 @@
 #include "HttpRequest.hpp"
 
 HttpRequest::HttpRequest()
-    : request_line_parse_status(INCOMPLETE),
-      request_headers_parse_status(INCOMPLETE),
-      request_msg_body_parse_status(INCOMPLETE)
+{
+}
+
+HttpRequest::HttpRequest(std::shared_ptr<ServerBlock> config) : config(config)
 {
 }
 
 HttpRequest::HttpRequest(const HttpRequest &obj)
-    : request_line_parse_status(obj.request_line_parse_status),
-      request_headers_parse_status(obj.request_headers_parse_status),
-      request_msg_body_parse_status(obj.request_msg_body_parse_status),
-      raw_request(obj.raw_request),
-      uri_comps(obj.uri_comps),
-      request_line(obj.request_line),
-      request_headers(obj.request_headers),
-      request_message_body(obj.request_message_body),
-      form_data(obj.form_data)
+// : request_line_parse_status(obj.request_line_parse_status),
+//   request_headers_parse_status(obj.request_headers_parse_status),
+//   request_msg_body_parse_status(obj.request_msg_body_parse_status),
+//   raw_request(obj.raw_request),
+//   uri_comps(obj.uri_comps),
+//   request_line(obj.request_line),
+//   request_headers(obj.request_headers),
+//   request_message_body(obj.request_message_body),
+//   form_data(obj.form_data),
+//   pfd(pfd)
 {
+    *this = obj;
 }
 
 HttpRequest HttpRequest::operator=(const HttpRequest &obj)
@@ -31,6 +34,7 @@ HttpRequest HttpRequest::operator=(const HttpRequest &obj)
     request_headers = obj.request_headers;
     request_message_body = obj.request_message_body;
     form_data = obj.form_data;
+    config = obj.config;
     return *this;
 }
 
@@ -45,7 +49,7 @@ std::string HttpRequest::getCgiExtension(const std::string &s)
 {
     try
     {
-        for (std::string ext : Config::getConfig()->getLocations()["/cgi-bin"].getCgiExt())
+        for (std::string ext : config->getLocations()["/cgi-bin"].getCgiExt())
         {
             if (s.find(ext) != NPOS)
                 return ext;
@@ -80,6 +84,10 @@ std::string HttpRequest::getExecutableName(const std::string &file_extension, co
     return "";
 }
 
+// void postParseOps()
+// {
+// }
+
 void HttpRequest::parseRequestUri(const std::string &uri)
 {
     std::vector<std ::string> uri_comps_local = tokenize(uri, QSTR_SEP);
@@ -97,18 +105,20 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         uri_comps.query_str = uri_comps_local[1];
     }
 
-    // apply redirect
-    t_redirect redir = Config::get().applyRedirect(uri_comps.path);
+    // REWORK!
 
-    if (redir.status_code != -1)
-    {
-        uri_comps.path = redir.new_path;
-        // add redirect status code to response
-    }
+    // apply redirect
+    // t_redirect redir = applyRedirect(uri_comps.path);
+
+    // if (redir.status_code != -1)
+    // {
+    //     uri_comps.path = redir.new_path;
+    //     // add redirect status code to response
+    // }
 
     // generate www_path based on path
-    std::string root = strip(Config::getConfig()->getRoot(), "/");
-    std::string default_landing_page = strip(Config::getConfig()->getIndex(), "/");
+    std::string root = strip(config->getRoot(), "/");
+    std::string default_landing_page = strip(config->getIndex(), "/");
 
     uri_comps.www_path = uri_comps.path == "/"
                              ? root + "/" + default_landing_page
@@ -134,6 +144,8 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         request_type = RESOURCE;
     else
         request_type = UNDEF;
+
+    parseRequestType();
 }
 
 bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_received)
@@ -143,8 +155,10 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
 
     raw_request += std::string(raw_request_data, bytes_received);
 
-    std::cout << CGRY << raw_request << NC << std::endl; // Todo comment out
+    // std::cout << raw_request << std::endl; // Todo comment out
+    // std::cout << CGRY << raw_request << NC << std::endl; // Todo comment out
 
+    // request line parsing
     if (request_line_parse_status == INCOMPLETE)
     {
         clrf_pos = raw_request.find(CRLF);
@@ -153,12 +167,11 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
             std::string raw_request_line = raw_request.substr(0, clrf_pos);
             parseRequestLine(raw_request_line);
             parseRequestUri(request_line.at("request_uri"));
-            parseRequestType();
-
             request_line_parse_status = COMPLETE;
         }
     }
 
+    // header parsing
     if (request_headers_parse_status == INCOMPLETE)
     {
         dbl_clrf_pos = raw_request.find(TWO_CRLF);
@@ -171,6 +184,7 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
         }
     }
 
+    // message body parsing
     if (request_line_parse_status == COMPLETE && request_headers_parse_status == COMPLETE)
     {
         try
@@ -337,8 +351,3 @@ void HttpRequest::flushBuffers()
 // {
 //     return form_data;
 // }
-
-e_request_type HttpRequest::getType() const
-{
-    return request_type;
-}
