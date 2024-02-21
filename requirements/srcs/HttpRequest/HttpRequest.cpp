@@ -1,10 +1,15 @@
 #include "HttpRequest.hpp"
 
-HttpRequest::HttpRequest()
+HttpRequest::HttpRequest() :     request_line_parse_status(INCOMPLETE),
+    request_headers_parse_status(INCOMPLETE),
+    request_msg_body_parse_status(INCOMPLETE)
 {
 }
 
-HttpRequest::HttpRequest(std::shared_ptr<ServerBlock> config) : config(config)
+HttpRequest::HttpRequest(std::shared_ptr<ServerBlock> config) : config(config),
+    request_line_parse_status(INCOMPLETE),
+    request_headers_parse_status(INCOMPLETE),
+    request_msg_body_parse_status(INCOMPLETE)
 {
 }
 
@@ -156,7 +161,7 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
     raw_request += std::string(raw_request_data, bytes_received);
 
     // std::cout << raw_request << std::endl; // Todo comment out
-    // std::cout << CGRY << raw_request << NC << std::endl; // Todo comment out
+    std::cout << CGRY << raw_request << NC << std::endl; // Todo comment out
 
     // request line parsing
     if (request_line_parse_status == INCOMPLETE)
@@ -207,6 +212,11 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
             request_msg_body_parse_status = NA;
         }
     }
+
+    std::cout << "request_line_parse_status: " << request_line_parse_status << std::endl; // Todo comment out
+    std::cout << "request_headers_parse_status: " << request_headers_parse_status << std::endl; // Todo comment out
+    std::cout << "request_msg_body_parse_status: " << request_msg_body_parse_status << std::endl; // Todo comment out
+
 
     return (request_line_parse_status == COMPLETE &&
             request_headers_parse_status == COMPLETE &&
