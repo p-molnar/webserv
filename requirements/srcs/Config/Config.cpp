@@ -215,6 +215,20 @@ Config::Config(const Config &obj) : _file_path(obj._file_path),
 									_servers(obj._servers),
 									redirects(obj.redirects)
 {
+		std::cout << "Copy constructor called" << std::endl;
+}
+
+Config &Config::operator=(const Config &obj)
+{
+	std::cout << "Assignation operator called" << std::endl;
+	if (this != &obj)
+	{
+		_file_path = obj._file_path;
+		_servers = obj._servers;
+		redirects = obj.redirects;
+	}
+	return *this;
+
 }
 
 Config::Config(const char *file_path)
@@ -226,9 +240,15 @@ Config::Config(const char *file_path)
 Config::Config(int argc, char *argv[])
 {
 	if (argc > 1 && argv[1] != NULL)
+	{
+		std::cout << "Using config file '" << argv[1] << "'" << std::endl;
 		_file_path = argv[1];
+	}
 	else
+	{
+		std::cout << "No config file specified, using default config file" << std::endl;
 		_file_path = DEFAULT_CONFIG_PATH;
+	}
 	parseFile();
 }
 
@@ -292,7 +312,7 @@ void Config::readFile()
 		std::cout << "Error: Can not read file '" << _file_path << "'" << std::endl;
 		exit(1);
 	}
-	std::cout << "Using config file '" << _file_path << "'" << std::endl;
+	// std::cout << "Using config file '" << _file_path << "'" << std::endl;
 
 	while (getline(_config_file, line))
 	{
@@ -338,8 +358,7 @@ void Config::readFile()
 			else if (!block.empty() && block.top() == "server")
 			{
 				value = "";
-				std::cout << "line " << line_nr << ": " << line << std::endl;
-				while (value.back() != ';' && lineStream >> value)
+				while ((value.empty() || value.back() != ';') && lineStream >> value)
 				{
 					std::cout << "key: " << key << " value: " << value << std::endl;
 					if (key == "listen" && is_number(removeSemicolon(value)))
@@ -373,8 +392,7 @@ void Config::readFile()
 			else if (!block.empty() && block.top() == "location")
 			{
 				value = "";
-				std::cout << "line " << line_nr << ": " << line << std::endl;
-				while (value.back() != ';' && lineStream >> value)
+				while ((value.empty() || value.back() != ';') && lineStream >> value)
 				{
 					std::cout << "key: " << key << " value: " << value << std::endl;
 					if (key == "root")

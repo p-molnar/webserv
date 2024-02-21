@@ -7,7 +7,8 @@ int main(int argc, char *argv[])
     try
     {
         Config config(argc, argv);
-        WebServer server(std::make_shared<Config>(config));
+        config.display(); // temp for testing
+        WebServer server(config);
         // Config.parseRedirect("redirects");
 
         // no need to load a config file anymore, because it is a global class

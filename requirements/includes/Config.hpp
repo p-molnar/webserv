@@ -117,6 +117,7 @@ private:
 public:
 	Config();
 	Config(const Config &obj);
+	Config &operator=(const Config &obj);
 	Config(const char *file_path);
 	Config(int argc, char *argv[]);
 	~Config();

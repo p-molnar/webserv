@@ -2,13 +2,15 @@
 #include <stdexcept>
 #include "ServerSocket.hpp"
 
-WebServer::WebServer(std::shared_ptr<Config> config) : config(config){};
+WebServer::WebServer(Config &config) : _config(config)
+{
+};
 
 void WebServer::startService()
 {
 
     std::vector<pid_t> pids;
-    for (ServerBlock &config : config->getServers())
+    for (ServerBlock &config : _config.getServers())
     {
         std::shared_ptr<ServerBlock> config_ptr = std::make_shared<ServerBlock>(config);
         try
@@ -16,6 +18,7 @@ void WebServer::startService()
             std::shared_ptr<ServerSocket> server_socket = std::shared_ptr<ServerSocket>(new ServerSocket(config_ptr));
             Log::logMsg("Server started");
             server_socket->createSocket();
+            std::cout << "config port: " << config.getListenPort() << "\n";
             server_socket->bindPort(config.getListenPort());
             server_socket->listenPort(10, config.getListenPort());
             poll_manager.addSocket(server_socket);
