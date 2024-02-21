@@ -104,13 +104,13 @@ class Config
 {
 private:
 	const char *_file_path;
-	std::fstream _config_file;
+	// std::fstream _config_file;
 	std::vector<ServerBlock> _servers;
 	std::vector<t_redirect> redirects;
 
-	void openFile();
+	// void openFile();
 	void readFile();
-	void closeFile();
+	// void closeFile();
 	void parseFile();
 	void addServer(const ServerBlock &server);
 

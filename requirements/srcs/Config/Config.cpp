@@ -234,7 +234,7 @@ Config::Config(int argc, char *argv[])
 
 Config::~Config()
 {
-	closeFile();
+	// closeFile();
 }
 
 void Config::display()
@@ -270,8 +270,20 @@ void Config::display()
 	}
 }
 
-void Config::openFile()
+// void Config::openFile()
+// {
+
+// }
+
+void Config::readFile()
 {
+	int line_nr = 1;
+	std::string line;
+	std::string key, value;
+	std::string path;
+	std::stack<std::string> block;
+	std::fstream _config_file;
+
 	if (_file_path == NULL)
 		_file_path = DEFAULT_CONFIG_PATH;
 	_config_file.open(_file_path);
@@ -281,15 +293,6 @@ void Config::openFile()
 		exit(1);
 	}
 	std::cout << "Using config file '" << _file_path << "'" << std::endl;
-}
-
-void Config::readFile()
-{
-	int line_nr = 1;
-	std::string line;
-	std::string key, value;
-	std::string path;
-	std::stack<std::string> block;
 
 	while (getline(_config_file, line))
 	{
@@ -396,6 +399,9 @@ void Config::readFile()
 		}
 		line_nr++;
 	}
+
+	if (_config_file.is_open())
+		_config_file.close();
 }
 
 void Config::addServer(const ServerBlock &server)
@@ -408,17 +414,17 @@ std::vector<ServerBlock> &Config::getServers()
 	return _servers;
 }
 
-void Config::closeFile()
-{
-	if (_config_file.is_open())
-		_config_file.close();
-}
+// void Config::closeFile()
+// {
+// 	if (_config_file.is_open())
+// 		_config_file.close();
+// }
 
 void Config::parseFile()
 {
-	openFile();
+	// openFile();
 	readFile();
-	closeFile();
+	// closeFile();
 }
 
 bool is_number(std::string s)
