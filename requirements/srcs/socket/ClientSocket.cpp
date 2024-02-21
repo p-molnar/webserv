@@ -2,7 +2,7 @@
 #include "consts.hpp"
 #include <iostream>
 
-ClientSocket::ClientSocket(int fd, std::shared_ptr<ServerBlock> config) : reque st(config), response()
+ClientSocket::ClientSocket(int fd, std::shared_ptr<ServerBlock> config) : request(config), response()
 {
     this->fd = fd;
     this->pfd = (t_pollfd){fd, POLLIN, 0};
