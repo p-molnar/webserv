@@ -13,6 +13,8 @@ ClientSocket::~ClientSocket()
     ::close(fd);
 }
 
+
+
 void ClientSocket::recvRequest()
 {
     char request_buff[10240]; // 10kb buffer size
@@ -30,6 +32,7 @@ void ClientSocket::recvRequest()
     if (is_request_parsed)
     {
         request.printParsedContent();
+        request.safeUserData();
         setState(State::Writing);
     }
 }

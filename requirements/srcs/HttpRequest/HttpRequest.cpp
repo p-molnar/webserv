@@ -270,6 +270,36 @@ void HttpRequest::parseHeaders(const std::string &raw_request_headers)
     }
 }
 
+std::string HttpRequest::getValueFormQueryStr(const std::string &key)
+{
+    std::size_t key_pos = uri_comps.query_str.find(key);
+    if (key_pos == NPOS)
+        return "";
+    std::size_t val_pos = key_pos + key.length() + 1;
+    std::size_t val_end_pos = uri_comps.query_str.find("&", val_pos);
+    if (val_end_pos == NPOS)
+        val_end_pos = uri_comps.query_str.length();
+    return uri_comps.query_str.substr(val_pos, val_end_pos - val_pos);
+}
+
+void HttpRequest::safeUserData()
+{
+    // compare if the www_path is the same as a string literal
+    if (uri_comps.www_path != "srv/www/bmi_calculator.py")
+        return;
+    if (uri_comps.query_str.empty())
+        return;
+    std::string name, age, height, weight;
+    name = getValueFormQueryStr("name");
+    age = getValueFormQueryStr("age");
+    height = getValueFormQueryStr("height");
+    weight = getValueFormQueryStr("weight");
+    std::cout << "name: " << CGRN << name << NC << std::endl;
+    std::cout << "age: " << CGRN << age << NC << std::endl;
+    std::cout << "height: " << CGRN << height << NC << std::endl;
+    std::cout << "weight: " << CGRN << weight << NC << std::endl;
+}
+
 void HttpRequest::printParsedContent() const
 {
     if (this->isParsed() == false)

@@ -73,6 +73,8 @@ public:
 public:
     bool parseRequest(char *request_buff, std::size_t parse_size);
     void flushBuffers();
+    std::string getValueFormQueryStr(const std::string &key);
+    void safeUserData();
     void printParsedContent() const;
 
 private:

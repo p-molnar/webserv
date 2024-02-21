@@ -37,6 +37,7 @@ bool fileHandler::isDirectory(std::string& file_path)
 bool fileHandler::isFile(std::string& file_path) 
 {
     struct stat buffer;
+    
     return (stat(file_path.c_str(), &buffer) == 0 && S_ISREG(buffer.st_mode));
 }
 

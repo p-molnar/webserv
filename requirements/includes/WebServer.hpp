@@ -8,6 +8,7 @@
 
 #include "HttpRequest.hpp"
 #include "Config.hpp"
+#include "Session.hpp"
 
 #include <memory>
 #include <vector>
