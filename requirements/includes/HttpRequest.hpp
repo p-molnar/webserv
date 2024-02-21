@@ -11,6 +11,7 @@
 #include "string_utils.hpp"
 #include "FormData.hpp"
 #include "Config.hpp"
+#include <memory>
 
 /*  HTTP Request parser.
     Requirements:
