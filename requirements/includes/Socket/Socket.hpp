@@ -20,6 +20,7 @@ protected:
 public:
 	Socket();
 	Socket(int fd);
+	Socket &operator=(const Socket &obj);
 	Socket(const Socket &obj);
 	virtual ~Socket();
 

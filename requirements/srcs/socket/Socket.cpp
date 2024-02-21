@@ -8,10 +8,19 @@ Socket::Socket(int fd)
 {
 }
 
+Socket &Socket::operator=(const Socket &obj)
+{
+	this->fd = obj.fd;
+	this->pfd = obj.pfd;
+	this->config = obj.config;
+	return *this;
+}
+
 Socket::Socket(const Socket &obj)
 {
 	this->fd = obj.fd;
 	this->pfd = obj.pfd;
+	this->config = obj.config;
 }
 
 Socket::~Socket()

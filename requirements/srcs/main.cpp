@@ -7,6 +7,7 @@ int main(int argc, char *argv[])
     try
     {
         Config config(argc, argv);
+        config.display(); // temp for testing
         WebServer server(config);
         // Config.parseRedirect("redirects");
 

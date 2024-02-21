@@ -66,27 +66,27 @@ void PollManager::processEvents()
 	while (RUNNING)
 	{
 		updatePollfd();
-		int active_events = SysCall::poll(pfds.data(), pfds.size(), 1000);
+		int active_events = SysCall::poll(pfds.	data(), pfds.size(), 1000);
 
 		if (active_events < 0)
 		{
 			continue;
 		}
-		for (auto &pfd : pfds)
+		for (size_t i = 0; i < pfds.size(); ++i)
 		{
-			auto fd = pfd.fd;
-			auto &curr_socket = sockets.at(fd);
-			if (pfd.revents & (POLLIN | POLLHUP))
+			int fd = pfds[i].fd;
+			std::shared_ptr<Socket> curr_socket = sockets.at(fd);
+			if (pfds[i].revents & (POLLIN | POLLHUP))
 			{
 				Log::logMsg("POLLIN event");
 				HandlePollInEvent(curr_socket);
 			}
-			if (pfd.revents & (POLLOUT | POLLHUP))
+			if (pfds[i].revents & (POLLOUT | POLLHUP))
 			{
 				Log::logMsg("POLLOUT event");
 				HandlePollOutEvent(curr_socket);
 			}
-			else if (pfd.revents & POLLHUP)
+			else if (pfds[i].revents & POLLHUP)
 				removeSocket(fd);
 		}
 	}
