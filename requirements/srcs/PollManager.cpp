@@ -1,6 +1,4 @@
 #include "PollManager.hpp"
-#include "HttpRequest.hpp"
-#include "Router.hpp"
 #include "Log.hpp"
 
 #define RUNNING 1
@@ -45,9 +43,9 @@ void PollManager::updatePollfd()
 
 		if (std::shared_ptr<ClientSocket> clientSocket = std::dynamic_pointer_cast<ClientSocket>(socket))
 		{
-			if (clientSocket->getState() == ClientSocket::State::Reading)
+			if (clientSocket->getState() == ClientSocket::State::Reading && pfd.events != POLLHUP)
 				pfd.events = POLLIN;
-			else if (clientSocket->getState() == ClientSocket::State::Writing)
+			else if (clientSocket->getState() == ClientSocket::State::Writing && pfd.events != POLLHUP)
 				pfd.events = POLLOUT;
 		}
 	}
@@ -65,37 +63,32 @@ bool PollManager::shouldCloseConnection(std::shared_ptr<ClientSocket> client_soc
 void PollManager::processEvents()
 {
 	Log::logMsg("Server is processing events");
-	// config->display();
-	while (RUNNING)
-	{
-		updatePollfd();
-		int active_events = SysCall::poll(pfds.data(), pfds.size(), 1000);
+    while (RUNNING)
+    {
+        updatePollfd();
+        int active_events = SysCall::poll(pfds.data(), pfds.size(), 1000);
 
-		std::vector<t_pollfd>::iterator it = pfds.begin();
-		std::vector<t_pollfd>::iterator ite = pfds.end();
-
-		int polled_events = 0;
-		while (it != ite && polled_events < active_events)
-		{
-			std::vector<t_pollfd>::iterator curr_pfd = it;
-			int fd = curr_pfd->fd;
-			std::shared_ptr<Socket> curr_socket = sockets[fd];
-
-			if (curr_pfd->revents & POLLIN)
-			{
-				Log::logMsg("POLLIN event");
-				polled_events++;
-				HandlePollInEvent(curr_socket);
-			}
-			else if (curr_pfd->revents & POLLOUT)
-			{
-				Log::logMsg("POLLOUT event");
-				polled_events++;
-				HandlePollOutEvent(curr_socket);
-			}
-			it++;
-		}
-	}
+        if (active_events < 0) {
+            continue;
+        }
+        for (auto& pfd : pfds)
+        {
+            auto fd = pfd.fd;
+            auto& curr_socket = sockets[fd];
+            if (pfd.revents & (POLLIN | POLLHUP))
+            {
+                Log::logMsg("POLLIN event");
+                HandlePollInEvent(curr_socket);
+            }
+            if (pfd.revents & (POLLOUT | POLLHUP))
+            {
+                Log::logMsg("POLLOUT event");
+                HandlePollOutEvent(curr_socket);
+            }
+			else if (pfd.revents & POLLHUP)
+				removeSocket(fd);
+        }
+    }
 }
 
 void PollManager::HandlePollOutEvent(std::shared_ptr<Socket> curr_socket)
@@ -111,10 +104,12 @@ void PollManager::HandlePollOutEvent(std::shared_ptr<Socket> curr_socket)
 		}
 		catch (const ClientSocket::HungUpException &e)
 		{
+			// client_socket->sendResponse(httpStatus::generateErrResponse(httpStatus::errnoToStatusCode(errno)));
 			PollManager::removeSocket(client_socket->getFd());
 		}
 		catch (const std::exception &e)
 		{
+			client_socket->sendResponse(httpStatus::generateErrResponse(httpStatus::errnoToStatusCode(errno)));
 			PollManager::removeSocket(client_socket->getFd());
 			Log::logMsg(e.what());
 		}
@@ -136,6 +131,7 @@ void PollManager::HandlePollInEvent(std::shared_ptr<Socket> curr_socket)
 		}
 		catch (const std::exception &e)
 		{
+			client_socket->sendResponse(httpStatus::generateErrResponse(httpStatus::errnoToStatusCode(errno)));
 			PollManager::removeSocket(client_socket->getFd());
 			if (e.what()[0] != '\0')
 				Log::logMsg(e.what());

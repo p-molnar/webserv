@@ -5,7 +5,7 @@
 #include "Socket/ServerSocket.hpp"
 #include "Socket/Socket.hpp"
 #include "PollManager.hpp"
-
+#include "httpStatus.hpp"
 #include "HttpRequest.hpp"
 #include "Config.hpp"
 #include "Session.hpp"
