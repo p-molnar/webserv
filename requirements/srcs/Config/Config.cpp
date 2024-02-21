@@ -215,7 +215,7 @@ Config::Config(const Config &obj) : _file_path(obj._file_path),
 									_servers(obj._servers),
 									redirects(obj.redirects)
 {
-		std::cout << "Copy constructor called" << std::endl;
+	std::cout << "Copy constructor called" << std::endl;
 }
 
 Config &Config::operator=(const Config &obj)
@@ -228,7 +228,6 @@ Config &Config::operator=(const Config &obj)
 		redirects = obj.redirects;
 	}
 	return *this;
-
 }
 
 Config::Config(const char *file_path)
@@ -360,7 +359,6 @@ void Config::readFile()
 				value = "";
 				while ((value.empty() || value.back() != ';') && lineStream >> value)
 				{
-					std::cout << "key: " << key << " value: " << value << std::endl;
 					if (key == "listen" && is_number(removeSemicolon(value)))
 						getServers().back().setListenPort(std::stoi(removeSemicolon(value)));
 					if (key == "host")
@@ -386,7 +384,6 @@ void Config::readFile()
 						getServers().back().setRoot(removeSemicolon(value));
 					if (key == "index")
 						getServers().back().setIndex(removeSemicolon(value));
-					std::cout << "value: '" << value << "'" << std::endl;
 				}
 			}
 			else if (!block.empty() && block.top() == "location")
@@ -394,7 +391,6 @@ void Config::readFile()
 				value = "";
 				while ((value.empty() || value.back() != ';') && lineStream >> value)
 				{
-					std::cout << "key: " << key << " value: " << value << std::endl;
 					if (key == "root")
 						getServers().back().getLocations()[path].setRoot(removeSemicolon(value));
 					if (key == "autoindex")
@@ -411,7 +407,6 @@ void Config::readFile()
 						getServers().back().getLocations()[path].addCgiPath(removeSemicolon(value));
 					if (key == "cgi_ext")
 						getServers().back().getLocations()[path].addCgiExt(removeSemicolon(value));
-					std::cout << "value: '" << value << "'" << std::endl;
 				}
 			}
 		}

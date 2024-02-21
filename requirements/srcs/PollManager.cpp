@@ -63,32 +63,33 @@ bool PollManager::shouldCloseConnection(std::shared_ptr<ClientSocket> client_soc
 void PollManager::processEvents()
 {
 	Log::logMsg("Server is processing events");
-    while (RUNNING)
-    {
-        updatePollfd();
-        int active_events = SysCall::poll(pfds.data(), pfds.size(), 1000);
+	while (RUNNING)
+	{
+		updatePollfd();
+		int active_events = SysCall::poll(pfds.data(), pfds.size(), 1000);
 
-        if (active_events < 0) {
-            continue;
-        }
-        for (auto& pfd : pfds)
-        {
-            auto fd = pfd.fd;
-            auto& curr_socket = sockets[fd];
-            if (pfd.revents & (POLLIN | POLLHUP))
-            {
-                Log::logMsg("POLLIN event");
-                HandlePollInEvent(curr_socket);
-            }
-            if (pfd.revents & (POLLOUT | POLLHUP))
-            {
-                Log::logMsg("POLLOUT event");
-                HandlePollOutEvent(curr_socket);
-            }
+		if (active_events < 0)
+		{
+			continue;
+		}
+		for (auto &pfd : pfds)
+		{
+			auto fd = pfd.fd;
+			auto &curr_socket = sockets.at(fd);
+			if (pfd.revents & (POLLIN | POLLHUP))
+			{
+				Log::logMsg("POLLIN event");
+				HandlePollInEvent(curr_socket);
+			}
+			if (pfd.revents & (POLLOUT | POLLHUP))
+			{
+				Log::logMsg("POLLOUT event");
+				HandlePollOutEvent(curr_socket);
+			}
 			else if (pfd.revents & POLLHUP)
 				removeSocket(fd);
-        }
-    }
+		}
+	}
 }
 
 void PollManager::HandlePollOutEvent(std::shared_ptr<Socket> curr_socket)

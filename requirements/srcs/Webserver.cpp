@@ -2,9 +2,7 @@
 #include <stdexcept>
 #include "ServerSocket.hpp"
 
-WebServer::WebServer(Config &config) : _config(config)
-{
-};
+WebServer::WebServer(Config &config) : _config(config){};
 
 void WebServer::startService()
 {
@@ -18,7 +16,6 @@ void WebServer::startService()
             std::shared_ptr<ServerSocket> server_socket = std::shared_ptr<ServerSocket>(new ServerSocket(config_ptr));
             Log::logMsg("Server started");
             server_socket->createSocket();
-            std::cout << "config port: " << config.getListenPort() << "\n";
             server_socket->bindPort(config.getListenPort());
             server_socket->listenPort(10, config.getListenPort());
             poll_manager.addSocket(server_socket);
