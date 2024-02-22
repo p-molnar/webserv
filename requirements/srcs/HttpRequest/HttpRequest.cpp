@@ -50,11 +50,11 @@ std::string HttpRequest::getMessageBody() const
     return request_message_body;
 }
 
-std::string HttpRequest::getCgiExtension(const LocationBlock &location, const std::string &s)
+std::string HttpRequest::getCgiExtension(const std::string &s)
 {
     try
     {
-        for (auto &ext : location.getCgiExt())
+        for (auto &ext : _location->getCgiExt())
         {
             if (s.find(ext) != NPOS)
                 return ext;
@@ -89,9 +89,9 @@ std::string HttpRequest::getExecutableName(const std::string &file_extension, co
     return "";
 }
 
-LocationBlock &HttpRequest::getMatchingLocation(std::string path)
+std::shared_ptr<LocationBlock> HttpRequest::getMatchingLocation(std::string path)
 {
-    LocationBlock *best_match;
+    std::shared_ptr<LocationBlock> best_match;
     int max_matching_chars = -1;
     for (auto &location : config->getLocations())
     {
@@ -102,10 +102,10 @@ LocationBlock &HttpRequest::getMatchingLocation(std::string path)
         if (static_cast<int>(i) > max_matching_chars)
         {
             max_matching_chars = i;
-            best_match = &location.second;
+            best_match = std::make_shared<LocationBlock>(location.second);
         }
     };
-    return *best_match;
+    return best_match;
 }
 
 std::string joinPath(std::vector<std::string> paths, std::string delimeter)
@@ -128,23 +128,14 @@ std::string joinPath(std::vector<std::string> paths, std::string delimeter)
     return joined_path;
 }
 
-std::string HttpRequest::constructPath(LocationBlock &location, std::string raw_path)
+std::string HttpRequest::constructPath(std::string raw_path)
 {
     std::string root = strip(config->getRoot(), "/");
-    std::string location_root = strip(location.getRoot(), "/");
+    std::string location_root = strip(_location->getRoot(), "/");
     std::string joined = joinPath({root, location_root, raw_path}, "/");
     return joined;
 }
 
-// bool HttpRequest::isAcceptedCgiExt(LocationBlock &location, std::string ext)
-// {
-//     for (auto &accepted_ext : location.getCgiExt())
-//     {
-//         if (accepted_ext == ext)
-//             return true;
-//     }
-//     return false;
-// }
 
 void HttpRequest::parseRequestUri(const std::string &uri)
 {
@@ -164,19 +155,28 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     }
 
     // get the best matching location block in config
-    LocationBlock location = getMatchingLocation(uri_comps.raw_path);
+    _location = getMatchingLocation(uri_comps.raw_path);
+
+    // LocationBlock location;
+    // for (const auto &loc : config->getLocations())
+    // {
+    //     if (uri_comps.raw_path.find(loc.first) != NPOS)
+    //     {
+    //         location = loc.second;
+    //     }
+    // }
 
     // apply redirect
-    std::string redirect_path = location.getReturn();
+    std::string redirect_path = _location->getReturn();
     if (redirect_path != "")
         uri_comps.raw_path = redirect_path;
 
-    uri_comps.raw_path = uri_comps.raw_path == "/" ? location.getIndex() : uri_comps.raw_path;
-    uri_comps.path = constructPath(location, uri_comps.raw_path);
+    uri_comps.raw_path = uri_comps.raw_path == "/" ? _location->getIndex() : uri_comps.raw_path;
+    uri_comps.path = constructPath(uri_comps.raw_path);
 
     // determine if the requested cgi is accepted, and if so what type of cgi it is
     std::string cgi_ext;
-    if ((cgi_ext = getCgiExtension(location, uri_comps.raw_path)).empty() == false)
+    if ((cgi_ext = getCgiExtension(uri_comps.raw_path)).empty() == false)
     {
         // populate executable name from file path
         uri_comps.executable_name = getExecutableName(cgi_ext, uri_comps.raw_path);
@@ -241,7 +241,10 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
         try
         {
             std::size_t content_length = atoi(getHeaderComp("Content-Length").c_str());
-
+            if (content_length > static_cast<std::size_t>(config->getClientMaxBodySize()))
+            {
+                std::cout << "BODY SIZE TOO BIG!\n";
+            }
             std::size_t msg_body_start = dbl_clrf_pos + TWO_CRLF.length();
             std::string raw_msg_body = raw_request.substr(msg_body_start);
 
@@ -349,9 +352,6 @@ std::string HttpRequest::getValueFormQueryStr(const std::string &key)
 
 void HttpRequest::safeUserData()
 {
-    // compare if the www_path is the same as a string literal
-    if (uri_comps.www_path != "srv/www/bmi_calculator.py")
-        return;
     if (uri_comps.query_str.empty())
         return;
     std::string name, age, height, weight;
@@ -359,10 +359,10 @@ void HttpRequest::safeUserData()
     age = getValueFormQueryStr("age");
     height = getValueFormQueryStr("height");
     weight = getValueFormQueryStr("weight");
-    std::cout << "name: " << CGRN << name << NC << std::endl;
-    std::cout << "age: " << CGRN << age << NC << std::endl;
-    std::cout << "height: " << CGRN << height << NC << std::endl;
-    std::cout << "weight: " << CGRN << weight << NC << std::endl;
+    // std::cout << "name: " << CGRN << name << NC << std::endl;
+    // std::cout << "age: " << CGRN << age << NC << std::endl;
+    // std::cout << "height: " << CGRN << height << NC << std::endl;
+    // std::cout << "weight: " << CGRN << weight << NC << std::endl;
 }
 
 void HttpRequest::printParsedContent() const

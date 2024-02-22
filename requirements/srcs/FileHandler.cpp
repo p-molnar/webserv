@@ -128,7 +128,9 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
 {
     Log::logMsg("Handling GET request");
 
-    const std::string root_dir = req->getConfig()->getRoot();
+
+
+    const std::string root_dir = req->getServerConfig()->getRoot();
     std::string file_path = req->getUriComps().path;
     if (req->getType() == EXECUTABLE)
     {
@@ -162,7 +164,11 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
         if (fileHandler::isDirectory(file_path))
         {
             res->setHeaders("Content-Type", "text/html");
-            s = RequestProcessor::listDirectoryContent(file_path);
+            // req->getLocation().getAutoindex() == "on" ? s = RequestProcessor::listDirectoryContent(req->getUriComps()) : "";
+            if (req->getServerLocation()->getAutoIndex() == "on")
+                s = RequestProcessor::listDirectoryContent(req->getUriComps());
+            else
+                s = "";
         }
         else if (fileHandler::isFile(file_path))
         {
@@ -183,7 +189,7 @@ void handlePostRequest(const HttpRequest *req, HttpResponse *res)
 
 void handleDeleteRequest(const HttpRequest *req, HttpResponse *res)
 {
-    fs::path absolute_path = getAbsolutePath(req->getUriComps().path, req->getConfig()->getRoot());
+    fs::path absolute_path = getAbsolutePath(req->getUriComps().path, req->getServerConfig()->getRoot());
     try
     {
         if (std::filesystem::exists(absolute_path))

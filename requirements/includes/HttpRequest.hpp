@@ -52,6 +52,7 @@ class HttpRequest
 {
 private:
     std::shared_ptr<ServerBlock> config;
+    std::shared_ptr<LocationBlock> _location;
 
 private:
     e_parse_status request_line_parse_status;
@@ -69,8 +70,8 @@ private:
     FormData form_data;
 
 private:
-    LocationBlock &getMatchingLocation(std::string path);
-    std::string constructPath(LocationBlock &location, std::string path);
+    std::shared_ptr<LocationBlock> getMatchingLocation(std::string path);
+    std::string constructPath(std::string raw_path);
 
 public:
     HttpRequest();
@@ -91,7 +92,7 @@ private:
     void parseRequestUri(const std::string &uri);
     void parseHeaders(const std::string &raw_request);
     void parseMessageBody(const std::string &raw_request);
-    std::string getCgiExtension(const LocationBlock &location, const std::string &s);
+    std::string getCgiExtension(const std::string &s);
     // bool isAcceptedCgiExt(LocationBlock &location, std::string ext);
     void parseRequestType();
     std::string getExecutableName(const std::string &file_extension, const std::string &path);
@@ -101,11 +102,13 @@ public:
     t_uri_comps getUriComps() const;
     std::string getHeaderComp(const std::string &header_name) const;
     std::string getMessageBody() const;
-    std::shared_ptr<ServerBlock> getConfig() const;
+    std::shared_ptr<ServerBlock> getServerConfig() const;
+    std::shared_ptr<LocationBlock> getServerLocation() const;
     e_request_type getType() const;
     const FormData &getFormDataObj() const;
     bool isParsed() const;
     bool hadSessionId() const;
+    
 };
 
 std::ostream &operator<<(std::ostream &os, const HttpRequest &obj);

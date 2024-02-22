@@ -1,19 +1,18 @@
 #include "RequestProcessor.hpp"
 #include <fstream>
 
-std::string RequestProcessor::listDirectoryContent(const std::string &path)
+std::string RequestProcessor::listDirectoryContent(const t_uri_comps &uri)
 {
-	DIR *dir = SysCall::opendir(path);
+	std::string rootdir = uri.path;
+	DIR *dir = SysCall::opendir(rootdir.c_str());
 	std::vector<struct dirent *> dirent_list = SysCall::listdir(dir);
 	std::string dirlist;
-	std::string rootdir = "srv/www";
+
 
 	for (struct dirent *dir : dirent_list)
 	{
-		std::string webpath = path.substr(rootdir.length()) + "/" + std::string(dir->d_name);
-		if (webpath[0] != '/')
-			webpath = "/" + webpath;
-		dirlist += "<a href=\"" + webpath + "\">" + std::string(dir->d_name) + "</a>" + "<br>";
+		std::string dirname = dir->d_name;
+		dirlist += "<a href=\"" + dirname + "\">" + dirname + "</a>" + "<br>\n";
 	}
 	return dirlist;
 }

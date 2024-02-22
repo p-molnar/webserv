@@ -5,7 +5,7 @@ NAME 		:= 		webserv
 SRCSDIR 	:= 		srcs
 OBJDIR 		:= 		obj
 
-CPP_FLAGS	:= 		-Wall -Werror -Wextra -std=c++17 -g -fsanitize=address
+CPP_FLAGS	:= 		-Wall -Werror -Wextra -std=c++17
 
 INC_DIR		:= 		includes
 INC_FLAGS	:= 		$(addprefix -I, $(shell find $(INC_DIR) -type d))
