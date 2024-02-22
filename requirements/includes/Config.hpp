@@ -114,7 +114,6 @@ public:
 	Config(const char *file_path);
 	Config(int argc, char *argv[]);
 	~Config();
-	t_redirect applyRedirect(std::string target_path);
 
 public:
 	void display();

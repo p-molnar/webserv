@@ -227,8 +227,7 @@ void ServerBlock::addLocation(const std::string &locationPath, const LocationBlo
 // }
 
 Config::Config(const Config &obj) : _file_path(obj._file_path),
-									_servers(obj._servers),
-									redirects(obj.redirects)
+									_servers(obj._servers)
 {
 	std::cout << "Copy constructor called" << std::endl;
 }
@@ -240,7 +239,6 @@ Config &Config::operator=(const Config &obj)
 	{
 		_file_path = obj._file_path;
 		_servers = obj._servers;
-		redirects = obj.redirects;
 	}
 	return *this;
 }
