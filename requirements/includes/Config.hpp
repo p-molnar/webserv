@@ -14,13 +14,6 @@
 #define CGRY "\x1B[90m"
 #define DEFAULT_CONFIG_PATH "../default.conf"
 
-typedef struct s_redirect
-{
-	int status_code;
-	std::string old_path;
-	std::string new_path;
-} t_redirect;
-
 bool is_number(std::string s);
 std::string removeSemicolon(const std::string &str);
 
@@ -40,6 +33,7 @@ private:
 
 public:
 	LocationBlock();
+	LocationBlock &operator=(const LocationBlock &other);
 	~LocationBlock();
 
 	void setPath(const std::string &path);
@@ -106,7 +100,6 @@ private:
 	const char *_file_path;
 	// std::fstream _config_file;
 	std::vector<ServerBlock> _servers;
-	std::vector<t_redirect> redirects;
 
 	// void openFile();
 	void readFile();
@@ -121,7 +114,6 @@ public:
 	Config(const char *file_path);
 	Config(int argc, char *argv[]);
 	~Config();
-	void parseRedirect(std::string file_path);
 	t_redirect applyRedirect(std::string target_path);
 
 public:

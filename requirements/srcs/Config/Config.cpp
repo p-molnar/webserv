@@ -1,5 +1,20 @@
 #include "Config.hpp"
 
+LocationBlock &LocationBlock::operator=(const LocationBlock &other)
+{
+	_path = other._path;
+	_root = other._root;
+	_index = other._index;
+	_autoIndex = other._autoIndex;
+	_return = other._return;
+	_alias = other._alias;
+	_allowedMethods = other._allowedMethods;
+	_cgiPath = other._cgiPath;
+	_cgiExt = other._cgiExt;
+	_locations = other._locations;
+	return *this;
+}
+
 LocationBlock::LocationBlock()
 {
 	_path = "/";
@@ -288,11 +303,6 @@ void Config::display()
 		}
 	}
 }
-
-// void Config::openFile()
-// {
-
-// }
 
 void Config::readFile()
 {
