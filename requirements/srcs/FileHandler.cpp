@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/22 11:58:47 by pmolnar       ########   odam.nl         */
+/*   Updated: 2024/02/22 15:03:27 by pmolnar       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
 
     const std::string root_dir = req->getConfig()->getRoot();
     std::string file_path = req->getUriComps().path;
-    if (file_path.find(".py") != std::string::npos)
+    if (req->getType() == EXECUTABLE)
     {
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK),
                                   RequestProcessor::executeCgi(req->getUriComps()));
