@@ -97,6 +97,32 @@ std::string fileHandler::readFileContent(const std::string &file_path)
     return content;
 }
 
+std::string getContentType(const std::string &file_path)
+{
+    std::string extension = file_path.substr(file_path.find_last_of(".") + 1);
+    if (extension == "html")
+        return "text/html";
+    if (extension == "php")
+        return "text/html";
+    if (extension == "css")
+        return "text/css";
+    if (extension == "js")
+        return "text/javascript";
+    if (extension == "ico")
+        return "image/x-icon";
+    if (extension == "jpeg")
+        return "image/jpeg";
+    if (extension == "png")
+        return "image/png";
+    if (extension == "gif")
+        return "image/gif";
+    if (extension == "pdf")
+        return "application/pdf";
+    if (extension == "zip")
+        return "application/zip";
+    return "text/plain";
+}
+
 void handleGetRequest(const HttpRequest *req, HttpResponse *res)
 {
     Log::logMsg("Handling GET request");
@@ -105,6 +131,7 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
     std::string file_path = req->getUriComps().path;
     if (req->getType() == EXECUTABLE)
     {
+        res->setHeaders("Content-Type", "text/html");
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK),
                                   RequestProcessor::executeCgi(req->getUriComps()));
     }
@@ -114,6 +141,7 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
     }
     if (!fileHandler::isValidPath(file_path) && req->getType() != EXECUTABLE)
     {
+        res->setHeaders("Content-Type", "text/html");
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found),
                                   fileHandler::readFileContent(root_dir + "/error.html"));
         return;
@@ -122,9 +150,15 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
     {
         std::string s;
         if (fileHandler::isDirectory(file_path))
+        {
+            res->setHeaders("Content-Type", "text/html");
             s = RequestProcessor::listDirectoryContent(file_path);
+        }
         else if (fileHandler::isFile(file_path))
+        {
+            res->setHeaders("Content-Type", getContentType(file_path));
             s = fileHandler::readFileContent(file_path);
+        }
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), s);
     }
 }
