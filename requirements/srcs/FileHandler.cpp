@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/16 14:07:34 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/22 13:50:22 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ bool fileHandler::deleteResource(const std::string& file_path)
 
     Log::logMsg("File(s) deleted from server: " + file_path);
     return true;
-    }
+}
 
 bool fileHandler::isDirectory(std::string& file_path)
 {
@@ -102,7 +102,7 @@ void     handleGetRequest(const HttpRequest *req, HttpResponse *res)
 
     const std::string root_dir = Config::getConfig()->getRoot();
     std::string file_path = req->getUriComps().www_path;
-    if (file_path.find(".py") != std::string::npos)
+    if (file_path.find(".py") != std::string::npos || file_path.find(".sh") != std::string::npos)
     {
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK),
             RequestProcessor::executeCgi(req->getUriComps()));

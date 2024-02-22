@@ -19,6 +19,7 @@ void PollManager::addSocket(std::shared_ptr<Socket> socket)
 
 void PollManager::removeSocket(int fd)
 {
+	Log::logMsg("connection removed: " + std::to_string(fd));
 	std::vector<t_pollfd>::iterator v_it = pfds.begin();
 	std::vector<t_pollfd>::iterator v_ite = pfds.end();
 	while (v_it != v_ite)
@@ -95,16 +96,20 @@ void PollManager::HandlePollOutEvent(std::shared_ptr<Socket> curr_socket)
 {
 	if (std::shared_ptr<ClientSocket> client_socket = std::dynamic_pointer_cast<ClientSocket>(curr_socket))
 	{
-		try
-		{
+		try {
 			router.routeRequest(client_socket->getRequest(), client_socket->getResponse());
+		}
+		catch (const std::runtime_error &e) {
+			Log::logMsg(e.what());
+			client_socket->sendResponse(httpStatus::generateErrResponse(httpStatus::errnoToStatusCode(ENOSYS)));
+			PollManager::removeSocket(client_socket->getFd());
+		}
+		try {
 			client_socket->sendResponse();
-			// if (shouldCloseConnection(client_socket)) // REFACTOR CONNECTION STATUS / HANDLING
-			// 	removeSocket(client_socket->getFd());
 		}
 		catch (const ClientSocket::HungUpException &e)
 		{
-			// client_socket->sendResponse(httpStatus::generateErrResponse(httpStatus::errnoToStatusCode(errno)));
+			client_socket->sendResponse(httpStatus::generateErrResponse(httpStatus::errnoToStatusCode(errno)));
 			PollManager::removeSocket(client_socket->getFd());
 		}
 		catch (const std::exception &e)

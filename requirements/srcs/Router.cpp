@@ -6,12 +6,12 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/19 10:40:30 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/16 10:15:10 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/22 10:39:36 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Router.hpp"
 #include <regex>
+#include "Router.hpp"
 #include "FileHandler.hpp"
 #include "Log.hpp"
 #include "httpStatus.hpp"
@@ -42,4 +42,5 @@ void    Router::routeRequest(const HttpRequest& req, HttpResponse& res)
             return ;
         }
     }
+    throw std::runtime_error("Unknown method: " + method);
 }
