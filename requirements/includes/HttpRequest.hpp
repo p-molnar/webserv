@@ -41,8 +41,8 @@ enum e_request_type
 
 typedef struct s_uri_comps
 {
+    std::string raw_path;
     std::string path;
-    std::string www_path;
     std::string query_str;
     std::string executable_name;
     std::string path_info;
@@ -68,6 +68,10 @@ private:
     std::string request_message_body;
     FormData form_data;
 
+private:
+    LocationBlock &getMatchingLocation(std::string path);
+    std::string constructPath(LocationBlock &location, std::string path);
+
 public:
     HttpRequest();
     HttpRequest(std::shared_ptr<ServerBlock> config);
@@ -85,7 +89,8 @@ private:
     void parseRequestUri(const std::string &uri);
     void parseHeaders(const std::string &raw_request);
     void parseMessageBody(const std::string &raw_request);
-    std::string getCgiExtension(const std::string &s);
+    std::string getCgiExtension(const LocationBlock &location, const std::string &s);
+    // bool isAcceptedCgiExt(LocationBlock &location, std::string ext);
     void parseRequestType();
     std::string getExecutableName(const std::string &file_extension, const std::string &path);
 
