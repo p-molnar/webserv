@@ -141,9 +141,17 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
     }
     if (!fileHandler::isValidPath(file_path) && req->getType() != EXECUTABLE)
     {
+        std::string content_type = getContentType(file_path);
+        if (content_type.find("image") != std::string::npos)
+        {
+            res->setHeaders("Content-Type", content_type);
+            res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found),
+                                      fileHandler::readFileContent(root_dir + "www/404.jpg"));
+            return;
+        }
         res->setHeaders("Content-Type", "text/html");
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found),
-                                  fileHandler::readFileContent(root_dir + "/error.html"));
+                                  fileHandler::readFileContent(root_dir + "www/error.html"));
         return;
     }
     if (fileHandler::isValidPath(file_path))
