@@ -40,5 +40,6 @@ std::string RequestProcessor::executeCgi(const t_uri_comps &uri)
 		raw_cgi_output = readFull(filedes[0]);
 		SysCall::close(filedes[0]);
 	}
+	std::cout << "raw_cgi_output: " << raw_cgi_output << '\n';
 	return raw_cgi_output;
 }

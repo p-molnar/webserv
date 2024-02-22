@@ -134,6 +134,7 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
         res->setHeaders("Content-Type", "text/html");
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK),
                                   RequestProcessor::executeCgi(req->getUriComps()));
+        return;
     }
     if (file_path.find(".") == std::string::npos && req->getType() == RESOURCE && !fileHandler::isDirectory(file_path))
     {
