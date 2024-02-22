@@ -2,6 +2,11 @@
 
 ServerSocket::ServerSocket(){};
 
+ServerSocket::ServerSocket(std::shared_ptr<ServerBlock> config)
+{
+    this->config = config;
+};
+
 void ServerSocket::createSocket()
 {
     int yes = 1;
@@ -9,16 +14,18 @@ void ServerSocket::createSocket()
     int fd = SysCall::socket(PF_INET, SOCK_STREAM, 0);
     SysCall::fcntl(fd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
 
-    this->setFd(fd);
-    this->setPfd((t_pollfd){fd, POLLIN, 0});
+    this->fd = fd;
+    this->pfd = (t_pollfd){fd, POLLIN, 0};
 
     Log::logMsg("file descriptor reserved for server: " + std::to_string(fd));
     SysCall::setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&yes, sizeof(yes));
 }
 
-ServerSocket::ServerSocket(const Socket &obj)
+ServerSocket::ServerSocket(const ServerSocket &obj)
 {
-    this->setFd(obj.getFd());
+    this->fd = obj.fd;
+    this->pfd = obj.pfd;
+    this->config = obj.config;
 }
 
 ServerSocket::~ServerSocket()
@@ -55,5 +62,5 @@ std::shared_ptr<ClientSocket> ServerSocket::acceptConnection()
 
     Log::logMsg("new connection accepted: " + std::to_string(cli_fd), fd);
 
-    return std::shared_ptr<ClientSocket>(new ClientSocket(cli_fd));
+    return std::shared_ptr<ClientSocket>(new ClientSocket(cli_fd, config));
 }

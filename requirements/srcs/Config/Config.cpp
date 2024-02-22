@@ -1,43 +1,18 @@
 #include "Config.hpp"
 
-Config &Config::get()
+LocationBlock &LocationBlock::operator=(const LocationBlock &other)
 {
-	if (instance == nullptr)
-		instance = new Config;
-	return *instance;
-}
-
-void Config::setConfig(ServerBlock *server_block)
-{
-	// for (int i = 0; i < Config::get().getServers().size(); i++)
-	// {
-	// 	ServerBlock srv =
-	// 	if (getListenPort() == port)
-	// 	{
-	// 		server_config = &config;
-	// 		break;
-	// 	}
-	// }
-	// for (ServerBlock config : Config::get().getServers())
-	// {
-	// 	if (config.getListenPort() == port)
-	// 	{
-	// 		server_config = &config;
-	// 		break;
-	// 	}
-	// }
-	server_config = server_block;
-}
-
-ServerBlock *Config::getConfig()
-{
-	return server_config;
-}
-
-void Config::destruct()
-{
-	delete instance;
-	instance = nullptr;
+	_path = other._path;
+	_root = other._root;
+	_index = other._index;
+	_autoIndex = other._autoIndex;
+	_return = other._return;
+	_alias = other._alias;
+	_allowedMethods = other._allowedMethods;
+	_cgiPath = other._cgiPath;
+	_cgiExt = other._cgiExt;
+	_locations = other._locations;
+	return *this;
 }
 
 LocationBlock::LocationBlock()
@@ -251,24 +226,47 @@ void ServerBlock::addLocation(const std::string &locationPath, const LocationBlo
 // 	parseFile();
 // }
 
-void Config::parse(const char *file_path)
+Config::Config(const Config &obj) : _file_path(obj._file_path),
+									_servers(obj._servers)
+{
+	std::cout << "Copy constructor called" << std::endl;
+}
+
+Config &Config::operator=(const Config &obj)
+{
+	std::cout << "Assignation operator called" << std::endl;
+	if (this != &obj)
+	{
+		_file_path = obj._file_path;
+		_servers = obj._servers;
+	}
+	return *this;
+}
+
+Config::Config(const char *file_path)
 {
 	_file_path = file_path;
 	parseFile();
 }
 
-void Config::parse(int argc, char *argv[])
+Config::Config(int argc, char *argv[])
 {
 	if (argc > 1 && argv[1] != NULL)
+	{
+		std::cout << "Using config file '" << argv[1] << "'" << std::endl;
 		_file_path = argv[1];
+	}
 	else
+	{
+		std::cout << "No config file specified, using default config file" << std::endl;
 		_file_path = DEFAULT_CONFIG_PATH;
+	}
 	parseFile();
 }
 
 Config::~Config()
 {
-	closeFile();
+	// closeFile();
 }
 
 void Config::display()
@@ -304,8 +302,15 @@ void Config::display()
 	}
 }
 
-void Config::openFile()
+void Config::readFile()
 {
+	int line_nr = 1;
+	std::string line;
+	std::string key, value;
+	std::string path;
+	std::stack<std::string> block;
+	std::fstream _config_file;
+
 	if (_file_path == NULL)
 		_file_path = DEFAULT_CONFIG_PATH;
 	_config_file.open(_file_path);
@@ -314,16 +319,7 @@ void Config::openFile()
 		std::cout << "Error: Can not read file '" << _file_path << "'" << std::endl;
 		exit(1);
 	}
-	std::cout << "Using config file '" << _file_path << "'" << std::endl;
-}
-
-void Config::readFile()
-{
-	int line_nr = 1;
-	std::string line;
-	std::string key, value;
-	std::string path;
-	std::stack<std::string> block;
+	// std::cout << "Using config file '" << _file_path << "'" << std::endl;
 
 	while (getline(_config_file, line))
 	{
@@ -369,7 +365,7 @@ void Config::readFile()
 			else if (!block.empty() && block.top() == "server")
 			{
 				value = "";
-				while (value.back() != ';' && lineStream >> value)
+				while ((value.empty() || value.back() != ';') && lineStream >> value)
 				{
 					if (key == "listen" && is_number(removeSemicolon(value)))
 						getServers().back().setListenPort(std::stoi(removeSemicolon(value)));
@@ -401,7 +397,7 @@ void Config::readFile()
 			else if (!block.empty() && block.top() == "location")
 			{
 				value = "";
-				while (value.back() != ';' && lineStream >> value)
+				while ((value.empty() || value.back() != ';') && lineStream >> value)
 				{
 					if (key == "root")
 						getServers().back().getLocations()[path].setRoot(removeSemicolon(value));
@@ -424,6 +420,9 @@ void Config::readFile()
 		}
 		line_nr++;
 	}
+
+	if (_config_file.is_open())
+		_config_file.close();
 }
 
 void Config::addServer(const ServerBlock &server)
@@ -436,17 +435,17 @@ std::vector<ServerBlock> &Config::getServers()
 	return _servers;
 }
 
-void Config::closeFile()
-{
-	if (_config_file.is_open())
-		_config_file.close();
-}
+// void Config::closeFile()
+// {
+// 	if (_config_file.is_open())
+// 		_config_file.close();
+// }
 
 void Config::parseFile()
 {
-	openFile();
+	// openFile();
 	readFile();
-	closeFile();
+	// closeFile();
 }
 
 bool is_number(std::string s)

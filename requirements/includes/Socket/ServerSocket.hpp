@@ -16,7 +16,8 @@ class ServerSocket : public Socket
 {
 public:
     ServerSocket();
-    ServerSocket(const Socket &obj);
+    ServerSocket(std::shared_ptr<ServerBlock> config);
+    ServerSocket(const ServerSocket &obj);
     ~ServerSocket();
 
 public:

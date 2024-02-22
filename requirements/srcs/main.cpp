@@ -1,18 +1,14 @@
 #include "WebServer.hpp"
 
-Config *Config::instance = nullptr;           // singleton design pattern
-ServerBlock *Config::server_config = nullptr; // singleton design pattern
-
 int main(int argc, char *argv[])
 {
-	// Config config(argc, argv);
-	// config.display();	// temp for testing
+    // config.display();	// temp for testing
 
     try
     {
-        WebServer server;
-        Config::get().parse(argc, argv);
-        Config::get().parseRedirect("redirects");
+        Config config(argc, argv);
+        // config.display(); // temp for testing
+        WebServer server(config);
 
         // no need to load a config file anymore, because it is a global class
         // and every function has access to it

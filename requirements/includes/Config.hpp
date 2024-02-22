@@ -14,13 +14,6 @@
 #define CGRY "\x1B[90m"
 #define DEFAULT_CONFIG_PATH "../default.conf"
 
-typedef struct s_redirect
-{
-	int status_code;
-	std::string old_path;
-	std::string new_path;
-} t_redirect;
-
 bool is_number(std::string s);
 std::string removeSemicolon(const std::string &str);
 
@@ -40,6 +33,7 @@ private:
 
 public:
 	LocationBlock();
+	LocationBlock &operator=(const LocationBlock &other);
 	~LocationBlock();
 
 	void setPath(const std::string &path);
@@ -103,39 +97,25 @@ public:
 class Config
 {
 private:
-	// Singleton pattern design
-	Config() = default;
-	~Config();
-	static Config *instance;
-	static ServerBlock *server_config;
-	// Config(const char *file_path) = default;
-	// Config(int argc, char *argv[]) = default;
-
-private:
 	const char *_file_path;
-	std::fstream _config_file;
+	// std::fstream _config_file;
 	std::vector<ServerBlock> _servers;
-	std::vector<t_redirect> redirects;
 
-	void openFile();
+	// void openFile();
 	void readFile();
-	void closeFile();
+	// void closeFile();
 	void parseFile();
 	void addServer(const ServerBlock &server);
 
 public:
-	static Config &get();
-	static void setConfig(ServerBlock *server_block);
-	static ServerBlock *getConfig();
-	static void setConfig(int port);
-
-	void parse(const char *file_path);
-	void parse(int argc, char *argv[]);
-	void parseRedirect(std::string file_path);
-	t_redirect applyRedirect(std::string target_path);
+	Config();
+	Config(const Config &obj);
+	Config &operator=(const Config &obj);
+	Config(const char *file_path);
+	Config(int argc, char *argv[]);
+	~Config();
 
 public:
-	static void destruct();
 	void display();
 	std::vector<ServerBlock> &getServers();
 };

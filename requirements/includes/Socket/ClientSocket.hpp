@@ -42,7 +42,7 @@ public:
         Writing
     } state = State::Reading;
 
-    ClientSocket(int fd);
+    ClientSocket(int fd, std::shared_ptr<ServerBlock> config);
     ~ClientSocket(void);
 
     void setState(State newState) { state = newState; }
@@ -54,7 +54,7 @@ public:
 
     void recvRequest();
     void sendResponse();
-    void sendResponse(std::string response); // Overloading the send response function for error usage. 
+    void sendResponse(std::string response); // Overloading the send response function for error usage.
 };
 
 #endif

@@ -2,10 +2,11 @@
 #include "consts.hpp"
 #include <iostream>
 
-ClientSocket::ClientSocket(int fd)
+ClientSocket::ClientSocket(int fd, std::shared_ptr<ServerBlock> config) : request(config), response()
 {
-    this->setFd(fd);
-    this->setPfd((t_pollfd){fd, POLLIN, 0});
+    this->fd = fd;
+    this->pfd = (t_pollfd){fd, POLLIN, 0};
+    this->config = config;
 }
 
 ClientSocket::~ClientSocket()
@@ -43,8 +44,7 @@ void ClientSocket::sendResponse()
     {
         return;
     }
-    std::string _response = response.generateResponse(request, true);
-    std::cout << CGRY << _response << NC << std::endl; // Todo commend out
+    std::string _response = response.generateResponse(request);
     int bytes_sent = send(fd, _response.c_str(), _response.size(), 0);
     if (bytes_sent < 0)
     {

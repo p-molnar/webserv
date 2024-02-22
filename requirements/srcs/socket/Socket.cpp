@@ -8,10 +8,19 @@ Socket::Socket(int fd)
 {
 }
 
+Socket &Socket::operator=(const Socket &obj)
+{
+	this->fd = obj.fd;
+	this->pfd = obj.pfd;
+	this->config = obj.config;
+	return *this;
+}
+
 Socket::Socket(const Socket &obj)
 {
 	this->fd = obj.fd;
 	this->pfd = obj.pfd;
+	this->config = obj.config;
 }
 
 Socket::~Socket()
@@ -23,13 +32,3 @@ Socket::~Socket()
 int Socket::getFd() const { return fd; }
 
 t_pollfd Socket::getPfd() const { return pfd; }
-
-void Socket::setFd(int fd)
-{
-	this->fd = fd;
-}
-
-void Socket::setPfd(t_pollfd pfd)
-{
-	this->pfd = pfd;
-}

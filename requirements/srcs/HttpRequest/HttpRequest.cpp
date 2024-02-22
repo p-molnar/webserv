@@ -1,23 +1,31 @@
 #include "HttpRequest.hpp"
 
-HttpRequest::HttpRequest()
-    : request_line_parse_status(INCOMPLETE),
-      request_headers_parse_status(INCOMPLETE),
-      request_msg_body_parse_status(INCOMPLETE)
+HttpRequest::HttpRequest() : request_line_parse_status(INCOMPLETE),
+                             request_headers_parse_status(INCOMPLETE),
+                             request_msg_body_parse_status(INCOMPLETE)
+{
+}
+
+HttpRequest::HttpRequest(std::shared_ptr<ServerBlock> config) : config(config),
+                                                                request_line_parse_status(INCOMPLETE),
+                                                                request_headers_parse_status(INCOMPLETE),
+                                                                request_msg_body_parse_status(INCOMPLETE)
 {
 }
 
 HttpRequest::HttpRequest(const HttpRequest &obj)
-    : request_line_parse_status(obj.request_line_parse_status),
-      request_headers_parse_status(obj.request_headers_parse_status),
-      request_msg_body_parse_status(obj.request_msg_body_parse_status),
-      raw_request(obj.raw_request),
-      uri_comps(obj.uri_comps),
-      request_line(obj.request_line),
-      request_headers(obj.request_headers),
-      request_message_body(obj.request_message_body),
-      form_data(obj.form_data)
+// : request_line_parse_status(obj.request_line_parse_status),
+//   request_headers_parse_status(obj.request_headers_parse_status),
+//   request_msg_body_parse_status(obj.request_msg_body_parse_status),
+//   raw_request(obj.raw_request),
+//   uri_comps(obj.uri_comps),
+//   request_line(obj.request_line),
+//   request_headers(obj.request_headers),
+//   request_message_body(obj.request_message_body),
+//   form_data(obj.form_data),
+//   pfd(pfd)
 {
+    *this = obj;
 }
 
 HttpRequest HttpRequest::operator=(const HttpRequest &obj)
@@ -31,6 +39,7 @@ HttpRequest HttpRequest::operator=(const HttpRequest &obj)
     request_headers = obj.request_headers;
     request_message_body = obj.request_message_body;
     form_data = obj.form_data;
+    config = obj.config;
     return *this;
 }
 
@@ -41,11 +50,11 @@ std::string HttpRequest::getMessageBody() const
     return request_message_body;
 }
 
-std::string HttpRequest::getCgiExtension(const std::string &s)
+std::string HttpRequest::getCgiExtension(const LocationBlock &location, const std::string &s)
 {
     try
     {
-        for (std::string ext : Config::getConfig()->getLocations()["/cgi-bin"].getCgiExt())
+        for (auto &ext : location.getCgiExt())
         {
             if (s.find(ext) != NPOS)
                 return ext;
@@ -60,7 +69,7 @@ std::string HttpRequest::getCgiExtension(const std::string &s)
 
 void HttpRequest::parseRequestType()
 {
-    if (uri_comps.www_path.back() == '/')
+    if (uri_comps.path.back() == '/')
         request_type = DIRECTORY;
     else if (!uri_comps.executable_name.empty())
         request_type = EXECUTABLE;
@@ -80,6 +89,63 @@ std::string HttpRequest::getExecutableName(const std::string &file_extension, co
     return "";
 }
 
+LocationBlock &HttpRequest::getMatchingLocation(std::string path)
+{
+    LocationBlock *best_match;
+    int max_matching_chars = -1;
+    for (auto &location : config->getLocations())
+    {
+        std::string location_directive = location.first;
+        size_t i = 0;
+        while (i < location_directive.length() && location_directive[i] == path[i])
+            i++;
+        if (static_cast<int>(i) > max_matching_chars)
+        {
+            max_matching_chars = i;
+            best_match = &location.second;
+        }
+    };
+    return *best_match;
+}
+
+std::string joinPath(std::vector<std::string> paths, std::string delimeter)
+{
+    std::string joined_path;
+
+    for (size_t i = 0; i < paths.size(); i++)
+    {
+        std::string stripped = strip(paths[i], "/");
+        if (stripped != "")
+            joined_path += stripped + delimeter;
+    }
+
+    // if the path is "/" or if the last character is not "/"
+    // i.e., then remove the extra "/"
+    if (paths.back() == "/" || paths.back().back() != '/')
+    {
+        joined_path.pop_back();
+    }
+    return joined_path;
+}
+
+std::string HttpRequest::constructPath(LocationBlock &location, std::string raw_path)
+{
+    std::string root = strip(config->getRoot(), "/");
+    std::string location_root = strip(location.getRoot(), "/");
+    std::string joined = joinPath({root, location_root, raw_path}, "/");
+    return joined;
+}
+
+// bool HttpRequest::isAcceptedCgiExt(LocationBlock &location, std::string ext)
+// {
+//     for (auto &accepted_ext : location.getCgiExt())
+//     {
+//         if (accepted_ext == ext)
+//             return true;
+//     }
+//     return false;
+// }
+
 void HttpRequest::parseRequestUri(const std::string &uri)
 {
     std::vector<std ::string> uri_comps_local = tokenize(uri, QSTR_SEP);
@@ -87,40 +153,36 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     // extract path
     if (uri_comps_local.size() == 1)
     {
-        uri_comps.path = uri_comps_local[0];
+        uri_comps.raw_path = uri_comps_local[0];
     }
 
     // extract query string
     if (uri_comps_local.size() == 2)
     {
-        uri_comps.path = uri_comps_local[0];
+        uri_comps.raw_path = uri_comps_local[0];
         uri_comps.query_str = uri_comps_local[1];
     }
 
+    // get the best matching location block in config
+    LocationBlock location = getMatchingLocation(uri_comps.raw_path);
+
     // apply redirect
-    t_redirect redir = Config::get().applyRedirect(uri_comps.path);
+    std::string redirect_path = location.getReturn();
+    if (redirect_path != "")
+        uri_comps.raw_path = redirect_path;
 
-    if (redir.status_code != -1)
-    {
-        uri_comps.path = redir.new_path;
-        // add redirect status code to response
-    }
-
-    // generate www_path based on path
-    std::string root = strip(Config::getConfig()->getRoot(), "/");
-    std::string default_landing_page = strip(Config::getConfig()->getIndex(), "/");
-
-    uri_comps.www_path = uri_comps.path == "/"
-                             ? root + "/" + default_landing_page
-                             : root + uri_comps.path;
+    uri_comps.raw_path = uri_comps.raw_path == "/" ? location.getIndex() : uri_comps.raw_path;
+    uri_comps.path = constructPath(location, uri_comps.raw_path);
 
     // determine if the requested cgi is accepted, and if so what type of cgi it is
-
     std::string cgi_ext;
-    if ((cgi_ext = getCgiExtension(uri_comps.path)).empty() == false)
+    if ((cgi_ext = getCgiExtension(location, uri_comps.raw_path)).empty() == false)
     {
         // populate executable name from file path
-        uri_comps.executable_name = getExecutableName(cgi_ext, uri_comps.path);
+        uri_comps.executable_name = getExecutableName(cgi_ext, uri_comps.raw_path);
+
+        // get rid of file_path from path
+        uri_comps.path = uri_comps.path.substr(0, uri_comps.path.find(cgi_ext) + cgi_ext.length());
 
         // extract path_info
         std::size_t qstr_sep_pos = uri.find(QSTR_SEP);
@@ -130,10 +192,12 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         else
             uri_comps.path_info = uri.substr(path_info_start);
     }
-    else if (uri_comps.path.length() > 1 && request_type != EXECUTABLE)
+    else if (uri_comps.raw_path.length() > 1 && request_type != EXECUTABLE)
         request_type = RESOURCE;
     else
         request_type = UNDEF;
+
+    parseRequestType();
 }
 
 bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_received)
@@ -145,6 +209,7 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
 
     std::cout << CGRY << raw_request << NC << std::endl; // Todo comment out
 
+    // request line parsing
     if (request_line_parse_status == INCOMPLETE)
     {
         clrf_pos = raw_request.find(CRLF);
@@ -153,12 +218,11 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
             std::string raw_request_line = raw_request.substr(0, clrf_pos);
             parseRequestLine(raw_request_line);
             parseRequestUri(request_line.at("request_uri"));
-            parseRequestType();
-
             request_line_parse_status = COMPLETE;
         }
     }
 
+    // header parsing
     if (request_headers_parse_status == INCOMPLETE)
     {
         dbl_clrf_pos = raw_request.find(TWO_CRLF);
@@ -171,6 +235,7 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
         }
     }
 
+    // message body parsing
     if (request_line_parse_status == COMPLETE && request_headers_parse_status == COMPLETE)
     {
         try
@@ -308,8 +373,8 @@ void HttpRequest::printParsedContent() const
     std::cout << "\n\nPARSED CONTENT:\n"
               << std::endl;
 
+    std::cout << "raw_path: |" << uri_comps.raw_path << "|" << '\n';
     std::cout << "path: |" << uri_comps.path << "|" << '\n';
-    std::cout << "www_path: |" << uri_comps.www_path << "|" << '\n';
     std::cout << "executable_name: |" << uri_comps.executable_name << "|" << '\n';
     std::cout << "path_info: |" << uri_comps.path_info << "|" << '\n';
     std::cout << "query_string: |" << uri_comps.query_str << "|" << '\n';
@@ -349,7 +414,7 @@ void HttpRequest::flushBuffers()
     request_message_body.erase();
     request_line.clear();
     request_headers.clear();
-    uri_comps.path.erase();
+    uri_comps.raw_path.erase();
     uri_comps.executable_name.erase();
     uri_comps.path_info.erase();
     uri_comps.query_str.erase();
@@ -367,8 +432,3 @@ void HttpRequest::flushBuffers()
 // {
 //     return form_data;
 // }
-
-e_request_type HttpRequest::getType() const
-{
-    return request_type;
-}
