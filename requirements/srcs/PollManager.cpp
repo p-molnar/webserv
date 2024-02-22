@@ -66,13 +66,9 @@ void PollManager::processEvents()
 	while (RUNNING)
 	{
 		updatePollfd();
-		int active_events = SysCall::poll(pfds.	data(), pfds.size(), 1000);
+		int active_events = SysCall::poll(pfds.data(), pfds.size(), 1000);
 
-		if (active_events < 0)
-		{
-			continue;
-		}
-		for (size_t i = 0; i < pfds.size(); ++i)
+		for (size_t i = 0, handled_events = 0; i < pfds.size() && (int)handled_events < active_events; ++i)
 		{
 			int fd = pfds[i].fd;
 			std::shared_ptr<Socket> curr_socket = sockets.at(fd);
@@ -80,14 +76,14 @@ void PollManager::processEvents()
 			{
 				Log::logMsg("POLLIN event");
 				HandlePollInEvent(curr_socket);
+				handled_events++;
 			}
-			if (pfds[i].revents & (POLLOUT | POLLHUP))
+			else if (pfds[i].revents & (POLLOUT | POLLHUP))
 			{
 				Log::logMsg("POLLOUT event");
 				HandlePollOutEvent(curr_socket);
+				handled_events++;
 			}
-			else if (pfds[i].revents & POLLHUP)
-				removeSocket(fd);
 		}
 	}
 }
@@ -129,6 +125,10 @@ void PollManager::HandlePollInEvent(std::shared_ptr<Socket> curr_socket)
 		try
 		{
 			client_socket->recvRequest();
+		}
+		catch (const ClientSocket::HungUpException &e)
+		{
+			PollManager::removeSocket(client_socket->getFd());
 		}
 		catch (const std::exception &e)
 		{
