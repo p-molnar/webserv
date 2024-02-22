@@ -6,7 +6,7 @@ std::string RequestProcessor::executeCgi(const t_uri_comps &uri)
 	std::string raw_cgi_output;
 
 	// std::string cgi_root = uri.www_path;
-	std::string exec_path = uri.www_path;
+	std::string exec_path = uri.www_path; // Todo: implement the correct path (solving the CGI problem)
 	// std::cout << "execpath:" << exec_path << std::endl;
 	SysCall::access(exec_path, X_OK);
 
