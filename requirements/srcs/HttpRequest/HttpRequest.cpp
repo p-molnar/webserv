@@ -160,7 +160,6 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
 
     raw_request += std::string(raw_request_data, bytes_received);
 
-    // std::cout << raw_request << std::endl; // Todo comment out
     std::cout << CGRY << raw_request << NC << std::endl; // Todo comment out
 
     // request line parsing
