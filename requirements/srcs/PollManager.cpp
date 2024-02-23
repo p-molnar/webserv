@@ -70,20 +70,30 @@ void PollManager::processEvents()
 
 		for (size_t i = 0, handled_events = 0; i < pfds.size() && (int)handled_events < active_events; ++i)
 		{
-			int fd = pfds[i].fd;
-			std::shared_ptr<Socket> curr_socket = sockets.at(fd);
-			if (pfds[i].revents & (POLLIN | POLLHUP))
+			if (pfds[i].revents & (POLLIN | POLLOUT))
 			{
-				Log::logMsg("POLLIN event");
-				HandlePollInEvent(curr_socket);
+				int fd = pfds[i].fd;
+				std::shared_ptr<Socket> curr_socket = sockets.at(fd);
+				if (pfds[i].revents & POLLIN)
+				{
+					Log::logMsg("POLLIN event");
+					HandlePollInEvent(curr_socket);
+					handled_events++;
+				}
+				else if (pfds[i].revents & POLLOUT)
+				{
+					Log::logMsg("POLLOUT event");
+					HandlePollOutEvent(curr_socket);
+					handled_events++;
+				}
+			}
+			else if (pfds[i].revents & POLLHUP)
+			{
+				Log::logMsg("POLLHUP event");
+				removeSocket(pfds[i].fd);
 				handled_events++;
 			}
-			else if (pfds[i].revents & (POLLOUT | POLLHUP))
-			{
-				Log::logMsg("POLLOUT event");
-				HandlePollOutEvent(curr_socket);
-				handled_events++;
-			}
+
 		}
 	}
 }
@@ -96,13 +106,16 @@ void PollManager::HandlePollOutEvent(std::shared_ptr<Socket> curr_socket)
 		{
 			router.routeRequest(client_socket->getRequest(), client_socket->getResponse());
 			client_socket->sendResponse();
-			// if (shouldCloseConnection(client_socket)) // REFACTOR CONNECTION STATUS / HANDLING
-			// 	removeSocket(client_socket->getFd());
 		}
 		catch (const ClientSocket::HungUpException &e)
 		{
-			// client_socket->sendResponse(httpStatus::generateErrResponse(httpStatus::errnoToStatusCode(errno)));
 			PollManager::removeSocket(client_socket->getFd());
+		}
+		catch (const HttpRequest::InvalidMethodException &e)
+		{
+			client_socket->sendResponse(httpStatus::generateErrResponse(statusCode::method_not_allowed));
+			PollManager::removeSocket(client_socket->getFd());
+			Log::logMsg("Method not allowed");
 		}
 		catch (const std::exception &e)
 		{

@@ -1,5 +1,6 @@
 #include "HttpRequest.hpp"
 
+
 HttpRequest::HttpRequest() : request_line_parse_status(INCOMPLETE),
                              request_headers_parse_status(INCOMPLETE),
                              request_msg_body_parse_status(INCOMPLETE)
@@ -198,6 +199,13 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         request_type = UNDEF;
 
     parseRequestType();
+
+    std::vector<std::string> allowed_methods = _location->getAllowedMethods();
+    if (std::find(allowed_methods.begin(), allowed_methods.end(), request_line.at("method")) == allowed_methods.end())
+    {
+        throw HttpRequest::InvalidMethodException();
+        return;
+    }
 }
 
 bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_received)

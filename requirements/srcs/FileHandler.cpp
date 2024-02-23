@@ -150,12 +150,12 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
         {
             res->setHeaders("Content-Type", content_type);
             res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found),
-                                      fileHandler::readFileContent(root_dir + "www/404.jpg"));
+                                      fileHandler::readFileContent(root_dir + "www/404.jpg")); // check if img exists
             return;
         }
         res->setHeaders("Content-Type", "text/html");
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found),
-                                  fileHandler::readFileContent(root_dir + "www/error.html"));
+                                  fileHandler::readFileContent(req->getServerConfig()->getErrorPage(404)));
         return;
     }
     if (fileHandler::isValidPath(file_path))
@@ -164,7 +164,6 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
         if (fileHandler::isDirectory(file_path))
         {
             res->setHeaders("Content-Type", "text/html");
-            // req->getLocation().getAutoindex() == "on" ? s = RequestProcessor::listDirectoryContent(req->getUriComps()) : "";
             if (req->getServerLocation()->getAutoIndex() == "on")
                 s = RequestProcessor::listDirectoryContent(req->getUriComps());
             else
