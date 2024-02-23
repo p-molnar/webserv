@@ -135,12 +135,19 @@ void PollManager::HandlePollInEvent(std::shared_ptr<Socket> curr_socket)
 		{
 			PollManager::removeSocket(client_socket->getFd());
 		}
+		catch (const HttpRequest::invalidRequest &e)
+		{
+			client_socket->sendResponse(httpStatus::generateErrResponse(statusCode::bad_request));
+			if (e.what()[0] != '\0')
+				Log::logMsg(e.what());
+			PollManager::removeSocket(client_socket->getFd());
+		}
 		catch (const std::exception &e)
 		{
 			client_socket->sendResponse(httpStatus::generateErrResponse(httpStatus::errnoToStatusCode(errno)));
-			PollManager::removeSocket(client_socket->getFd());
 			if (e.what()[0] != '\0')
 				Log::logMsg(e.what());
+			PollManager::removeSocket(client_socket->getFd());
 		}
 	}
 	return;

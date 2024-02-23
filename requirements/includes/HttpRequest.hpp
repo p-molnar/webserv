@@ -50,6 +50,18 @@ typedef struct s_uri_comps
 
 class HttpRequest
 {
+public:
+class invalidRequest : public std::exception
+{
+    std::string exc;
+
+public:
+    invalidRequest(){};
+    invalidRequest(std::string what_arg) : exc(what_arg){};
+    const char *what() const throw() { return exc.c_str(); };
+    ~invalidRequest() throw(){};
+};
+
 private:
     std::shared_ptr<ServerBlock> config;
     std::shared_ptr<LocationBlock> _location;

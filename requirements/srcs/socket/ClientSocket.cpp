@@ -1,6 +1,8 @@
 #include "ClientSocket.hpp"
 #include "consts.hpp"
 #include <iostream>
+#include <httpStatus.hpp>
+#include <stdexcept>
 
 ClientSocket::ClientSocket(int fd, std::shared_ptr<ServerBlock> config) : request(config), response()
 {
@@ -27,7 +29,6 @@ void ClientSocket::recvRequest()
         Log::logMsg("Connection hung up", fd);
         throw ClientSocket::HungUpException();
     }
-
     is_request_parsed = request.parseRequest(request_buff, bytes_received);
     Log::logMsg("request received", fd);
     if (is_request_parsed)

@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 09:13:36 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/23 14:51:51 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/23 15:27:47 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ std::string httpStatus::generateErrResponse(statusCode code)
     response += "Connection: close\r\n\r\n";
 
 	response += body;
+	std::cout << response ;
 	return response;
 }
 

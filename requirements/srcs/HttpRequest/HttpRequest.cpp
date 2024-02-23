@@ -281,6 +281,8 @@ void HttpRequest::parseRequestLine(const std::string &raw_request)
     request_line["method"] = *curr_field++;
     request_line["request_uri"] = *curr_field++;
     request_line["http_version"] = *curr_field++;
+    if (request_line["http_version"] != "HTTP/1.1")
+        throw HttpRequest::invalidRequest("Http version not supported");
 }
 
 void HttpRequest::parseMessageBody(const std::string &raw_request)
