@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/22 13:50:22 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/23 12:28:09 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,12 @@ namespace fs = std::filesystem;
 
 #define ERROR "<html><body><h1>404 Not Found</h1></body></html>"
 
-bool fileHandler::isValidPath(std::string& file_path)
+bool fileHandler::isValidPath(std::string &file_path)
 {
     return std::filesystem::exists(file_path);
 }
 
-
-fs::path getAbsolutePath(const std::string& file_path_input, const std::string& root_input) 
+fs::path getAbsolutePath(const std::string &file_path_input, const std::string &root_input)
 {
     std::string file_path = file_path_input;
     if (!file_path.empty() && file_path[0] == '/')
@@ -41,7 +40,8 @@ fs::path getAbsolutePath(const std::string& file_path_input, const std::string& 
     if (!root.empty() && root.back() == '/')
         root.pop_back();
 
-    if (file_path.substr(0, root.length()) == root) {
+    if (file_path.substr(0, root.length()) == root)
+    {
         file_path = file_path.substr(root.length());
         if (!file_path.empty() && file_path[0] == '/')
             file_path.erase(0, 1);
@@ -53,15 +53,16 @@ fs::path getAbsolutePath(const std::string& file_path_input, const std::string& 
     return absolute_path;
 }
 
-
-bool fileHandler::deleteResource(const std::string& file_path) 
+bool fileHandler::deleteResource(const std::string &file_path)
 {
     Log::logMsg("Handling DELETE request");
 
-    try {
+    try
+    {
         std::filesystem::remove_all(file_path);
-    } 
-    catch (const std::filesystem::filesystem_error& e) {
+    }
+    catch (const std::filesystem::filesystem_error &e)
+    {
         std::string error_message = "Filesystem error: " + std::string(e.what());
         Log::logMsg(error_message);
         throw std::runtime_error(error_message);
@@ -71,19 +72,20 @@ bool fileHandler::deleteResource(const std::string& file_path)
     return true;
 }
 
-bool fileHandler::isDirectory(std::string& file_path)
+bool fileHandler::isDirectory(std::string &file_path)
 {
     struct stat buffer;
     return (stat(file_path.c_str(), &buffer) == 0 && S_ISDIR(buffer.st_mode));
 }
 
-bool fileHandler::isFile(std::string& file_path) 
+bool fileHandler::isFile(std::string &file_path)
 {
     struct stat buffer;
+    
     return (stat(file_path.c_str(), &buffer) == 0 && S_ISREG(buffer.st_mode));
 }
 
-std::string fileHandler::readFileContent(const std::string& file_path)
+std::string fileHandler::readFileContent(const std::string &file_path)
 {
     std::ifstream file(file_path);
     if (!file.is_open())
@@ -96,37 +98,86 @@ std::string fileHandler::readFileContent(const std::string& file_path)
     return content;
 }
 
-void     handleGetRequest(const HttpRequest *req, HttpResponse *res) 
+std::string getContentType(const std::string &file_path)
+{
+    std::string extension = file_path.substr(file_path.find_last_of(".") + 1);
+    if (extension == "html")
+        return "text/html";
+    if (extension == "php")
+        return "text/html";
+    if (extension == "css")
+        return "text/css";
+    if (extension == "js")
+        return "text/javascript";
+    if (extension == "ico")
+        return "image/x-icon";
+    if (extension == "jpeg")
+        return "image/jpeg";
+    if (extension == "png")
+        return "image/png";
+    if (extension == "gif")
+        return "image/gif";
+    if (extension == "pdf")
+        return "application/pdf";
+    if (extension == "zip")
+        return "application/zip";
+    return "text/plain";
+}
+
+void handleGetRequest(const HttpRequest *req, HttpResponse *res)
 {
     Log::logMsg("Handling GET request");
 
-    const std::string root_dir = Config::getConfig()->getRoot();
-    std::string file_path = req->getUriComps().www_path;
-    if (file_path.find(".py") != std::string::npos || file_path.find(".sh") != std::string::npos)
+    const std::string root_dir = req->getServerConfig()->getRoot();
+    std::string file_path = req->getUriComps().path;
+    if (req->getType() == EXECUTABLE)
     {
+        res->setHeaders("Content-Type", "text/html");
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK),
-            RequestProcessor::executeCgi(req->getUriComps()));
+                                  RequestProcessor::executeCgi(req->getUriComps()));
+        return;
     }
-    if (file_path.find(".") == std::string::npos && req->getType() == RESOURCE && !fileHandler::isDirectory(file_path)) {
+    if (file_path.find(".") == std::string::npos && req->getType() == RESOURCE && !fileHandler::isDirectory(file_path))
+    {
         file_path += ".html";
     }
-    if (!fileHandler::isValidPath(file_path) && req->getType() != EXECUTABLE) {
-        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found), 
-            fileHandler::readFileContent(root_dir + "/error.html"));
-        return ;
+    if (!fileHandler::isValidPath(file_path) && req->getType() != EXECUTABLE)
+    {
+        std::string content_type = getContentType(file_path);
+        if (content_type.find("image") != std::string::npos)
+        {
+            res->setHeaders("Content-Type", content_type);
+            res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found),
+                                      fileHandler::readFileContent(root_dir + "www/404.jpg"));
+            return;
+        }
+        res->setHeaders("Content-Type", "text/html");
+        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found),
+                                  fileHandler::readFileContent(root_dir + "www/error.html"));
+        return;
     }
     if (fileHandler::isValidPath(file_path))
     {
         std::string s;
         if (fileHandler::isDirectory(file_path))
-            s = RequestProcessor::listDirectoryContent(file_path);
+        {
+            res->setHeaders("Content-Type", "text/html");
+            // req->getLocation().getAutoindex() == "on" ? s = RequestProcessor::listDirectoryContent(req->getUriComps()) : "";
+            if (req->getServerLocation()->getAutoIndex() == "on")
+                s = RequestProcessor::listDirectoryContent(req->getUriComps());
+            else
+                s = "";
+        }
         else if (fileHandler::isFile(file_path))
+        {
+            res->setHeaders("Content-Type", getContentType(file_path));
             s = fileHandler::readFileContent(file_path);
+        }
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), s);
     }
 }
 
-void     handlePostRequest(const HttpRequest *req, HttpResponse *res)
+void handlePostRequest(const HttpRequest *req, HttpResponse *res)
 {
     Log::logMsg("Handling POST request");
     std::string file_path = req->getUriComps().path;
@@ -134,20 +185,25 @@ void     handlePostRequest(const HttpRequest *req, HttpResponse *res)
     res->setStatusLine(httpStatus::getStatusLine(statusCode::OK));
 }
 
-void handleDeleteRequest(const HttpRequest *req, HttpResponse *res) 
+void handleDeleteRequest(const HttpRequest *req, HttpResponse *res)
 {
-    fs::path absolute_path = getAbsolutePath
-        (req->getUriComps().path, Config::getConfig()->getRoot());
-    try {
-        if (std::filesystem::exists(absolute_path)) {
+    fs::path absolute_path = getAbsolutePath(req->getUriComps().path, req->getServerConfig()->getRoot());
+    try
+    {
+        if (std::filesystem::exists(absolute_path))
+        {
             fileHandler::deleteResource(absolute_path.string());
             res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), "");
-        } else {
+        }
+        else
+        {
             throw std::runtime_error("File not found: " + absolute_path.string());
         }
-    } catch (const std::runtime_error& e) {
+    }
+    catch (const std::runtime_error &e)
+    {
         std::cerr << e.what() << '\n';
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found),
-            "<html><body><h1>" + httpStatus::_message.at(statusCode::not_found) + "</h1></body></html>");
+                                  "<html><body><h1>" + httpStatus::_message.at(statusCode::not_found) + "</h1></body></html>");
     }
 }

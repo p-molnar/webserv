@@ -9,6 +9,7 @@
 void    handleGetRequest(const HttpRequest *req, HttpResponse *res);
 void    handlePostRequest(const HttpRequest *req, HttpResponse *res);
 void    handleDeleteRequest(const HttpRequest *req, HttpResponse *res);
+std::string getContentType(const std::string &file_path);
 
 class fileHandler {
     public:

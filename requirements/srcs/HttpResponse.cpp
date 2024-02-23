@@ -31,7 +31,8 @@ HttpResponse HttpResponse::operator=(const HttpResponse &obj)
     return *this;
 };
 
-HttpResponse::HttpResponse() : _httpVersion("HTTP/1.1"){};
+HttpResponse::HttpResponse() : _httpVersion("HTTP/1.1") {};
+
 HttpResponse::~HttpResponse() {}
 
 void HttpResponse::setBody(const std::string &body)
@@ -89,7 +90,7 @@ std::string generateSessionID(int length)
     return result;
 }
 
-std::string    HttpResponse::generateResponse(HttpRequest &request, bool hasBody)
+std::string    HttpResponse::generateResponse(HttpRequest &request)
 {
     Log::logMsg("Response generated, ready to sent");
     std::string response;
@@ -101,17 +102,16 @@ std::string    HttpResponse::generateResponse(HttpRequest &request, bool hasBody
     // response += setCookie("all", "Hello cookie world!", "");
     // response += setCookie("bmi", "bmi calculator", "/bmi_calculator");
     // response += setCookie("Error", "ERROR", "/error");
-    if (hasBody)
-    {
-        setHeaders("Content-Length", std::to_string(_body.size()));
-        setHeaders("Content-Type", "text/html");
-    }
+    setHeaders("Content-Length", std::to_string(_body.size()));
     for (const auto& header : _headers) {
         response += header.first + ": " + header.second + CRLF;
     }
     response += CRLF;
-    if (hasBody) {
-        response += _body;
-    }
+    std::cout << CGRY << response << NC << std::endl;
+    response += _body;
+    if (getHeader("Content-Type").find("text/html") != std::string::npos)
+        std::cout << CGRY << _body << NC << std::endl;
+    else
+        std::cout << CGRY << "[Raw bits]" << NC << std::endl;
     return response;
 }

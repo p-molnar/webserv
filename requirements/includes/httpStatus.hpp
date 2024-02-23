@@ -32,25 +32,7 @@ enum class statusCode
 };
 
 class httpStatus {
-
-	class httpStatusException : public std::runtime_error 
-	{
-		public:
-			httpStatusException(statusCode code) : std::runtime_error(getStatusLine(code)), _code(code) {};
-			statusCode code() const {return _code;}
-			const char* what() const noexcept override {
-				auto it = _message.find(_code);
-				if (it != _message.end())
-					return it->second.c_str();
-				else
-					return "HTTP Status Exception";
-			}
-		private:
-			statusCode _code;
-
-	};
 	private:
-
 	public:
 		static statusCode errnoToStatusCode(int err);
 		static std::unordered_map<statusCode, std::string> _message;

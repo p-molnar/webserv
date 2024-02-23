@@ -8,6 +8,7 @@
 #include <csignal>
 #include <iostream>
 
+
 #include "errors.hpp"
 #include "consts.hpp"
 #include "string_utils.hpp"
@@ -22,7 +23,7 @@ class RequestProcessor
 public:
 	static std::string executeCgi(const t_uri_comps &uri);
 	static void uploadFiles(const FormData &form_data);
-	static std::string listDirectoryContent(const std::string &path);
+	static std::string listDirectoryContent(const t_uri_comps &uri);
 };
 
 #endif

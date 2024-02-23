@@ -2,16 +2,19 @@
 #include "consts.hpp"
 #include <iostream>
 
-ClientSocket::ClientSocket(int fd)
+ClientSocket::ClientSocket(int fd, std::shared_ptr<ServerBlock> config) : request(config), response()
 {
-    this->setFd(fd);
-    this->setPfd((t_pollfd){fd, POLLIN, 0});
+    this->fd = fd;
+    this->pfd = (t_pollfd){fd, POLLIN, 0};
+    this->config = config;
 }
 
 ClientSocket::~ClientSocket()
 {
     ::close(fd);
 }
+
+
 
 void ClientSocket::recvRequest()
 {
@@ -30,6 +33,7 @@ void ClientSocket::recvRequest()
     if (is_request_parsed)
     {
         request.printParsedContent();
+        request.safeUserData();
         setState(State::Writing);
     }
 }
@@ -40,7 +44,7 @@ void ClientSocket::sendResponse()
     {
         return;
     }
-    std::string _response = response.generateResponse(request, true);
+    std::string _response = response.generateResponse(request);
     // std::cout << CGRY << _response << NC << std::endl; // Todo commend out
     int bytes_sent = send(fd, _response.c_str(), _response.size(), 0);
     if (bytes_sent < 0)

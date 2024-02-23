@@ -30,6 +30,7 @@ private:
 public:
     HttpResponse();
     HttpResponse(const HttpResponse &obj);
+    HttpResponse(const HttpRequest& request);
     HttpResponse operator=(const HttpResponse &obj);
     ~HttpResponse();
 
@@ -37,12 +38,10 @@ public:
     void setBody(const std::string &body);
     void setHeaders(const std::string &key, const std::string &value);
     void setStatusLineAndBody(const std::string& statusline, const std::string& body);
-
     std::string getHeader(const std::string &headerName) const;
 
     static HttpResponse generateResponse2(HttpRequest &request);
-    // std::string    generateResponse(bool includeBody);
-    std::string    generateResponse(HttpRequest &request, bool includeBody);
+    std::string    generateResponse(HttpRequest &request);
 
 };
 

@@ -5,8 +5,7 @@ NAME 		:= 		webserv
 SRCSDIR 	:= 		srcs
 OBJDIR 		:= 		obj
 
-
-CPP_FLAGS	:= 		-Wall -Werror -Wextra -std=c++17 -g
+CPP_FLAGS	:= 		-Wall -Werror -Wextra -std=c++17
 
 INC_DIR		:= 		includes
 INC_FLAGS	:= 		$(addprefix -I, $(shell find $(INC_DIR) -type d))
@@ -25,7 +24,7 @@ all: $(NAME)
 
 $(NAME): $(OBJDIR) $(OBJ)
 	@printf "$(GREEN)compiling '$(NAME)'...$(RESET)\n"
-	c++ $(CPP_FLAGS) $(OBJ) -o $(NAME) -lstdc++fs
+	c++ $(CPP_FLAGS) $(OBJ) -o $(NAME)
 	@printf "$(GREEN)compilation completed$(RESET)\n"
 
 $(OBJDIR)/%.o: %.cpp

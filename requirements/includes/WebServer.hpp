@@ -8,6 +8,7 @@
 #include "httpStatus.hpp"
 #include "HttpRequest.hpp"
 #include "Config.hpp"
+#include "Session.hpp"
 
 #include <memory>
 #include <vector>
@@ -17,13 +18,14 @@ class WebServer : public ServerSocket, public PollManager
 {
 
 private:
+    // std::shared_ptr<Config> config;
+    Config &_config;
     std::vector<std::shared_ptr<ServerSocket>> server_sockets;
     PollManager poll_manager;
 
     // constructor & destructo
 public:
-    WebServer();
-    // WebServer(Config *config_data);
+    WebServer(Config &config);
     ~WebServer();
 
     // main member functions

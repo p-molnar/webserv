@@ -27,3 +27,18 @@ const FormData &HttpRequest::getFormDataObj() const
 {
 	return form_data;
 }
+
+e_request_type HttpRequest::getType() const
+{
+	return request_type;
+}
+
+std::shared_ptr<ServerBlock> HttpRequest::getServerConfig() const
+{
+	return config;
+}
+
+std::shared_ptr<LocationBlock> HttpRequest::getServerLocation() const
+{
+	return _location;
+}
