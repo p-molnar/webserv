@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   HttpResponse.cpp                                   :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:14:58 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:15:00 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "HttpResponse.hpp"
 
 HttpResponse HttpResponse::generateResponse2(HttpRequest &request)

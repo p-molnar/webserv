@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   HttpRequest_getters.cpp                            :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:14:14 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:14:16 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "HttpRequest.hpp"
 
 t_uri_comps HttpRequest::getUriComps() const

@@ -1,9 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   ConfigTypes.hpp                                    :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:10:27 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:13:41 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #pragma once
 #ifndef CONFIG_TYPES
 #define CONFIG_TYPES
 
+/* C/C++ Libs */
 #include <vector>
 #include <string>
+#include <iostream>
 
 class ConfigType
 {

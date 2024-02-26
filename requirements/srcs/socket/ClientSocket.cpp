@@ -1,8 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   ClientSocket.cpp                                   :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:14:17 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:14:36 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ClientSocket.hpp"
-#include "consts.hpp"
-#include <iostream>
-#include <httpStatus.hpp>
-#include <stdexcept>
 
 ClientSocket::ClientSocket(int fd, std::shared_ptr<ServerBlock> config) : request(config), response()
 {
@@ -15,8 +23,6 @@ ClientSocket::~ClientSocket()
 {
     ::close(fd);
 }
-
-
 
 void ClientSocket::recvRequest()
 {
@@ -46,7 +52,6 @@ void ClientSocket::sendResponse()
         return;
     }
     std::string _response = response.generateResponse(request);
-    // std::cout << CGRY << _response << NC << std::endl; // Todo commend out
     int bytes_sent = send(fd, _response.c_str(), _response.size(), 0);
     if (bytes_sent < 0)
     {

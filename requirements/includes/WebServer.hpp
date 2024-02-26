@@ -1,6 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   WebServer.hpp                                      :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:12:34 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:17:41 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef WEBSERV_HPP
 #define WEBSERV_HPP
 
+/* C/C++ Libs */
+#include <memory>
+#include <vector>
+#include <map>
+#include <stdexcept>
+
+/* Webserv */
 #include "Socket/ClientSocket.hpp"
 #include "Socket/ServerSocket.hpp"
 #include "Socket/Socket.hpp"
@@ -9,10 +28,6 @@
 #include "HttpRequest.hpp"
 #include "Config.hpp"
 #include "Session.hpp"
-
-#include <memory>
-#include <vector>
-#include <map>
 
 class WebServer : public ServerSocket, public PollManager
 {

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   HttpRequest.cpp                                    :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:14:11 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:14:12 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "HttpRequest.hpp"
 
 HttpRequest::HttpRequest() : request_line_parse_status(INCOMPLETE),

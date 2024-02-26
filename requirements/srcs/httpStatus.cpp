@@ -6,13 +6,11 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 09:13:36 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/23 15:27:47 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/26 12:15:06 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "httpStatus.hpp"
-#include "consts.hpp"
-#include <iostream>
 
 std::unordered_map<statusCode, std::string> httpStatus::_message = {
 	{statusCode::OK, "OK"},

@@ -6,15 +6,11 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/19 10:40:30 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/22 10:39:36 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/26 12:01:56 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <regex>
 #include "Router.hpp"
-#include "FileHandler.hpp"
-#include "Log.hpp"
-#include "httpStatus.hpp"
 
 Router::Router() 
 {

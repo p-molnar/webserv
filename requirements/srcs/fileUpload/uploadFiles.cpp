@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   uploadFiles.cpp                                    :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:14:06 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:14:09 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "RequestProcessor.hpp"
 
 void RequestProcessor::uploadFiles(const FormData &form_data)

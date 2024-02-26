@@ -6,17 +6,19 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/19 10:36:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/01/29 11:14:26 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/26 12:01:51 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+/* C/C++ Libs */
 #include <string>
 #include <vector>
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
-#include <iostream>
+#include <regex>
+
+/* Webserv */
+#include "RequestHandler.hpp"
 
 class Router {
 

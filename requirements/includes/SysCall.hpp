@@ -1,8 +1,7 @@
 #ifndef SYSCALL__HPP
 #define SYSCALL__HPP
 
-#include "errors.hpp"
-
+/* C/C++ Libs */
 #include <string>
 #include <vector>
 #include <unistd.h>
@@ -14,6 +13,9 @@
 #include <stdexcept>
 #include <sys/types.h>
 #include <sys/wait.h>
+
+/* Webserv */
+#include "errors.hpp"
 
 class SysCall
 {

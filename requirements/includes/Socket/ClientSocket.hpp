@@ -1,15 +1,28 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   ClientSocket.hpp                                   :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:08:05 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:08:06 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CLIENTSOCKET_HPP
 #define CLIENTSOCKET_HPP
 
+/* C/C++ Libs */
 #include <stdexcept>
 #include <exception>
 
+/* Webserv */
 #include "Socket.hpp"
-#include "errors.hpp"
-#include "Log.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
-
+#include "errors.hpp"
+#include "Log.hpp"
 #include "SysCall.hpp"
 
 class ClientSocket : public Socket

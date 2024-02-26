@@ -1,17 +1,28 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   PollManager.hpp                                    :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:11:45 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:17:05 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef POLLMANAGER_HPP
 #define POLLMANAGER_HPP
 
+/* C / C++ Libs */
 #include <map>
 #include <vector>
 #include <memory>
 
-#include "Socket.hpp"
+/* Webserv */
 #include "ServerSocket.hpp"
-#include "ClientSocket.hpp"
-#include "httpStatus.hpp"
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
 #include "Router.hpp"
+#include "Log.hpp"
+
 
 /*
     #define POLLIN 0x001  There is data to read.

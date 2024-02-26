@@ -1,12 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   Socket.hpp                                         :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:09:13 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:10:08 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef SOCKET__HPP
 #define SOCKET__HPP
 
-#include "Config.hpp"
-
+/* C/C++ Libs */
 #include <sys/poll.h>
 #include <stdexcept>
 #include <unistd.h>
 #include <memory>
+
+/* Webserv */
+#include "Config.hpp"
 
 typedef struct pollfd t_pollfd;
 
@@ -30,3 +44,4 @@ public:
 };
 
 #endif
+

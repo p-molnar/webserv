@@ -1,9 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   HttpResponse.hpp                                   :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:11:09 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:11:23 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef HTTPRESPONSE__HPP
 #define HTTPRESPONSE__HPP
 
+/* C/C++ Libs */
 #include "iostream"
 #include <map>
 
+/* Webserv */
 #include "HttpRequest.hpp"
 #include "RequestProcessor.hpp"
 #include "Log.hpp"

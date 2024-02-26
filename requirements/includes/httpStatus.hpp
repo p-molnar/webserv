@@ -1,10 +1,27 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   httpStatus.hpp                                     :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:11:25 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:15:42 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef HTTPSTATUS_HPP
 #define HTTPSTATUS_HPP
 
+/* C/C++ Libs */
 #include <string>
 #include <exception>
 #include <unordered_map>
 #include <stdexcept>
+#include <iostream>
+
+/* Webserv */
+#include "consts.hpp"
 
 enum class statusCode
 {

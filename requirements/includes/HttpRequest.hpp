@@ -1,17 +1,31 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   HttpRequest.hpp                                    :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:08:08 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:08:09 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef HTTPREQUEST__HPP
 #define HTTPREQUEST__HPP
 
+/* C/C++ Libs */
 #include <map>
 #include <cstdio>
 #include <cstring>
 #include <string>
 #include <iostream>
 #include <memory>
+
+/* Webserv */
 #include "consts.hpp"
 #include "string_utils.hpp"
 #include "FormData.hpp"
 #include "Config.hpp"
-#include <memory>
 
 /*  HTTP Request parser.
     Requirements:

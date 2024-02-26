@@ -1,5 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   PollManager.cpp                                    :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:16:44 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:16:50 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "PollManager.hpp"
-#include "Log.hpp"
 
 #define RUNNING 1
 
@@ -144,6 +155,7 @@ void PollManager::HandlePollInEvent(std::shared_ptr<Socket> curr_socket)
 		}
 		catch (const std::exception &e)
 		{
+			std::cout << "THIS EXCEPTION\n";
 			client_socket->sendResponse(httpStatus::generateErrResponse(httpStatus::errnoToStatusCode(errno)));
 			if (e.what()[0] != '\0')
 				Log::logMsg(e.what());

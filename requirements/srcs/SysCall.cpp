@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   SysCall.cpp                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:17:15 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:17:16 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "SysCall.hpp"
 
 void SysCall::access(std::string path, int mode)

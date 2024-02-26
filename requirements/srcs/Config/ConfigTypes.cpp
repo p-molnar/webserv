@@ -1,5 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   ConfigTypes.cpp                                    :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:13:12 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:13:37 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ConfigTypes.hpp"
-#include <iostream>
 
 int ConfigType::getInt()
 {

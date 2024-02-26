@@ -1,6 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   Config.hpp                                         :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:10:17 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:10:24 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CONFIG_H
 #define CONFIG_H
 
+/* C/C++ Libs */
 #include <iostream>
 #include <fstream>
 #include <vector>

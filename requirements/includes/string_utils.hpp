@@ -1,6 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   string_utils.hpp                                   :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:12:08 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:12:12 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef STRING_UTILS__HPP
 #define STRING_UTILS__HPP
 
+/* C/C++ Libs */
 #include <vector>
 #include <string>
 

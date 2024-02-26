@@ -1,11 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   FormData.hpp                                       :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:10:48 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/26 12:11:03 by tklouwer      ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef FORMDATA__HPP
 #define FORMDATA__HPP
 
+/* C/C++ Libs */
 #include <string>
 #include <map>
 #include <vector>
 #include <iostream>
 
+/* Webserv */
 #include "string_utils.hpp"
 #include "consts.hpp"
 
