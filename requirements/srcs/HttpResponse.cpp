@@ -44,6 +44,11 @@ void HttpResponse::setHeaders(const std::string &key, const std::string &value)
     _headers[key] = value;
 }
 
+void HttpResponse::removeHeader(const std::string &key)
+{
+    _headers.erase(key);
+}
+
 void    HttpResponse::setStatusLine(const std::string& statusline)
 {
     _statusLine = statusline;
@@ -95,13 +100,18 @@ std::string    HttpResponse::generateResponse(HttpRequest &request)
     std::string response;
 
     response += _statusLine;
-    // if sesionID cookie is not set, set it
-    if (!request.hadSessionId())
-        response += setCookie("sessionID", generateSessionID(64), "/", 2);
-    // response += setCookie("all", "Hello cookie world!", "");
-    // response += setCookie("bmi", "bmi calculator", "/bmi_calculator");
-    // response += setCookie("Error", "ERROR", "/error");
-    setHeaders("Content-Length", std::to_string(_body.size()));
+    // if (_statusLine.find("307") != std::string::npos)
+    // {
+    //     setHeaders("Content-Length", std::to_string(_body.size()));
+    //     if (!request.hadSessionId())
+    //         response += setCookie("sessionID", generateSessionID(64), "/", 2);
+    // }
+    if (!request.isMovedPermanently())
+    {
+        setHeaders("Content-Length", std::to_string(_body.size()));
+        if (!request.hadSessionId())
+            response += setCookie("sessionID", generateSessionID(64), "/", 2);
+    }
     for (const auto& header : _headers) {
         response += header.first + ": " + header.second + CRLF;
     }

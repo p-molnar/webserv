@@ -172,7 +172,38 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
             res->setHeaders("Content-Type", getContentType(file_path));
             s = fileHandler::readFileContent(file_path);
         }
-        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), s);
+        std::string loc_path;
+        if (req->isMovedPermanently())
+        {
+            std::cout << "Moved permanently\n";
+            loc_path = req->getUriComps().path;
+            // std::cout << "uri paht: " << CGRN << loc_path << NC << std::endl;    
+            int i = 0;
+            while (i < 1)
+            {
+                if (loc_path[i] == '/')
+                    i++;
+                loc_path.erase(0, 1);
+            }
+            loc_path = "localhost:8080/" + loc_path;
+            std::cout << "uri paht: " << CGRN << loc_path << NC << std::endl;    
+            // res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::temporary_redirect), s);
+            res->setStatusLine(httpStatus::getStatusLine(statusCode::temporary_redirect));
+            res->setHeaders("Location", loc_path);
+            res->removeHeader("Content-Type");
+
+            // res->setHeaders("Content-Length", std::to_string(_body.size()));
+            // res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), s);
+        }
+        else
+        {
+            std::cout << "Not moved permanently\n";
+            loc_path = req->getUriComps().raw_path;
+            while (loc_path[0] == '/')
+                loc_path.erase(0, 1);
+            std::cout << "uri raw_path: " << CGRN << loc_path << NC << std::endl;
+            res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), s);
+        }
     }
 }
 

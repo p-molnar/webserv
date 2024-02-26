@@ -19,6 +19,7 @@ std::unordered_map<statusCode, std::string> httpStatus::_message = {
 	{statusCode::created, "Created"},
 	{statusCode::accepted, "Accepted"},
 	{statusCode::no_content, "No Content"},
+	{statusCode::temporary_redirect, "Temporary Redirect"},
 	{statusCode::temp_redir, "Temporary Redirect"},
 	{statusCode::not_modified, "Not Modified"},
 	{statusCode::bad_request, "Bad Request"},
@@ -33,8 +34,8 @@ std::unordered_map<statusCode, std::string> httpStatus::_message = {
 	{statusCode::unsupported_type, "Unsupported Media Type"},
 	{statusCode::internal_server_error, "Internal Server Error"},
 	{statusCode::not_implemented, "Not Implemented"},
-	{statusCode::bad_gateway, "Bad Gateway"},
 	{statusCode::service_unavailable, "Service Unavailable"},
+	{statusCode::bad_gateway, "Bad Gateway"},
 	{statusCode::gateway_timeout, "Gateway Timeout"}};
 
 std::string httpStatus::getStatusLine(statusCode code)

@@ -14,6 +14,7 @@ enum class statusCode
 	no_content = 204,
 	temp_redir = 302,
 	not_modified = 304,
+	temporary_redirect = 307,
 	bad_request = 400,
 	unauthorized = 401,
 	forbidden = 403,

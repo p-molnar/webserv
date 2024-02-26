@@ -141,6 +141,11 @@ std::string joinPath(std::vector<std::string> paths, std::string delimeter)
     return joined_path;
 }
 
+bool HttpRequest::isMovedPermanently() const
+{
+    return moved_permanently;
+}
+
 std::string HttpRequest::constructPath(std::string raw_path)
 {
     std::string root;
@@ -148,11 +153,13 @@ std::string HttpRequest::constructPath(std::string raw_path)
     bool is_defined_location_root = _location->getRoot() != "";
     bool is_defined_location_alias = _location->getAlias() != "";
 
+    moved_permanently = false;
     if (!is_defined_location_root && is_defined_location_alias)
     {
         root = _location->getAlias();
         std::size_t second_slash = raw_path.find("/", 1);
         raw_path.erase(0, second_slash);
+        moved_permanently = true;
     }
     else if (!is_defined_location_root)
         root = config->getRoot();

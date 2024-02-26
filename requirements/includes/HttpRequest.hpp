@@ -82,6 +82,7 @@ private:
     std::map<std::string, std::string> request_headers;
     std::string request_message_body;
     FormData form_data;
+    bool moved_permanently;
 
 private:
     std::shared_ptr<LocationBlock> getMatchingLocation(std::string path);
@@ -100,6 +101,7 @@ public:
     std::string getValueFormQueryStr(const std::string &key);
     void safeUserData();
     void printParsedContent() const;
+    bool isMovedPermanently() const;
 
 private:
     void parseRequestLine(const std::string &raw_request);
