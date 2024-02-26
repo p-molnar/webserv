@@ -18,7 +18,7 @@ LocationBlock &LocationBlock::operator=(const LocationBlock &other)
 LocationBlock::LocationBlock()
 {
 	_path = "/";
-	_root = "/var/www/html";
+	_root = "/www";
 	_index = "index.html";
 	_autoIndex = "off";
 	_return = "";
