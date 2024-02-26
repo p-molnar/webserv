@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:11:45 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 12:17:05 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/26 15:37:34 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,12 @@ public:
     bool shouldCloseConnection(std::shared_ptr<ClientSocket> client_socket);
 
     void processEvents();
+    void handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSocket, bool isPollIn);
+    void sendErrorResponse(std::shared_ptr<ClientSocket> clientSocket, statusCode errorCode, const std::string& logMessage);
+    void handleConnection(std::shared_ptr<ClientSocket>client_socket);
+private:
+    void SendSafeResponse(std::shared_ptr<ClientSocket> clientSocket);
+    void handleEvent(int fd, short revents); 
 };
 
 #endif

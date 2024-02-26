@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:14:11 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 12:14:12 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/26 15:32:34 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,7 +219,7 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
 
     raw_request += std::string(raw_request_data, bytes_received);
 
-    // std::cout << CGRY << raw_request << NC << std::endl; // Todo comment out
+    std::cout << CGRY << raw_request << NC << std::endl; // Todo comment out
 
     // request line parsing
     if (request_line_parse_status == INCOMPLETE)

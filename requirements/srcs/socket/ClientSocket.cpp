@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:14:17 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 12:14:36 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/26 15:33:28 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void ClientSocket::recvRequest()
     Log::logMsg("request received", fd);
     if (is_request_parsed)
     {
+        std::cout << request.getHeaderComp("Connection") << "\n\n";
         request.printParsedContent();
         request.safeUserData();
         setState(State::Writing);
