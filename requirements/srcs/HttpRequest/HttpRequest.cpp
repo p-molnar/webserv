@@ -151,8 +151,9 @@ std::string HttpRequest::constructPath(std::string raw_path)
     if (!is_defined_location_root && is_defined_location_alias)
     {
         root = _location->getAlias();
+        std::size_t second_slash = raw_path.find("/", 1);
+        raw_path.erase(0, second_slash);
     }
-
     else if (!is_defined_location_root)
         root = config->getRoot();
     else if (is_defined_location_root)
