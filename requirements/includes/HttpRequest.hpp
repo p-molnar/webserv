@@ -14,7 +14,6 @@
 #include "FormData.hpp"
 #include "Config.hpp"
 
-
 /*  HTTP Request parser.
     Requirements:
         - A request should never hang forever - set a timeout for a request;
@@ -52,7 +51,6 @@ typedef struct s_uri_comps
 
 class HttpRequest
 {
-
 
 public:
     class InvalidMethodException : public std::exception
@@ -124,7 +122,6 @@ public:
     const FormData &getFormDataObj() const;
     bool isParsed() const;
     bool hadSessionId() const;
-    
 };
 
 std::ostream &operator<<(std::ostream &os, const HttpRequest &obj);

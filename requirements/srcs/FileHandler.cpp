@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/22 15:03:27 by pmolnar       ########   odam.nl         */
+/*   Updated: 2024/02/26 13:53:16 by pmolnar       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ bool fileHandler::isDirectory(std::string &file_path)
 bool fileHandler::isFile(std::string &file_path)
 {
     struct stat buffer;
-    
+
     return (stat(file_path.c_str(), &buffer) == 0 && S_ISREG(buffer.st_mode));
 }
 
@@ -128,8 +128,6 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
 {
     Log::logMsg("Handling GET request");
 
-
-
     const std::string root_dir = req->getServerConfig()->getRoot();
     std::string file_path = req->getUriComps().path;
     if (req->getType() == EXECUTABLE)
@@ -167,7 +165,7 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
             if (req->getServerLocation()->getAutoIndex() == "on")
                 s = RequestProcessor::listDirectoryContent(req->getUriComps());
             else
-                s = "";
+                s = fileHandler::readFileContent("srv/www/auto_index_off.html");
         }
         else if (fileHandler::isFile(file_path))
         {
