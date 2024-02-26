@@ -93,7 +93,6 @@ void PollManager::processEvents()
 				removeSocket(pfds[i].fd);
 				handled_events++;
 			}
-
 		}
 	}
 }
@@ -110,12 +109,6 @@ void PollManager::HandlePollOutEvent(std::shared_ptr<Socket> curr_socket)
 		catch (const ClientSocket::HungUpException &e)
 		{
 			PollManager::removeSocket(client_socket->getFd());
-		}
-		catch (const HttpRequest::InvalidMethodException &e)
-		{
-			client_socket->sendResponse(httpStatus::generateErrResponse(statusCode::method_not_allowed));
-			PollManager::removeSocket(client_socket->getFd());
-			Log::logMsg("Method not allowed");
 		}
 		catch (const std::exception &e)
 		{
@@ -142,6 +135,12 @@ void PollManager::HandlePollInEvent(std::shared_ptr<Socket> curr_socket)
 		catch (const ClientSocket::HungUpException &e)
 		{
 			PollManager::removeSocket(client_socket->getFd());
+		}
+		catch (const HttpRequest::InvalidMethodException &e)
+		{
+			client_socket->sendResponse(httpStatus::generateErrResponse(statusCode::method_not_allowed));
+			PollManager::removeSocket(client_socket->getFd());
+			Log::logMsg("Method not allowed");
 		}
 		catch (const std::exception &e)
 		{

@@ -14,8 +14,6 @@ ClientSocket::~ClientSocket()
     ::close(fd);
 }
 
-
-
 void ClientSocket::recvRequest()
 {
     char request_buff[10240]; // 10kb buffer size
@@ -59,10 +57,6 @@ void ClientSocket::sendResponse()
 
 void ClientSocket::sendResponse(std::string response)
 {
-    if (!is_request_parsed)
-    {
-        return;
-    }
     int bytes_sent = send(fd, response.c_str(), response.size(), 0);
     if (bytes_sent < 0)
     {
