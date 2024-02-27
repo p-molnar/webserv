@@ -22,6 +22,8 @@
 #include <memory>
 
 /* Webserv */
+#include <algorithm>
+#include "Log.hpp"
 #include "consts.hpp"
 #include "string_utils.hpp"
 #include "FormData.hpp"
@@ -134,7 +136,6 @@ public:
     const FormData &getFormDataObj() const;
     bool isParsed() const;
     bool hadSessionId() const;
-    
 };
 
 std::ostream &operator<<(std::ostream &os, const HttpRequest &obj);

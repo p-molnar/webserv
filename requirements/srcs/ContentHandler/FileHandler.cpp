@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   FileHandlerUtils.cpp                               :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/02/26 11:36:36 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 11:51:51 by tklouwer      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "FileHandler.hpp"
 
 #define ERROR "<html><body><h1>404 Not Found</h1></body></html>"
@@ -70,7 +58,7 @@ bool fileHandler::isDirectory(std::string &file_path)
 bool fileHandler::isFile(std::string &file_path)
 {
     struct stat buffer;
-    
+
     return (stat(file_path.c_str(), &buffer) == 0 && S_ISREG(buffer.st_mode));
 }
 
@@ -121,34 +109,81 @@ void fileHandler::serveDirectoryListing(const HttpRequest *req, HttpResponse *re
     res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), content);
 }
 
-void fileHandler::handleExecutableRequest(const HttpRequest *req, HttpResponse *res)
-{
-    res->setHeaders("Content-Type", "text/html");
-    res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK),
-                              RequestProcessor::executeCgi(req->getUriComps()));
-}
-
-void fileHandler::serveStaticFile(const std::string& file_path, HttpResponse *res)
-{
-    res->setHeaders("Content-Type", getContentType(file_path));
-    std::string content = fileHandler::readFileContent(file_path);
-    res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), content);
-}
-
-void fileHandler::handleErrorResponse(int errorCode, const HttpRequest *req, HttpResponse *res)
-{
-    std::string root_dir = req->getServerConfig()->getRoot();
-    std::string content_type = getContentType(req->getUriComps().path);
-    if (content_type.find("image") != std::string::npos)
-    {
-        res->setHeaders("Content-Type", content_type);
-        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found),
-                                  fileHandler::readFileContent(root_dir + "www/404.jpg"));
-    }
-    else
+    const std::string root_dir = req->getServerConfig()->getRoot();
+    std::string file_path = req->getUriComps().path;
+    if (req->getType() == EXECUTABLE)
     {
         res->setHeaders("Content-Type", "text/html");
+        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK),
+                                  RequestProcessor::executeCgi(req->getUriComps()));
+        return;
+    }
+    if (file_path.find(".") == std::string::npos && req->getType() == RESOURCE && !fileHandler::isDirectory(file_path))
+    {
+        file_path += ".html";
+    }
+    if (!fileHandler::isValidPath(file_path) && req->getType() != EXECUTABLE)
+    {
+        std::string content_type = getContentType(file_path);
+        if (content_type.find("image") != std::string::npos)
+        {
+            res->setHeaders("Content-Type", content_type);
+            res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found),
+                                      fileHandler::readFileContent(root_dir + "www/404.jpg")); // check if img exists
+            return;
+        }
+        res->setHeaders("Content-Type", "text/html");
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found),
-                                  fileHandler::readFileContent(root_dir + req->getServerConfig()->getErrorPage(errorCode)));
+                                  fileHandler::readFileContent(req->getServerConfig()->getErrorPage(404)));
+        return;
+    }
+    if (fileHandler::isValidPath(file_path))
+    {
+        std::string s;
+        if (fileHandler::isDirectory(file_path))
+        {
+            res->setHeaders("Content-Type", "text/html");
+            if (req->getServerLocation()->getAutoIndex() == "on")
+                s = RequestProcessor::listDirectoryContent(req->getUriComps());
+            else
+                s = fileHandler::readFileContent("srv/www/auto_index_off.html");
+        }
+        else if (fileHandler::isFile(file_path))
+        {
+            res->setHeaders("Content-Type", getContentType(file_path));
+            s = fileHandler::readFileContent(file_path);
+        }
+        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), s);
+    }
+}
+
+void handlePostRequest(const HttpRequest *req, HttpResponse *res)
+{
+    Log::logMsg("Handling POST request");
+    std::string file_path = req->getUriComps().path;
+    RequestProcessor::uploadFiles(req->getFormDataObj());
+    res->setStatusLine(httpStatus::getStatusLine(statusCode::OK));
+}
+
+void handleDeleteRequest(const HttpRequest *req, HttpResponse *res)
+{
+    fs::path absolute_path = getAbsolutePath(req->getUriComps().path, req->getServerConfig()->getRoot());
+    try
+    {
+        if (std::filesystem::exists(absolute_path))
+        {
+            fileHandler::deleteResource(absolute_path.string());
+            res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), "");
+        }
+        else
+        {
+            throw std::runtime_error("File not found: " + absolute_path.string());
+        }
+    }
+    catch (const std::runtime_error &e)
+    {
+        std::cerr << e.what() << '\n';
+        res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found),
+                                  "<html><body><h1>" + httpStatus::_message.at(statusCode::not_found) + "</h1></body></html>");
     }
 }
