@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:16:44 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/27 08:39:33 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 08:46:32 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,10 +90,6 @@ void PollManager::processEvents()
         
         updatePollfd();
         int active_events = SysCall::poll(pfds.data(), pfds.size(), 1000);
-        if (active_events == 0)
-        {
-            Log::logMsg("Connection timed out");
-        }
 		for (size_t i = 0; i < pfds.size() && active_events > 0; ++i) 
 		{
 			handleEvent(pfds[i].fd, pfds[i].revents);
@@ -152,8 +148,9 @@ void PollManager::handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSo
 		else {
             router.routeRequest(clientSocket->getRequest(), clientSocket->getResponse());
             clientSocket->sendResponse();
+            if (shouldCloseConnection(clientSocket))
+                removeSocket(clientSocket->getFd());
         }
-        shouldCloseConnection(clientSocket);
     } 
 	catch (const ClientSocket::HungUpException& e) {
         sendErrorResponse(clientSocket, httpStatus::errnoToStatusCode(errno), "Connection hung up");
