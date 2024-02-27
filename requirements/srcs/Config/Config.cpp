@@ -29,10 +29,10 @@ LocationBlock &LocationBlock::operator=(const LocationBlock &other)
 
 LocationBlock::LocationBlock()
 {
-	_path = "/";
-	_root = "/var/www/html";
-	_index = "index.html";
-	_autoIndex = "off";
+	_path = "";
+	_root = "";
+	_index = "";
+	_autoIndex = "on";
 	_return = "";
 	_alias = "";
 }
