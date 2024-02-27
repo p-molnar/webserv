@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:14:58 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 12:15:00 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 09:47:14 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,12 +108,8 @@ std::string    HttpResponse::generateResponse(HttpRequest &request)
     std::string response;
 
     response += _statusLine;
-    // if sesionID cookie is not set, set it
     if (!request.hadSessionId())
         response += setCookie("sessionID", generateSessionID(64), "/", 2);
-    // response += setCookie("all", "Hello cookie world!", "");
-    // response += setCookie("bmi", "bmi calculator", "/bmi_calculator");
-    // response += setCookie("Error", "ERROR", "/error");
     setHeaders("Content-Length", std::to_string(_body.size()));
     for (const auto& header : _headers) {
         response += header.first + ": " + header.second + CRLF;

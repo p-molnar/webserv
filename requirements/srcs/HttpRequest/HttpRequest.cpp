@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:14:11 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 15:32:34 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 10:51:53 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -344,8 +344,8 @@ void HttpRequest::parseHeaders(const std::string &raw_request_headers)
         if (header_parts.size() != 2)
             throw std::runtime_error("http header parse error on line: '" + headers[i] + "'");
 
-        std::string key = header_parts[0];
-        std::string value = header_parts[1];
+        std::string key = strip(header_parts[0], " ");
+        std::string value = strip(header_parts[1], " ");
         if (key == "Cookie")
             cookies = getCookies(value);
         request_headers[key] = value;
@@ -384,7 +384,7 @@ void HttpRequest::printParsedContent() const
     if (this->isParsed() == false)
         return;
 
-    std::cout << "\n\nPARSED CONTENT:\n"
+    std::cout << "PARSED CONTENT:\n"
               << std::endl;
 
     std::cout << "raw_path: |" << uri_comps.raw_path << "|" << '\n';
