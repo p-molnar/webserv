@@ -158,8 +158,13 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
     }
     if (fileHandler::isValidPath(file_path))
     {
-        std::string s;
-        if (fileHandler::isDirectory(file_path))
+        std::string s = "";
+        std::string location_index = req->getServerLocation()->getIndex();
+        if (fileHandler::isDirectory(file_path) && location_index != "")
+        {
+            file_path += "/" + location_index;
+        }
+        if (fileHandler::isDirectory(file_path) && location_index == "")
         {
             res->setHeaders("Content-Type", "text/html");
             if (req->getServerLocation()->getAutoIndex() == "on")
@@ -167,7 +172,7 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
             else
                 s = fileHandler::readFileContent("srv/www/auto_index_off.html");
         }
-        else if (fileHandler::isFile(file_path))
+        if (fileHandler::isFile(file_path) && s == "")
         {
             res->setHeaders("Content-Type", getContentType(file_path));
             s = fileHandler::readFileContent(file_path);
