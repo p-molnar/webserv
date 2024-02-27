@@ -192,7 +192,12 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     // apply redirect
     std::string redirect_path = _location->getReturn();
     if (redirect_path != "")
-        uri_comps.raw_path = redirect_path;
+    {
+        request_type = REDIRECT;
+        std::cout << "REDIRECTING TO: " << redirect_path << '\n';
+        uri_comps.rederection_path = redirect_path;
+        return;
+    }
 
     uri_comps.raw_path = uri_comps.raw_path == "/" ? _location->getIndex() : uri_comps.raw_path;
     uri_comps.path = constructPath(uri_comps.raw_path);
@@ -215,12 +220,13 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         else
             uri_comps.path_info = uri.substr(path_info_start);
     }
-    else if (uri_comps.raw_path.length() > 1 && request_type != EXECUTABLE)
+    else if (uri_comps.raw_path.length() > 1 && request_type != EXECUTABLE && request_type != REDIRECT)
         request_type = RESOURCE;
-    else
+    else if (request_type != REDIRECT)
         request_type = UNDEF;
 
-    parseRequestType();
+    if (request_type != REDIRECT)
+        parseRequestType();
 
     std::vector<std::string> allowed_methods = _location->getAllowedMethods();
     if (std::find(allowed_methods.begin(), allowed_methods.end(), request_line.at("method")) == allowed_methods.end())

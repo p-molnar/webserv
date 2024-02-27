@@ -38,6 +38,7 @@ enum e_request_type
     RESOURCE,
     DIRECTORY,
     EXECUTABLE,
+    REDIRECT,
 };
 
 typedef struct s_uri_comps
@@ -47,6 +48,7 @@ typedef struct s_uri_comps
     std::string query_str;
     std::string executable_name;
     std::string path_info;
+    std::string rederection_path;
 } t_uri_comps;
 
 class HttpRequest
