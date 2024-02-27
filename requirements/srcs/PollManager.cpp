@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:16:44 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 15:40:12 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 08:39:33 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,13 +87,31 @@ void PollManager::processEvents()
     Log::logMsg("Server is processing events");
     while (RUNNING) 
 	{
+        
         updatePollfd();
         int active_events = SysCall::poll(pfds.data(), pfds.size(), 1000);
+        if (active_events == 0)
+        {
+            Log::logMsg("Connection timed out");
+        }
 		for (size_t i = 0; i < pfds.size() && active_events > 0; ++i) 
 		{
 			handleEvent(pfds[i].fd, pfds[i].revents);
 		}
     }
+}
+
+bool PollManager::shouldCloseConnection(std::shared_ptr<ClientSocket> client_socket)
+{
+	const auto &connectionHeader = client_socket->getResponse().getHeader("Connection");
+
+	if (connectionHeader == "close") {
+		return true;
+    }
+    if (connectionHeader == "keep-alive") {
+        return false;
+    }
+	return false;
 }
 
 void PollManager::sendErrorResponse(std::shared_ptr<ClientSocket> clientSocket, statusCode errorCode, const std::string& logMessage)
@@ -127,7 +145,6 @@ void PollManager::HandlePollOutEvent(std::shared_ptr<Socket> currSocket)
 
 void PollManager::handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSocket, bool isPollIn) 
 {
-	
     try {
         if (isPollIn) {
             clientSocket->recvRequest();
@@ -136,6 +153,7 @@ void PollManager::handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSo
             router.routeRequest(clientSocket->getRequest(), clientSocket->getResponse());
             clientSocket->sendResponse();
         }
+        shouldCloseConnection(clientSocket);
     } 
 	catch (const ClientSocket::HungUpException& e) {
         sendErrorResponse(clientSocket, httpStatus::errnoToStatusCode(errno), "Connection hung up");
