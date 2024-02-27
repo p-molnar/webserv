@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:16:44 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/27 11:04:44 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 13:30:04 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,23 @@ void PollManager::handleEvent(int fd, short revents)
         HandlePollInEvent(socket);
     else if (revents & (POLLOUT | POLLHUP))
         HandlePollOutEvent(socket);
+    else if (revents & (POLLERR | POLLNVAL | POLLHUP))
+        removeSocket(fd);
+}
+
+bool PollManager::shouldCloseConnection(std::shared_ptr<ClientSocket> client_socket)
+{
+    try {
+	    const auto connectionHeader = client_socket->getRequest().getHeaderComp("Connection");
+        if (connectionHeader == "close") {
+            return true ;
+        }
+        else
+            return false ;
+    }
+    catch (std::out_of_range& e) {
+            return true ;
+    }
 }
 
 void PollManager::processEvents()
@@ -90,41 +107,28 @@ void PollManager::processEvents()
         int active_events = SysCall::poll(pfds.data(), pfds.size(), 2000);
         if (active_events == 0)
         {
+            Log::logMsg("Poll timed out");
             for (size_t i = 0; i < pfds.size(); ++i)
             {
                 if (auto client = std::dynamic_pointer_cast<ClientSocket>(sockets.at(pfds[i].fd))){
                     shouldCloseConnection(client);
-                    Log::logMsg(std::to_string(client->getFd()));
+                }
+                else
+                    continue;
+            }
+        }
+        else {
+            for (size_t i = 0; i < pfds.size() && active_events > 0; i++) 
+            {
+                if (pfds[i].revents != 0) {
+                    handleEvent(pfds[i].fd, pfds[i].revents);
+                    active_events--;
                 }
             }
         }
-		for (size_t i = 0; i < pfds.size() && active_events > 0; ++i) 
-		{
-			handleEvent(pfds[i].fd, pfds[i].revents);
-		}
     }
 }
 
-bool PollManager::shouldCloseConnection(std::shared_ptr<ClientSocket> client_socket)
-{
-    try {
-        std::cout << "parsed stuff:";
-        client_socket->getRequest().printParsedContent();
-	    const auto connectionHeader = client_socket->getRequest().getHeaderComp("Connection");
-
-        std::cout << "connectionHeader: " << "|" << connectionHeader << "|\n"; 
-        Log::logMsg(connectionHeader);
-        if (connectionHeader == "close") {
-            return true ;
-        }
-        else
-            return false ;
-    }
-    catch (std::out_of_range& e) {
-            std::cout << "out of range exception " <<  e.what() << "\n\n";
-            return true ;
-    }
-}
 
 void PollManager::sendErrorResponse(std::shared_ptr<ClientSocket> clientSocket, statusCode errorCode, const std::string& logMessage)
 {

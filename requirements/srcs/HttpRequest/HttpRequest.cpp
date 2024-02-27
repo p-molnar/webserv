@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:14:11 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/27 10:51:53 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 12:52:17 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -384,17 +384,17 @@ void HttpRequest::printParsedContent() const
     if (this->isParsed() == false)
         return;
 
-    std::cout << "PARSED CONTENT:\n"
+    std::cout << "Parsed headers:\n"
               << std::endl;
 
-    std::cout << "raw_path: |" << uri_comps.raw_path << "|" << '\n';
-    std::cout << "path: |" << uri_comps.path << "|" << '\n';
-    std::cout << "executable_name: |" << uri_comps.executable_name << "|" << '\n';
-    std::cout << "path_info: |" << uri_comps.path_info << "|" << '\n';
-    std::cout << "query_string: |" << uri_comps.query_str << "|" << '\n';
+    std::cout << "raw_path: " << uri_comps.raw_path << '\n';
+    std::cout << "path: " << uri_comps.path << '\n';
+    std::cout << "executable_name: " << uri_comps.executable_name << '\n';
+    std::cout << "path_info: " << uri_comps.path_info << '\n';
+    std::cout << "query_string: " << uri_comps.query_str << '\n';
     std::cout << "request type: " << request_type << '\n';
     for (std::pair<std::string, std::string> cookie : cookies)
-        std::cout << "cookie: |" << cookie.first << "| = |" << cookie.second << "|\n";
+        std::cout << "cookie: " << cookie.first << " = " << cookie.second << "|\n";
 
     // for (std::pair<std::string, std::string> line : request_line)
     // {
