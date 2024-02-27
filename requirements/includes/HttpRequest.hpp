@@ -124,6 +124,7 @@ public:
     const FormData &getFormDataObj() const;
     bool isParsed() const;
     bool hadSessionId() const;
+    std::string getRedirectLocation() const;
 };
 
 std::ostream &operator<<(std::ostream &os, const HttpRequest &obj);

@@ -129,7 +129,7 @@ ServerBlock::ServerBlock()
 	_serverName = "localhost";
 	_clientMaxBodySize = 1024;
 	_index = "index.html";
-	_root = "/var/www/html";
+	_root = "srv/www/";
 	_errorPages[403] = "/error/403.html";
 	_errorPages[404] = "/error/404.html";
 }

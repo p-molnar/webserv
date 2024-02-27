@@ -115,7 +115,7 @@ std::shared_ptr<LocationBlock> HttpRequest::getMatchingLocation(std::string path
     if (matching_block == NULL)
     {
         matching_block = std::make_shared<LocationBlock>(default_block);
-        std::cout << "THIS\n";
+        std::cout << "No maching block\n";
     }
 
     return matching_block;
@@ -194,8 +194,12 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     if (redirect_path != "")
     {
         request_type = REDIRECT;
-        std::cout << "REDIRECTING TO: " << redirect_path << '\n';
+        // if (_location->getRoot() != "")
+        //     uri_comps.rederection_path = _location->getRoot();
+        // else
+        //     uri_comps.rederection_path = config->getRoot();
         uri_comps.rederection_path = redirect_path;
+        std::cout << "REDIRECTING TO: " << CGRN << uri_comps.rederection_path << NC << '\n';
         return;
     }
 
@@ -234,6 +238,11 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         throw HttpRequest::InvalidMethodException();
         return;
     }
+}
+
+std::string HttpRequest::getRedirectLocation() const
+{
+    return uri_comps.rederection_path;
 }
 
 bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_received)

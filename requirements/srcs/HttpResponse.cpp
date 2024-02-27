@@ -94,6 +94,15 @@ std::string    HttpResponse::generateResponse(HttpRequest &request)
     Log::logMsg("Response generated, ready to sent");
     std::string response;
 
+    if (request.getRedirectLocation() != "")
+    {
+        Log::logMsg("Redirecting to " + request.getRedirectLocation());
+        response = "HTTP/1.1 301 Moved Permanently" + CRLF;
+        response += "Location: " + request.getRedirectLocation() + TWO_CRLF;
+        std::cout << CGRY << response << NC << std::endl;
+        return response;
+    }
+
     response += _statusLine;
     // if sesionID cookie is not set, set it
     if (!request.hadSessionId())
