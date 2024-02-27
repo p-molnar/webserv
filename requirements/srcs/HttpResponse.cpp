@@ -1,25 +1,5 @@
 #include "HttpResponse.hpp"
 
-HttpResponse HttpResponse::generateResponse2(HttpRequest &request)
-{
-    (void) request;
-    // std::string cgi_raw_output = RequestProcessor::executeCgi(request.getUriComps());
-    // std::cout << cgi_raw_output << "\n";
-
-    // RequestProcessor::uploadFiles(request.getFormDataObj());
-
-    // if request_type == DIRECTORY
-    // {
-    //     std::string path = request.getUriComps().path;
-    //     // replace with config file's default directory from which the website should be served
-    //     path = path == "/" ? "srv/www/" : "srv/www/" + path;
-
-    //     std::string s = RequestProcessor::listDirectoryContent(path);
-    //     std::cout << s << '\n';
-    // }
-    return HttpResponse();
-}
-
 HttpResponse::HttpResponse(const HttpResponse &obj)
 {
     (void)obj;
@@ -102,14 +82,9 @@ std::string    HttpResponse::generateResponse(HttpRequest &request)
         std::cout << CGRY << response << NC << std::endl;
         return response;
     }
-
     response += _statusLine;
-    // if sesionID cookie is not set, set it
     if (!request.hadSessionId())
         response += setCookie("sessionID", generateSessionID(64), "/", 2);
-    // response += setCookie("all", "Hello cookie world!", "");
-    // response += setCookie("bmi", "bmi calculator", "/bmi_calculator");
-    // response += setCookie("Error", "ERROR", "/error");
     setHeaders("Content-Length", std::to_string(_body.size()));
     for (const auto& header : _headers) {
         response += header.first + ": " + header.second + CRLF;

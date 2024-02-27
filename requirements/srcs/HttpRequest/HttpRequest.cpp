@@ -107,7 +107,6 @@ std::shared_ptr<LocationBlock> HttpRequest::getMatchingLocation(std::string path
         std::string location_directive = strip(location.first, "/");
         if (location_directive == basename)
         {
-            std::cout << "matching location: " << location_directive << '\n';
             matching_block = std::make_shared<LocationBlock>(location.second);
         }
     };
@@ -115,7 +114,6 @@ std::shared_ptr<LocationBlock> HttpRequest::getMatchingLocation(std::string path
     if (matching_block == NULL)
     {
         matching_block = std::make_shared<LocationBlock>(default_block);
-        std::cout << "No maching block\n";
     }
 
     return matching_block;
@@ -158,11 +156,6 @@ std::string HttpRequest::constructPath(std::string raw_path)
         root = config->getRoot();
     else if (is_defined_location_root)
         root = _location->getRoot();
-
-    std::cout << "root :" << root << '\n';
-    std::cout << "alias: " << std::boolalpha << is_defined_location_alias << "\n";
-    std::cout << "root: " << std::boolalpha << is_defined_location_root << "\n";
-
     std::string joined = joinPath({root, raw_path}, "/");
     return joined;
 }
