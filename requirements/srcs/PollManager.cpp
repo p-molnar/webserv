@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:16:44 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/27 13:55:56 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 16:53:12 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ void PollManager::SendSafeResponse(std::shared_ptr<ClientSocket> clientSocket)
         clientSocket->sendResponse();
     } catch (const std::exception &e) {
         Log::logMsg(e.what());
-        removeSocket(clientSocket->getFd());
     }
 }
 
@@ -86,14 +85,14 @@ void PollManager::handleEvent(int fd, short revents)
 bool PollManager::shouldCloseConnection(std::shared_ptr<ClientSocket> client_socket)
 {
     try {
-	    const auto connectionHeader = client_socket->getRequest().getHeaderComp("Connection");
-        if (connectionHeader == "close") {
-            return true ;
+        if (client_socket->getConnection() == "keep-alive") {
+            return false ;
         }
         else
-            return false ;
+            return true ;
     }
     catch (std::out_of_range& e) {
+            Log::logMsg(e.what());
             return true ;
     }
 }
@@ -104,20 +103,21 @@ void PollManager::processEvents()
     while (RUNNING) 
 	{
         updatePollfd();
-        int active_events = SysCall::poll(pfds.data(), pfds.size(), 2000);
+        int active_events = SysCall::poll(pfds.data(), pfds.size(), 100);
         if (active_events == 0)
         {
             for (size_t i = 0; i < pfds.size(); ++i)
             {
-                if (auto client = std::dynamic_pointer_cast<ClientSocket>(sockets.at(pfds[i].fd))){
-                    shouldCloseConnection(client);
+                if (auto client = std::dynamic_pointer_cast<ClientSocket>(sockets.at(pfds[i].fd))) {
+                    if (shouldCloseConnection(client))
+                        removeSocket(client->getFd());
                 }
                 else
                     continue;
             }
         }
         else {
-            for (size_t i = 0; i < pfds.size() && active_events > 0; i++) 
+            for (size_t i = 0; i < pfds.size() && active_events > 0; ++i) 
             {
                 if (pfds[i].revents != 0) {
                     handleEvent(pfds[i].fd, pfds[i].revents);
@@ -145,8 +145,11 @@ void PollManager::HandlePollInEvent(std::shared_ptr<Socket> currSocket)
         auto newClient = serverSocket->acceptConnection();
         addSocket(newClient);
     } 
-	else if (auto clientSocket = std::dynamic_pointer_cast<ClientSocket>(currSocket)) 
+	else if (auto clientSocket = std::dynamic_pointer_cast<ClientSocket>(currSocket)) {
+        if (clientSocket->getIsParsed())
+            clientSocket->updateLastActivity();
         handleClientSocketEvent(clientSocket, true);
+    }
 }
 
 void PollManager::HandlePollOutEvent(std::shared_ptr<Socket> currSocket) 
@@ -163,6 +166,8 @@ void PollManager::handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSo
     if (isPollIn) {
         try {
             clientSocket->recvRequest();
+        } catch (const HttpRequest::requestTimedOut& e) {
+            sendErrorResponse(clientSocket, statusCode::request_timeout, e.what()); 
         } catch (const ClientSocket::HungUpException& e) {
             sendErrorResponse(clientSocket, httpStatus::errnoToStatusCode(errno), "Connection hung up");
         } catch (const HttpRequest::invalidRequest& e) {
@@ -174,9 +179,13 @@ void PollManager::handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSo
     else {
         try {
             router.routeRequest(clientSocket->getRequest(), clientSocket->getResponse());
+            if (clientSocket->hasTimedOut())
+                throw HttpRequest::requestTimedOut();
             SendSafeResponse(clientSocket);
             if (shouldCloseConnection(clientSocket))
                 removeSocket(clientSocket->getFd());
+        } catch (const HttpRequest::requestTimedOut& e) {
+            sendErrorResponse(clientSocket, statusCode::request_timeout, e.what()); 
         } catch (const std::runtime_error& e) {
             Log::logMsg(e.what());
         } catch (const std::exception& e) {

@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:14:17 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/27 10:48:31 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 16:53:28 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,24 @@ ClientSocket::ClientSocket(int fd, std::shared_ptr<ServerBlock> config) : reques
     this->fd = fd;
     this->pfd = (t_pollfd){fd, POLLIN, 0};
     this->config = config;
+    this->last_activity = std::chrono::steady_clock::now();
 }
 
 ClientSocket::~ClientSocket()
 {
     ::close(fd);
+}
+
+void    ClientSocket::updateLastActivity()
+{
+    last_activity = std::chrono::steady_clock::now();
+}
+
+bool    ClientSocket::hasTimedOut()
+{
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - last_activity);
+    return elapsed.count() > SOCKET_TIMEOUT;
 }
 
 void ClientSocket::recvRequest()
@@ -36,6 +49,9 @@ void ClientSocket::recvRequest()
         throw ClientSocket::HungUpException();
     }
     is_request_parsed = request.parseRequest(request_buff, bytes_received);
+    if (hasTimedOut()) // TO DO CHECK TIMED OUT
+        throw HttpRequest::requestTimedOut();
+    setConnection(request.getHeaderComp("Connection"));
     Log::logMsg("request received", fd);
     if (is_request_parsed)
     {
@@ -58,8 +74,8 @@ void ClientSocket::sendResponse()
         request.flushBuffers();
         throw std::runtime_error("accept: " + STRERR);
     }
-    // request.flushBuffers();
-    // is_request_parsed = false;
+    request.flushBuffers();
+    is_request_parsed = false;
     Log::logMsg("response sent", fd);
     setState(State::Reading);
 }
@@ -76,8 +92,8 @@ void ClientSocket::sendResponse(std::string response)
         request.flushBuffers();
         throw std::runtime_error("accept: " + STRERR);
     }
-    // request.flushBuffers();
-    // is_request_parsed = false;
+    request.flushBuffers();
+    is_request_parsed = false;
     Log::logMsg("response sent", fd);
     setState(State::Reading);
 }

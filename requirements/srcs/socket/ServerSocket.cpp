@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:14:45 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 12:14:46 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 15:57:47 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ std::shared_ptr<ClientSocket> ServerSocket::acceptConnection()
     socklen_t addrlen = sizeof(remoteaddr);
 
     int cli_fd = SysCall::accept(fd, (struct sockaddr *)&remoteaddr, &addrlen);
-
     Log::logMsg("new connection accepted: " + std::to_string(cli_fd), fd);
 
     return std::shared_ptr<ClientSocket>(new ClientSocket(cli_fd, config));

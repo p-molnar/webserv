@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:10:37 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 12:10:39 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 15:47:04 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 #define SEMICOL std::string(";")
 #define WHTSPC std::string(" \r\n\t")
 #define CHARSET std::string("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
-
+#define SOCKET_TIMEOUT 0.01;
 #define NPOS std::string::npos
 
 #endif

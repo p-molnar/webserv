@@ -8,7 +8,6 @@ echo "<center>this functionality only support image extensions."
 echo "<hr>"
 echo "<div>"
 
-
 IMAGE_DIR="/home/tklouwer/Desktop/webserv/requirements/srv/www/uploads"
 
 for img in $IMAGE_DIR/*; do

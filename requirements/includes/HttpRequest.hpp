@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:08:08 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 12:08:09 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 15:51:55 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,18 @@ public:
     invalidRequest(std::string what_arg) : exc(what_arg){};
     const char *what() const throw() { return exc.c_str(); };
     ~invalidRequest() throw(){};
+};
+
+public:
+class requestTimedOut : public std::exception
+{
+    std::string exc;
+
+public:
+    requestTimedOut(){};
+    requestTimedOut(std::string what_arg) : exc(what_arg){};
+    const char *what() const throw() { return exc.c_str(); };
+    ~requestTimedOut() throw(){};
 };
 
 private:

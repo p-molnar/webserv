@@ -6,11 +6,12 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:14:11 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/27 12:52:17 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 16:49:33 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpRequest.hpp"
+#include <unistd.h>
 
 HttpRequest::HttpRequest() : request_line_parse_status(INCOMPLETE),
                              request_headers_parse_status(INCOMPLETE),
@@ -219,7 +220,7 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
 
     raw_request += std::string(raw_request_data, bytes_received);
 
-    std::cout << CGRY << raw_request << NC << std::endl; // Todo comment out
+    // std::cout << CGRY << raw_request << NC << std::endl; // Todo comment out
 
     // request line parsing
     if (request_line_parse_status == INCOMPLETE)
@@ -255,7 +256,7 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
             std::size_t content_length = atoi(getHeaderComp("Content-Length").c_str());
             if (content_length > static_cast<std::size_t>(config->getClientMaxBodySize()))
             {
-                std::cout << "BODY SIZE TOO BIG!\n";
+                throw HttpRequest::invalidRequest("Body size too big");
             }
             std::size_t msg_body_start = dbl_clrf_pos + TWO_CRLF.length();
             std::string raw_msg_body = raw_request.substr(msg_body_start);
@@ -268,12 +269,10 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
                 request_msg_body_parse_status = COMPLETE;
             }
         }
-        catch (const std::out_of_range &e)
-        {
+        catch (const std::out_of_range &e) {
             request_msg_body_parse_status = NA;
         }
     }
-
     return (request_line_parse_status == COMPLETE &&
             request_headers_parse_status == COMPLETE &&
             (request_msg_body_parse_status == NA ||

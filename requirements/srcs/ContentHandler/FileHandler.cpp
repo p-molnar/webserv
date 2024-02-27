@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   FileHandlerUtils.cpp                               :+:    :+:            */
+/*   FileHandler.cpp                                    :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 11:36:36 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 11:51:51 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 14:02:58 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,6 @@ void fileHandler::handleErrorResponse(int errorCode, const HttpRequest *req, Htt
     {
         res->setHeaders("Content-Type", "text/html");
         res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::not_found),
-                                  fileHandler::readFileContent(root_dir + req->getServerConfig()->getErrorPage(errorCode)));
+                                  fileHandler::readFileContent(req->getServerConfig()->getErrorPage(errorCode)));
     }
 }

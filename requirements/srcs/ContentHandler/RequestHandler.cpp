@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/27 13:57:48 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 14:10:20 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,12 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
     std::string file_path = req->getUriComps().path;
     const std::string root_dir = req->getServerConfig()->getRoot();
 
+    Log::logMsg(file_path);
     if (req->getType() == EXECUTABLE)
     {
         fileHandler::handleExecutableRequest(req, res);
         return;
     }
-
     if (file_path.find(".") == std::string::npos && req->getType() == RESOURCE && !fileHandler::isDirectory(file_path))
         file_path += ".html";
 
