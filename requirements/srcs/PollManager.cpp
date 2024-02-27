@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:16:44 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/27 13:30:04 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 13:55:56 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,6 @@ void PollManager::processEvents()
         int active_events = SysCall::poll(pfds.data(), pfds.size(), 2000);
         if (active_events == 0)
         {
-            Log::logMsg("Poll timed out");
             for (size_t i = 0; i < pfds.size(); ++i)
             {
                 if (auto client = std::dynamic_pointer_cast<ClientSocket>(sockets.at(pfds[i].fd))){

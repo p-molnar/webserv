@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   FileHandler.cpp                                    :+:    :+:            */
+/*   RequestHandler.cpp                                 :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 11:55:00 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/27 13:57:48 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
         fileHandler::handleErrorResponse(404, req, res);
         return;
     }
-
     if (fileHandler::isValidPath(file_path))
     {
         if (fileHandler::isDirectory(file_path))
