@@ -18,7 +18,7 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
     std::string file_path = req->getUriComps().path;
     const std::string root_dir = req->getServerConfig()->getRoot();
 
-    Log::logMsg(file_path);
+    Log::logMsg("Request file_path: '" + file_path + "'");
     if (req->getType() == EXECUTABLE)
     {
         fileHandler::handleExecutableRequest(req, res);
