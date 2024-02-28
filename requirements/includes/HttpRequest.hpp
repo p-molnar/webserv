@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:08:08 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/27 15:51:55 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/28 10:18:03 by pmolnar       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,28 +65,39 @@ typedef struct s_uri_comps
 class HttpRequest
 {
 public:
-class invalidRequest : public std::exception
-{
-    std::string exc;
+    class RequestEntityTooLarge : public std::exception
+    {
+        std::string exc;
+
+    public:
+        RequestEntityTooLarge(){};
+        RequestEntityTooLarge(std::string what_arg) : exc(what_arg){};
+        const char *what() const throw() { return exc.c_str(); };
+        ~RequestEntityTooLarge() throw(){};
+    };
+
+    class invalidRequest : public std::exception
+    {
+        std::string exc;
+
+    public:
+        invalidRequest(){};
+        invalidRequest(std::string what_arg) : exc(what_arg){};
+        const char *what() const throw() { return exc.c_str(); };
+        ~invalidRequest() throw(){};
+    };
 
 public:
-    invalidRequest(){};
-    invalidRequest(std::string what_arg) : exc(what_arg){};
-    const char *what() const throw() { return exc.c_str(); };
-    ~invalidRequest() throw(){};
-};
+    class requestTimedOut : public std::exception
+    {
+        std::string exc;
 
-public:
-class requestTimedOut : public std::exception
-{
-    std::string exc;
-
-public:
-    requestTimedOut(){};
-    requestTimedOut(std::string what_arg) : exc(what_arg){};
-    const char *what() const throw() { return exc.c_str(); };
-    ~requestTimedOut() throw(){};
-};
+    public:
+        requestTimedOut(){};
+        requestTimedOut(std::string what_arg) : exc(what_arg){};
+        const char *what() const throw() { return exc.c_str(); };
+        ~requestTimedOut() throw(){};
+    };
 
 private:
     std::shared_ptr<ServerBlock> config;
@@ -146,7 +157,6 @@ public:
     const FormData &getFormDataObj() const;
     bool isParsed() const;
     bool hadSessionId() const;
-    
 };
 
 std::ostream &operator<<(std::ostream &os, const HttpRequest &obj);

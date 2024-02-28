@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:14:11 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/27 16:49:33 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/28 10:20:22 by pmolnar       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,6 @@ std::string HttpRequest::constructPath(std::string raw_path)
     return joined;
 }
 
-
 void HttpRequest::parseRequestUri(const std::string &uri)
 {
     std::vector<std ::string> uri_comps_local = tokenize(uri, QSTR_SEP);
@@ -256,7 +255,7 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
             std::size_t content_length = atoi(getHeaderComp("Content-Length").c_str());
             if (content_length > static_cast<std::size_t>(config->getClientMaxBodySize()))
             {
-                throw HttpRequest::invalidRequest("Body size too big");
+                throw HttpRequest::RequestEntityTooLarge("Request Entity Too Large");
             }
             std::size_t msg_body_start = dbl_clrf_pos + TWO_CRLF.length();
             std::string raw_msg_body = raw_request.substr(msg_body_start);
@@ -269,7 +268,8 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
                 request_msg_body_parse_status = COMPLETE;
             }
         }
-        catch (const std::out_of_range &e) {
+        catch (const std::out_of_range &e)
+        {
             request_msg_body_parse_status = NA;
         }
     }

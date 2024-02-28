@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:14:58 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/27 09:47:14 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/28 10:29:13 by pmolnar       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 HttpResponse HttpResponse::generateResponse2(HttpRequest &request)
 {
-    (void) request;
+    (void)request;
     // std::string cgi_raw_output = RequestProcessor::executeCgi(request.getUriComps());
     // std::cout << cgi_raw_output << "\n";
 
@@ -43,7 +43,7 @@ HttpResponse HttpResponse::operator=(const HttpResponse &obj)
     return *this;
 };
 
-HttpResponse::HttpResponse() : _httpVersion("HTTP/1.1") {};
+HttpResponse::HttpResponse() : _httpVersion("HTTP/1.1"){};
 
 HttpResponse::~HttpResponse() {}
 
@@ -57,16 +57,16 @@ void HttpResponse::setHeaders(const std::string &key, const std::string &value)
     _headers[key] = value;
 }
 
-void    HttpResponse::setStatusLine(const std::string& statusline)
+void HttpResponse::setStatusLine(const std::string &statusline)
 {
     _statusLine = statusline;
 }
 
- void    HttpResponse::setStatusLineAndBody(const std::string& statusline, const std::string& body)
- {
+void HttpResponse::setStatusLineAndBody(const std::string &statusline, const std::string &body)
+{
     setStatusLine(statusline);
     setBody(body);
- }
+}
 
 std::string HttpResponse::getHeader(const std::string &headerName) const
 {
@@ -96,13 +96,14 @@ std::string generateSessionID(int length)
 
     srand(time(nullptr));
     result.reserve(length);
-    for (int i = 0; i < length; ++i) {
+    for (int i = 0; i < length; ++i)
+    {
         result += CHARSET[rand() % CHARSET.length()];
     }
     return result;
 }
 
-std::string    HttpResponse::generateResponse(HttpRequest &request)
+std::string HttpResponse::generateResponse(HttpRequest &request)
 {
     Log::logMsg("Response generated, ready to sent");
     std::string response;
@@ -111,15 +112,23 @@ std::string    HttpResponse::generateResponse(HttpRequest &request)
     if (!request.hadSessionId())
         response += setCookie("sessionID", generateSessionID(64), "/", 2);
     setHeaders("Content-Length", std::to_string(_body.size()));
-    for (const auto& header : _headers) {
+    for (const auto &header : _headers)
+    {
         response += header.first + ": " + header.second + CRLF;
     }
     response += CRLF;
     std::cout << CGRY << response << NC << std::endl;
     response += _body;
-    if (getHeader("Content-Type").find("text/html") != std::string::npos)
-        std::cout << CGRY << _body << NC << std::endl;
-    else
-        std::cout << CGRY << "[Raw bits]" << NC << std::endl;
+    try
+    {
+        if (getHeader("Content-Type").find("text/html") != std::string::npos)
+            std::cout << CGRY << _body << NC << std::endl;
+        else
+            std::cout << CGRY << "[Raw bits]" << NC << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        (void)e;
+    }
     return response;
 }
