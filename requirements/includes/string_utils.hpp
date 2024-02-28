@@ -10,4 +10,5 @@ std::vector<std::string> tokenize(const std::string &input,
 								  const std::string &delimiter,
 								  std::size_t max_count = -1);
 std::string readFull(int fd);
+std::string joinPath(std::vector<std::string> paths, std::string delimeter);
 #endif

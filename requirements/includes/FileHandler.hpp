@@ -10,10 +10,10 @@
 #include <cstdio>
 
 /* Webserv */
+#include "RequestProcessor.hpp"
 #include "Log.hpp"
 #include "HttpResponse.hpp"
 #include "httpStatus.hpp"
-#include "RequestProcessor.hpp"
 
 class fileHandler {
     public:

@@ -137,7 +137,7 @@ void fileHandler::handleErrorResponse(int errorCode, const HttpRequest *req, Htt
     {
         Log::logMsg("File not found: " + req->getUriComps().path);
         res->setHeaders("Content-Type", "text/html");
-        std::string error_page = req->getServerConfig()->getRoot() + req->getServerConfig()->getErrorPage(errorCode);
+        std::string error_page = req->getServerConfig()->getErrorPage(errorCode);
         Log::logMsg("Try to use the error page in config: '" + error_page + "'");
         if (isFile(error_page))
         {

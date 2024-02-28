@@ -22,10 +22,12 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
     }
     if (fileHandler::isValidPath(file_path))
     {
-        if (fileHandler::isDirectory(file_path))
+        if (fileHandler::isDirectory(file_path) && req->getType() == DIRECTORY)
             fileHandler::serveDirectoryListing(req, res);
         else if (fileHandler::isFile(file_path))
             fileHandler::serveStaticFile(file_path, res);
+        else
+            fileHandler::handleErrorResponse(404, req, res);
     }
 }
 

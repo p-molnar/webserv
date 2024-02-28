@@ -124,32 +124,15 @@ std::shared_ptr<LocationBlock> HttpRequest::getMatchingLocation(std::string path
     return matching_block;
 }
 
-std::string joinPath(std::vector<std::string> paths, std::string delimeter)
-{
-    std::string joined_path;
-
-    for (size_t i = 0; i < paths.size(); i++)
-    {
-        std::string stripped = strip(paths[i], "/");
-        if (stripped != "")
-            joined_path += stripped + delimeter;
-    }
-
-    // if the path is "/" or if the last character is not "/"
-    // i.e., then remove the extra "/"
-    if (paths.back() == "/" || paths.back().back() != '/')
-    {
-        joined_path.pop_back();
-    }
-    return joined_path;
-}
-
 std::string HttpRequest::constructPath(std::string raw_path)
 {
     std::string root;
 
     bool is_defined_location_root = _location->getRoot() != "";
     bool is_defined_location_alias = _location->getAlias() != "";
+
+    std::cout << "is_defined_location_root: " << is_defined_location_root << '\n';
+    std::cout << "is_defined_location_alias: " << is_defined_location_alias << '\n';
 
     if (!is_defined_location_root && is_defined_location_alias)
     {
@@ -185,7 +168,8 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     // get the best matching location block in config
     _location = getMatchingLocation(uri_comps.raw_path);
 
-    // std::cout << "Matching location: " << _location->getRoot() << '\n';
+    std::cout << "raw path: " << uri_comps.raw_path << '\n';
+    std::cout << "Matching location: " << _location->getRoot() << '\n';
 
     // apply redirect
     std::string redirect_path = _location->getReturn();
@@ -196,7 +180,10 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         return;
     }
 
+    std::cout << "pre uripath: " << uri_comps.raw_path << '\n';
     uri_comps.raw_path = uri_comps.raw_path == "/" ? _location->getIndex() : uri_comps.raw_path;
+    std::cout << "post uripath: " << uri_comps.raw_path << '\n';
+
     uri_comps.path = constructPath(uri_comps.raw_path);
 
     // determine if the requested cgi is accepted, and if so what type of cgi it is

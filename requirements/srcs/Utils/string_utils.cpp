@@ -53,3 +53,23 @@ std::string readFull(int fd)
 
 	return output;
 }
+
+std::string joinPath(std::vector<std::string> paths, std::string delimeter)
+{
+    std::string joined_path;
+
+    for (size_t i = 0; i < paths.size(); i++)
+    {
+        std::string stripped = strip(paths[i], "/");
+        if (stripped != "")
+            joined_path += stripped + delimeter;
+    }
+
+    // if the path is "/" or if the last character is not "/"
+    // i.e., then remove the extra "/"
+    if (paths.back() == "/" || paths.back().back() != '/')
+    {
+        joined_path.pop_back();
+    }
+    return joined_path;
+}

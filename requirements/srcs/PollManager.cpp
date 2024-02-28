@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   PollManager.cpp                                    :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/02/26 12:16:44 by tklouwer      #+#    #+#                 */
+/*   Updated: 2024/02/28 10:54:13 by pmolnar       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "PollManager.hpp"
 
 #define RUNNING 1
@@ -144,8 +156,8 @@ void PollManager::HandlePollInEvent(std::shared_ptr<Socket> currSocket)
     }
     else if (auto clientSocket = std::dynamic_pointer_cast<ClientSocket>(currSocket))
     {
-        // if (clientSocket->getIsParsed())
-        //     clientSocket->updateLastActivity();
+        if (clientSocket->getIsParsed())
+            clientSocket->updateLastActivity();
         handleClientSocketEvent(clientSocket, true);
     }
 }
