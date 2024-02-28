@@ -13,7 +13,7 @@
 #define CRED "\x1B[31m"
 #define CGRN "\x1B[32m"
 #define CGRY "\x1B[90m"
-#define DEFAULT_CONFIG_PATH "../default.conf"
+#define DEFAULT_CONFIG_PATH "../.default.conf"
 
 bool is_number(std::string s);
 std::string removeSemicolon(const std::string &str);
@@ -102,12 +102,9 @@ class Config
 {
 private:
 	const char *_file_path;
-	// std::fstream _config_file;
 	std::vector<ServerBlock> _servers;
 
-	// void openFile();
 	void readFile();
-	// void closeFile();
 	void parseFile();
 	void addServer(const ServerBlock &server);
 
