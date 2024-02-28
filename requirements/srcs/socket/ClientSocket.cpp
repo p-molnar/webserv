@@ -15,7 +15,7 @@
 ClientSocket::ClientSocket(int fd, std::shared_ptr<ServerBlock> config) : request(config), response()
 {
     this->fd = fd;
-    this->pfd = (t_pollfd){fd, POLLIN, 0};
+    this->pfd = (t_pollfd){fd, POLLIN | POLLOUT, 0};
     this->config = config;
     this->last_activity = std::chrono::steady_clock::now();
 }

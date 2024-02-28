@@ -20,8 +20,8 @@
 #include <string>
 #include <iostream>
 #include <memory>
-
-/* Webserv */
+#include <algorithm>
+#include "Log.hpp"
 #include "consts.hpp"
 #include "string_utils.hpp"
 #include "FormData.hpp"
@@ -51,6 +51,7 @@ enum e_request_type
     RESOURCE,
     DIRECTORY,
     EXECUTABLE,
+    REDIRECT,
 };
 
 typedef struct s_uri_comps
@@ -60,6 +61,7 @@ typedef struct s_uri_comps
     std::string query_str;
     std::string executable_name;
     std::string path_info;
+    std::string rederection_path;
 } t_uri_comps;
 
 class HttpRequest
@@ -97,6 +99,19 @@ public:
         requestTimedOut(std::string what_arg) : exc(what_arg){};
         const char *what() const throw() { return exc.c_str(); };
         ~requestTimedOut() throw(){};
+    };
+
+
+public:
+    class InvalidMethodException : public std::exception
+    {
+        std::string exc;
+
+    public:
+        InvalidMethodException(){};
+        InvalidMethodException(std::string what_arg) : exc(what_arg){};
+        const char *what() const throw() { return exc.c_str(); };
+        ~InvalidMethodException() throw(){};
     };
 
 private:
@@ -157,6 +172,7 @@ public:
     const FormData &getFormDataObj() const;
     bool isParsed() const;
     bool hadSessionId() const;
+    std::string getRedirectLocation() const;
 };
 
 std::ostream &operator<<(std::ostream &os, const HttpRequest &obj);

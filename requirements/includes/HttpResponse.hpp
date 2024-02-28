@@ -54,7 +54,6 @@ public:
     void setStatusLineAndBody(const std::string& statusline, const std::string& body);
     std::string getHeader(const std::string &headerName) const;
 
-    static HttpResponse generateResponse2(HttpRequest &request);
     std::string    generateResponse(HttpRequest &request);
 
 };

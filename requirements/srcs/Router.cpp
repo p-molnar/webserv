@@ -28,8 +28,7 @@ void    Router::registerRoute(std::string request_method,
 void    Router::routeRequest(const HttpRequest& req, HttpResponse& res)
 {
     Log::logMsg("Routing the request");
-    std::string method = req.getRequestLineComp("method");
-
+    std::string method = req.getRequestLineComp("method");    
     for (const auto& route : routes) 
     {
         if (method == route.request_method)

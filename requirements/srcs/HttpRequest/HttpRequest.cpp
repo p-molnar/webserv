@@ -104,21 +104,32 @@ std::string HttpRequest::getExecutableName(const std::string &file_extension, co
 
 std::shared_ptr<LocationBlock> HttpRequest::getMatchingLocation(std::string path)
 {
-    std::shared_ptr<LocationBlock> best_match;
-    int max_matching_chars = -1;
+    std::shared_ptr<LocationBlock> matching_block = NULL;
+    std::vector<std::string> path_comps = tokenize(path, "/");
+    std::string basename;
+
+    if (path_comps.size() == 1)
+        basename = "";
+    else
+        basename = path_comps[1];
+
+    LocationBlock default_block = config->getLocations().at("/");
+
     for (auto &location : config->getLocations())
     {
-        std::string location_directive = location.first;
-        size_t i = 0;
-        while (i < location_directive.length() && location_directive[i] == path[i])
-            i++;
-        if (static_cast<int>(i) > max_matching_chars)
+        std::string location_directive = strip(location.first, "/");
+        if (location_directive == basename)
         {
-            max_matching_chars = i;
-            best_match = std::make_shared<LocationBlock>(location.second);
+            matching_block = std::make_shared<LocationBlock>(location.second);
         }
     };
-    return best_match;
+
+    if (matching_block == NULL)
+    {
+        matching_block = std::make_shared<LocationBlock>(default_block);
+    }
+
+    return matching_block;
 }
 
 std::string joinPath(std::vector<std::string> paths, std::string delimeter)
@@ -143,9 +154,22 @@ std::string joinPath(std::vector<std::string> paths, std::string delimeter)
 
 std::string HttpRequest::constructPath(std::string raw_path)
 {
-    std::string root = strip(config->getRoot(), "/");
-    std::string location_root = strip(_location->getRoot(), "/");
-    std::string joined = joinPath({root, location_root, raw_path}, "/");
+    std::string root;
+
+    bool is_defined_location_root = _location->getRoot() != "";
+    bool is_defined_location_alias = _location->getAlias() != "";
+
+    if (!is_defined_location_root && is_defined_location_alias)
+    {
+        root = _location->getAlias();
+        std::size_t second_slash = raw_path.find("/", 1);
+        raw_path = raw_path.substr(second_slash);
+    }
+    else if (!is_defined_location_root)
+        root = config->getRoot();
+    else if (is_defined_location_root)
+        root = _location->getRoot();
+    std::string joined = joinPath({root, raw_path}, "/");
     return joined;
 }
 
@@ -169,19 +193,21 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     // get the best matching location block in config
     _location = getMatchingLocation(uri_comps.raw_path);
 
-    // LocationBlock location;
-    // for (const auto &loc : config->getLocations())
-    // {
-    //     if (uri_comps.raw_path.find(loc.first) != NPOS)
-    //     {
-    //         location = loc.second;
-    //     }
-    // }
+    // std::cout << "Matching location: " << _location->getRoot() << '\n';
 
     // apply redirect
     std::string redirect_path = _location->getReturn();
     if (redirect_path != "")
-        uri_comps.raw_path = redirect_path;
+    {
+        request_type = REDIRECT;
+        // if (_location->getRoot() != "")
+        //     uri_comps.rederection_path = _location->getRoot();
+        // else
+        //     uri_comps.rederection_path = config->getRoot();
+        uri_comps.rederection_path = redirect_path;
+        std::cout << "REDIRECTING TO: " << CGRN << uri_comps.rederection_path << NC << '\n';
+        return;
+    }
 
     uri_comps.raw_path = uri_comps.raw_path == "/" ? _location->getIndex() : uri_comps.raw_path;
     uri_comps.path = constructPath(uri_comps.raw_path);
@@ -204,12 +230,25 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         else
             uri_comps.path_info = uri.substr(path_info_start);
     }
-    else if (uri_comps.raw_path.length() > 1 && request_type != EXECUTABLE)
+    else if (uri_comps.raw_path.length() > 1 && request_type != EXECUTABLE && request_type != REDIRECT)
         request_type = RESOURCE;
-    else
+    else if (request_type != REDIRECT)
         request_type = UNDEF;
 
-    parseRequestType();
+    if (request_type != REDIRECT)
+        parseRequestType();
+
+    std::vector<std::string> allowed_methods = _location->getAllowedMethods();
+    if (std::find(allowed_methods.begin(), allowed_methods.end(), request_line.at("method")) == allowed_methods.end())
+    {
+        throw HttpRequest::InvalidMethodException();
+        return;
+    }
+}
+
+std::string HttpRequest::getRedirectLocation() const
+{
+    return uri_comps.rederection_path;
 }
 
 bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_received)

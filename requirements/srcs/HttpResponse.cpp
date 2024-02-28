@@ -12,26 +12,6 @@
 
 #include "HttpResponse.hpp"
 
-HttpResponse HttpResponse::generateResponse2(HttpRequest &request)
-{
-    (void)request;
-    // std::string cgi_raw_output = RequestProcessor::executeCgi(request.getUriComps());
-    // std::cout << cgi_raw_output << "\n";
-
-    // RequestProcessor::uploadFiles(request.getFormDataObj());
-
-    // if request_type == DIRECTORY
-    // {
-    //     std::string path = request.getUriComps().path;
-    //     // replace with config file's default directory from which the website should be served
-    //     path = path == "/" ? "srv/www/" : "srv/www/" + path;
-
-    //     std::string s = RequestProcessor::listDirectoryContent(path);
-    //     std::cout << s << '\n';
-    // }
-    return HttpResponse();
-}
-
 HttpResponse::HttpResponse(const HttpResponse &obj)
 {
     (void)obj;
@@ -108,6 +88,14 @@ std::string HttpResponse::generateResponse(HttpRequest &request)
     Log::logMsg("Response generated, ready to sent");
     std::string response;
 
+    if (request.getRedirectLocation() != "")
+    {
+        Log::logMsg("Redirecting to " + request.getRedirectLocation());
+        response = "HTTP/1.1 301 Moved Permanently" + CRLF;
+        response += "Location: " + request.getRedirectLocation() + TWO_CRLF;
+        std::cout << CGRY << response << NC << std::endl;
+        return response;
+    }
     response += _statusLine;
     if (!request.hadSessionId())
         response += setCookie("sessionID", generateSessionID(64), "/", 2);

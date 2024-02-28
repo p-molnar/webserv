@@ -29,10 +29,10 @@ LocationBlock &LocationBlock::operator=(const LocationBlock &other)
 
 LocationBlock::LocationBlock()
 {
-	_path = "/";
-	_root = "/var/www/html";
-	_index = "index.html";
-	_autoIndex = "off";
+	_path = "";
+	_root = "";
+	_index = "";
+	_autoIndex = "on";
 	_return = "";
 	_alias = "";
 }
@@ -142,7 +142,7 @@ ServerBlock::ServerBlock()
 	_timeOut = 30;
 	_clientMaxBodySize = 1024;
 	_index = "index.html";
-	_root = "/var/www/html";
+	_root = "srv/www/";
 	_errorPages[403] = "/error/403.html";
 	_errorPages[404] = "/error/404.html";
 }
