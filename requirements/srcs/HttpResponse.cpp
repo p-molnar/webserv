@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   HttpResponse.cpp                                   :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/02/26 12:14:58 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/28 10:29:13 by pmolnar       ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "HttpResponse.hpp"
 
 HttpResponse::HttpResponse(const HttpResponse &obj)

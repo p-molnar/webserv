@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   FileHandler.cpp                                    :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/02/26 11:36:36 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/27 14:02:58 by tklouwer      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "FileHandler.hpp"
 
 #define ERROR "<html><body><h1>404 Not Found</h1></body></html>"

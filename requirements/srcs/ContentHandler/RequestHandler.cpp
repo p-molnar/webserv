@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   RequestHandler.cpp                                 :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/01/25 08:25:07 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/27 14:10:20 by tklouwer      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "RequestHandler.hpp"
 
 void handleGetRequest(const HttpRequest *req, HttpResponse *res)

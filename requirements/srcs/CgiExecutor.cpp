@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   CgiExecutor.cpp                                    :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/02/26 12:14:55 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 12:14:56 by tklouwer      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "RequestProcessor.hpp"
 
 std::string RequestProcessor::executeCgi(const t_uri_comps &uri)

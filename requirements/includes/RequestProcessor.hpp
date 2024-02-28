@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   RequestProcessor.hpp                               :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/02/26 11:59:31 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 12:16:12 by tklouwer      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef REQUESTPROCESSOR__HPP
 #define REQUESTPROCESSOR__HPP
 

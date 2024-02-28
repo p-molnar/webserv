@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   PollManager.hpp                                    :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/02/26 12:11:45 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 15:51:19 by tklouwer      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
 
 #ifndef POLLMANAGER_HPP
 #define POLLMANAGER_HPP
@@ -22,7 +11,6 @@
 #include "ServerSocket.hpp"
 #include "Router.hpp"
 #include "Log.hpp"
-
 
 /*
     #define POLLIN 0x001  There is data to read.
@@ -42,7 +30,7 @@ protected:
     // Config *config;
     std::vector<t_pollfd> pfds;
     std::map<int, std::shared_ptr<Socket>> sockets;
-    
+
 public:
     PollManager();
     // PollManager(Config *config_data);
@@ -52,7 +40,7 @@ public:
 
     void addSocket(std::shared_ptr<Socket> socket);
     void updatePollfd();
-    void HandleGETRequest(const HttpRequest& request);
+    void HandleGETRequest(const HttpRequest &request);
     void HandlePollInEvent(std::shared_ptr<Socket> curr_socket);
     void HandlePollOutEvent(std::shared_ptr<Socket> curr_socket);
 
@@ -65,11 +53,12 @@ public:
 
     void processEvents();
     void handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSocket, bool isPollIn);
-    void sendErrorResponse(std::shared_ptr<ClientSocket> clientSocket, statusCode errorCode, const std::string& logMessage);
+    void sendErrorResponse(std::shared_ptr<ClientSocket> clientSocket, statusCode errorCode, const std::string &logMessage);
     void connectionStatus(std::shared_ptr<ClientSocket> ClientSocket);
+
 private:
     void SendSafeResponse(std::shared_ptr<ClientSocket> clientSocket);
-    void handleEvent(int fd, short revents); 
+    void handleEvent(int fd, short revents);
 };
 
 #endif

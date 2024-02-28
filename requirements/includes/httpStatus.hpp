@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   httpStatus.hpp                                     :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/02/26 12:11:25 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 12:15:42 by tklouwer      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef HTTPSTATUS_HPP
 #define HTTPSTATUS_HPP
 
@@ -48,13 +36,14 @@ enum class statusCode
 	gateway_timeout = 504
 };
 
-class httpStatus {
-	private:
-	public:
-		static statusCode errnoToStatusCode(int err);
-		static std::unordered_map<statusCode, std::string> _message;
-		static std::string getStatusLine(statusCode code);
-		static std::string generateErrResponse(statusCode code);
+class httpStatus
+{
+private:
+public:
+	static statusCode errnoToStatusCode(int err);
+	static std::unordered_map<statusCode, std::string> _message;
+	static std::string getStatusLine(statusCode code);
+	static std::string generateErrResponse(statusCode code);
 };
 
 #endif

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   ConfigTypes.hpp                                    :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/02/26 12:10:27 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 12:13:41 by tklouwer      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 #ifndef CONFIG_TYPES
 #define CONFIG_TYPES
@@ -22,12 +10,9 @@
 class ConfigType
 {
 private:
-
-
 public:
 	virtual int getInt();
 	virtual std::string getString();
-
 };
 
 class ConfigInt : public ConfigType
@@ -40,7 +25,6 @@ public:
 	int getInt();
 	~ConfigInt();
 };
-
 
 class ConfigStr : public ConfigType
 {

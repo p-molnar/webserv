@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   HttpRequest.hpp                                    :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/02/26 12:08:08 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/28 10:18:03 by pmolnar       ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef HTTPREQUEST__HPP
 #define HTTPREQUEST__HPP
 
@@ -26,17 +14,6 @@
 #include "string_utils.hpp"
 #include "FormData.hpp"
 #include "Config.hpp"
-
-/*  HTTP Request parser.
-    Requirements:
-        - A request should never hang forever - set a timeout for a request;
-        - GET, POST, DELETE methods should be parsed;
-            - For POST parse the 'Content-Length' header.
- */
-
-/* TO MAKE : Chunked data function
-    save chunks with istream and append to requestText
- */
 
 enum e_parse_status
 {
@@ -99,7 +76,6 @@ public:
         const char *what() const throw() { return exc.c_str(); };
         ~requestTimedOut() throw(){};
     };
-
 
 public:
     class InvalidMethodException : public std::exception

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   ClientSocket.cpp                                   :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/02/26 12:14:17 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/28 10:56:41 by pmolnar       ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "ClientSocket.hpp"
 
 ClientSocket::ClientSocket(int fd, std::shared_ptr<ServerBlock> config) : request(config), response()

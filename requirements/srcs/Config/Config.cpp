@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   Config.cpp                                         :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/02/26 12:13:09 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 12:13:11 by tklouwer      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Config.hpp"
 
 LocationBlock &LocationBlock::operator=(const LocationBlock &other)

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   listDirectoryContent.cpp                           :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/02/26 12:15:48 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 12:15:54 by tklouwer      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "RequestProcessor.hpp"
 
 std::string RequestProcessor::listDirectoryContent(const t_uri_comps &uri)

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   Webserver.cpp                                      :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/02/26 12:17:18 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 12:17:26 by tklouwer      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "WebServer.hpp"
 
 WebServer::WebServer(Config &config) : _config(config){};
