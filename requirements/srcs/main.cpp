@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     try
     {
         Config config(argc, argv);
-        // config.display(); // temp for testing
+        config.display(); // temp for testing
         WebServer server(config);
 
         // no need to load a config file anymore, because it is a global class

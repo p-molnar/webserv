@@ -34,7 +34,8 @@ bool    ClientSocket::hasTimedOut()
 {
     auto now = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - last_activity);
-    return elapsed.count() > SOCKET_TIMEOUT;
+    // return elapsed.count() > SOCKET_TIMEOUT;
+    return elapsed.count() > getRequest().getServerConfig()->getTimeOut();
 }
 
 void ClientSocket::recvRequest()

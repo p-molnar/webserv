@@ -78,6 +78,7 @@ private:
 	int _listenPort;
 	std::string _listenIpAddress;
 	std::string _serverName;
+	int _timeOut;
 	std::map<int, std::string> _errorPages;
 	std::string _root;
 	std::string _index;
@@ -91,6 +92,7 @@ public:
 	void setClientMaxBodySize(int size);
 	void setListenIpAddress(const std::string &listenIpAddress);
 	void setServerName(const std::string &serverName);
+	void setTimeOut(int timeOut);
 	void setErrorPage(int errorCode, const std::string &errorPage);
 	void setRoot(const std::string &root);
 	void setIndex(const std::string &index);
@@ -100,6 +102,7 @@ public:
 	int getClientMaxBodySize() const;
 	std::string getListenIpAddress() const;
 	std::string getServerName() const;
+	int getTimeOut() const;
 	std::string getErrorPage(int errorCode) const;
 	std::map<int, std::string> getErrorPages() const;
 	std::string getRoot() const;

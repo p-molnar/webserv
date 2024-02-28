@@ -139,6 +139,7 @@ ServerBlock::ServerBlock()
 	_listenPort = 8080;
 	_listenIpAddress = "127.0.0.1";
 	_serverName = "localhost";
+	_timeOut = 30;
 	_clientMaxBodySize = 1024;
 	_index = "index.html";
 	_root = "/var/www/html";
@@ -181,6 +182,11 @@ void ServerBlock::setListenPort(int listenPort)
 void ServerBlock::setServerName(const std::string &serverName)
 {
 	_serverName = serverName;
+}
+
+void ServerBlock::setTimeOut(int timeOut)
+{
+	_timeOut = timeOut;
 }
 
 std::map<std::string, LocationBlock> &ServerBlock::getLocations()
@@ -226,6 +232,11 @@ int ServerBlock::getListenPort() const
 std::string ServerBlock::getServerName() const
 {
 	return _serverName;
+}
+
+int ServerBlock::getTimeOut() const
+{
+	return _timeOut;
 }
 
 void ServerBlock::addLocation(const std::string &locationPath, const LocationBlock &location)
@@ -289,6 +300,7 @@ void Config::display()
 		std::cout << "Server Port: " << server.getListenPort() << std::endl;
 		std::cout << "Server IP Address: " << server.getListenIpAddress() << std::endl;
 		std::cout << "Server Name: " << server.getServerName() << std::endl;
+		std::cout << "Server Time Out: " << server.getTimeOut() << std::endl;
 		for (const auto &errorPage : server.getErrorPages())
 			std::cout << "Server Error Page: " << errorPage.first << " " << errorPage.second << std::endl;
 		std::cout << "Server client max body size: " << server.getClientMaxBodySize() << std::endl;
@@ -385,6 +397,13 @@ void Config::readFile()
 						getServers().back().setListenIpAddress(removeSemicolon(value));
 					if (key == "server_name")
 						getServers().back().setServerName(removeSemicolon(value));
+					if (key == "time_out")
+					{
+						if (is_number(removeSemicolon(value)))
+							getServers().back().setTimeOut(std::stoi(removeSemicolon(value)));
+						else
+							std::cout << CRED << "Error config format, line " << NC << line_nr << ": '" << line << "'" << std::endl;
+					}
 					if (key == "error_page")
 					{
 						if (is_number(removeSemicolon(value)))
