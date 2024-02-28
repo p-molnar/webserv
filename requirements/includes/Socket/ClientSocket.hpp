@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:08:05 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/26 15:35:10 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/28 10:55:09 by pmolnar       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 /* C/C++ Libs */
 #include <stdexcept>
 #include <exception>
+#include <chrono>
 
 /* Webserv */
 #include "Socket.hpp"
@@ -47,6 +48,8 @@ private:
 
 private:
     std::string _request_buff;
+    std::string connection;
+    std::chrono::steady_clock::time_point last_activity;
 
 public:
     enum class State
@@ -58,16 +61,20 @@ public:
     ClientSocket(int fd, std::shared_ptr<ServerBlock> config);
     ~ClientSocket(void);
 
+    void updateLastActivity();
+    bool hasTimedOut();
+    void setConnection(std::string status) { connection = status; }
     void setState(State newState) { state = newState; }
     State getState() const { return state; }
-
+    std::string getConnection() const { return connection; }
     const HttpRequest &getRequest() const { return request; }
     HttpResponse &getResponse() { return response; }
     std::string getRequestBuff() const { return this->_request_buff; }
+    bool getIsParsed() const { return this->is_request_parsed; }
 
     void recvRequest();
     void sendResponse();
-    void sendResponse(std::string response); // Overloading the send response function for error usage.
+    void sendErrResponse(std::string response);
 };
 
 #endif

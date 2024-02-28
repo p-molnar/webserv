@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:16:44 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/27 13:30:04 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/02/28 10:54:13 by pmolnar       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,55 +24,57 @@ PollManager::~PollManager()
 
 void PollManager::addSocket(std::shared_ptr<Socket> socket)
 {
-	pfds.push_back(socket->getPfd());
-	sockets[socket->getFd()] = socket;
+    pfds.push_back(socket->getPfd());
+    sockets[socket->getFd()] = socket;
 }
 
 void PollManager::removeSocket(int fd)
 {
-	Log::logMsg("connection removed: " + std::to_string(fd));
-	std::vector<t_pollfd>::iterator v_it = pfds.begin();
-	std::vector<t_pollfd>::iterator v_ite = pfds.end();
-	while (v_it != v_ite)
-	{
-		if (v_it->fd == fd)
-		{
-			pfds.erase(v_it);
-			break;
-		}
-		v_it++;
-	}
+    Log::logMsg("connection removed", fd);
+    std::vector<t_pollfd>::iterator v_it = pfds.begin();
+    std::vector<t_pollfd>::iterator v_ite = pfds.end();
+    while (v_it != v_ite)
+    {
+        if (v_it->fd == fd)
+        {
+            pfds.erase(v_it);
+            break;
+        }
+        v_it++;
+    }
 
-	std::map<int, std::shared_ptr<Socket>>::iterator m_it = sockets.find(fd);
-	sockets.erase(m_it);
+    std::map<int, std::shared_ptr<Socket>>::iterator m_it = sockets.find(fd);
+    sockets.erase(m_it);
 }
 
 void PollManager::updatePollfd()
 {
-	for (auto &pfd : pfds)
-	{
-		std::shared_ptr<Socket> socket = sockets.at(pfd.fd);
-		if (std::shared_ptr<ClientSocket> clientSocket = std::dynamic_pointer_cast<ClientSocket>(socket))
-		{
-			if (clientSocket->getState() == ClientSocket::State::Reading && pfd.events != POLLHUP)
-				pfd.events = POLLIN;
-			else if (clientSocket->getState() == ClientSocket::State::Writing && pfd.events != POLLHUP)
-				pfd.events = POLLOUT;
-		}
-	}
-}
-
-void PollManager::SendSafeResponse(std::shared_ptr<ClientSocket> clientSocket) 
-{
-    try {
-        clientSocket->sendResponse();
-    } catch (const std::exception &e) {
-        Log::logMsg(e.what());
-        removeSocket(clientSocket->getFd());
+    for (auto &pfd : pfds)
+    {
+        std::shared_ptr<Socket> socket = sockets.at(pfd.fd);
+        if (std::shared_ptr<ClientSocket> clientSocket = std::dynamic_pointer_cast<ClientSocket>(socket))
+        {
+            if (clientSocket->getState() == ClientSocket::State::Reading && pfd.events != POLLHUP)
+                pfd.events = POLLIN;
+            else if (clientSocket->getState() == ClientSocket::State::Writing && pfd.events != POLLHUP)
+                pfd.events = POLLOUT;
+        }
     }
 }
 
-void PollManager::handleEvent(int fd, short revents) 
+void PollManager::SendSafeResponse(std::shared_ptr<ClientSocket> clientSocket)
+{
+    try
+    {
+        clientSocket->sendResponse();
+    }
+    catch (const std::exception &e)
+    {
+        Log::logMsg(e.what());
+    }
+}
+
+void PollManager::handleEvent(int fd, short revents)
 {
     auto socket = sockets.at(fd);
     if (revents & (POLLIN | POLLHUP))
@@ -85,42 +87,48 @@ void PollManager::handleEvent(int fd, short revents)
 
 bool PollManager::shouldCloseConnection(std::shared_ptr<ClientSocket> client_socket)
 {
-    try {
-	    const auto connectionHeader = client_socket->getRequest().getHeaderComp("Connection");
-        if (connectionHeader == "close") {
-            return true ;
+    try
+    {
+        if (client_socket->getConnection() == "keep-alive")
+        {
+            return false;
         }
         else
-            return false ;
+            return true;
     }
-    catch (std::out_of_range& e) {
-            return true ;
+    catch (std::out_of_range &e)
+    {
+        Log::logMsg(e.what());
+        return true;
     }
 }
 
 void PollManager::processEvents()
 {
     Log::logMsg("Server is processing events");
-    while (RUNNING) 
-	{
+    while (RUNNING)
+    {
         updatePollfd();
-        int active_events = SysCall::poll(pfds.data(), pfds.size(), 2000);
+        int active_events = SysCall::poll(pfds.data(), pfds.size(), 1000);
         if (active_events == 0)
         {
-            Log::logMsg("Poll timed out");
             for (size_t i = 0; i < pfds.size(); ++i)
             {
-                if (auto client = std::dynamic_pointer_cast<ClientSocket>(sockets.at(pfds[i].fd))){
-                    shouldCloseConnection(client);
+                if (auto client = std::dynamic_pointer_cast<ClientSocket>(sockets.at(pfds[i].fd)))
+                {
+                    if (shouldCloseConnection(client) || client->hasTimedOut())
+                        removeSocket(client->getFd());
                 }
                 else
                     continue;
             }
         }
-        else {
-            for (size_t i = 0; i < pfds.size() && active_events > 0; i++) 
+        else
+        {
+            for (size_t i = 0; i < pfds.size() && active_events > 0; ++i)
             {
-                if (pfds[i].revents != 0) {
+                if (pfds[i].revents != 0)
+                {
                     handleEvent(pfds[i].fd, pfds[i].revents);
                     active_events--;
                 }
@@ -129,58 +137,90 @@ void PollManager::processEvents()
     }
 }
 
-
-void PollManager::sendErrorResponse(std::shared_ptr<ClientSocket> clientSocket, statusCode errorCode, const std::string& logMessage)
+void PollManager::sendErrorResponse(std::shared_ptr<ClientSocket> clientSocket, statusCode errorCode, const std::string &logMessage)
 {
-    clientSocket->sendResponse(httpStatus::generateErrResponse(errorCode));
-    if (!logMessage.empty()) {
+    clientSocket->sendErrResponse(httpStatus::generateErrResponse(errorCode));
+    if (!logMessage.empty())
+    {
         Log::logMsg(logMessage);
-	}
-	removeSocket(clientSocket->getFd());
+    }
+    removeSocket(clientSocket->getFd());
 }
 
-void PollManager::HandlePollInEvent(std::shared_ptr<Socket> currSocket) 
+void PollManager::HandlePollInEvent(std::shared_ptr<Socket> currSocket)
 {
-    if (auto serverSocket = std::dynamic_pointer_cast<ServerSocket>(currSocket)) 
-	{
+    if (auto serverSocket = std::dynamic_pointer_cast<ServerSocket>(currSocket))
+    {
         auto newClient = serverSocket->acceptConnection();
         addSocket(newClient);
-    } 
-	else if (auto clientSocket = std::dynamic_pointer_cast<ClientSocket>(currSocket)) 
+    }
+    else if (auto clientSocket = std::dynamic_pointer_cast<ClientSocket>(currSocket))
+    {
+        if (clientSocket->getIsParsed())
+            clientSocket->updateLastActivity();
         handleClientSocketEvent(clientSocket, true);
+    }
 }
 
-void PollManager::HandlePollOutEvent(std::shared_ptr<Socket> currSocket) 
+void PollManager::HandlePollOutEvent(std::shared_ptr<Socket> currSocket)
 {
     auto clientSocket = std::dynamic_pointer_cast<ClientSocket>(currSocket);
-    if (clientSocket) 
-	{
+    if (clientSocket)
+    {
         handleClientSocketEvent(clientSocket, false);
     }
 }
 
-void PollManager::handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSocket, bool isPollIn) 
+void PollManager::handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSocket, bool isPollIn)
 {
-    if (isPollIn) {
-        try {
+    if (isPollIn)
+    {
+        try
+        {
             clientSocket->recvRequest();
-        } catch (const ClientSocket::HungUpException& e) {
+        }
+        catch (const HttpRequest::requestTimedOut &e)
+        {
+            sendErrorResponse(clientSocket, statusCode::request_timeout, e.what());
+        }
+        catch (const ClientSocket::HungUpException &e)
+        {
             sendErrorResponse(clientSocket, httpStatus::errnoToStatusCode(errno), "Connection hung up");
-        } catch (const HttpRequest::invalidRequest& e) {
+        }
+        catch (const HttpRequest::invalidRequest &e)
+        {
             sendErrorResponse(clientSocket, statusCode::bad_request, e.what());
-        } catch (const std::exception& e) {
+        }
+        catch (const HttpRequest::RequestEntityTooLarge &e)
+        {
+            sendErrorResponse(clientSocket, statusCode::payload_too_large, "Request Entity too large");
+        }
+        catch (const std::exception &e)
+        {
             sendErrorResponse(clientSocket, httpStatus::errnoToStatusCode(errno), e.what());
         }
-    } 
-    else {
-        try {
+    }
+    else
+    {
+        try
+        {
             router.routeRequest(clientSocket->getRequest(), clientSocket->getResponse());
+            if (clientSocket->hasTimedOut())
+                throw HttpRequest::requestTimedOut();
             SendSafeResponse(clientSocket);
             if (shouldCloseConnection(clientSocket))
                 removeSocket(clientSocket->getFd());
-        } catch (const std::runtime_error& e) {
+        }
+        catch (const HttpRequest::requestTimedOut &e)
+        {
+            sendErrorResponse(clientSocket, statusCode::request_timeout, e.what());
+        }
+        catch (const std::runtime_error &e)
+        {
             Log::logMsg(e.what());
-        } catch (const std::exception& e) {
+        }
+        catch (const std::exception &e)
+        {
             Log::logMsg(e.what());
         }
     }
