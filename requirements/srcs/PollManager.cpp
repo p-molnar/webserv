@@ -156,8 +156,8 @@ void PollManager::HandlePollInEvent(std::shared_ptr<Socket> currSocket)
     }
     else if (auto clientSocket = std::dynamic_pointer_cast<ClientSocket>(currSocket))
     {
-        if (clientSocket->getIsParsed())
-            clientSocket->updateLastActivity();
+        // if (clientSocket->getIsParsed())
+        //     clientSocket->updateLastActivity();
         handleClientSocketEvent(clientSocket, true);
     }
 }

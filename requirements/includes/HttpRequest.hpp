@@ -51,7 +51,6 @@ enum e_request_type
     RESOURCE,
     DIRECTORY,
     EXECUTABLE,
-    REDIRECT,
 };
 
 typedef struct s_uri_comps

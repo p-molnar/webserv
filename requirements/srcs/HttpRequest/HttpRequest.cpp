@@ -15,14 +15,18 @@
 
 HttpRequest::HttpRequest() : request_line_parse_status(INCOMPLETE),
                              request_headers_parse_status(INCOMPLETE),
-                             request_msg_body_parse_status(INCOMPLETE)
+                             request_msg_body_parse_status(INCOMPLETE),
+                             request_type(UNDEF)
+
 {
 }
 
 HttpRequest::HttpRequest(std::shared_ptr<ServerBlock> config) : config(config),
                                                                 request_line_parse_status(INCOMPLETE),
                                                                 request_headers_parse_status(INCOMPLETE),
-                                                                request_msg_body_parse_status(INCOMPLETE)
+                                                                request_msg_body_parse_status(INCOMPLETE),
+                                                                request_type(UNDEF)
+
 {
 }
 
@@ -199,11 +203,6 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     std::string redirect_path = _location->getReturn();
     if (redirect_path != "")
     {
-        request_type = REDIRECT;
-        // if (_location->getRoot() != "")
-        //     uri_comps.rederection_path = _location->getRoot();
-        // else
-        //     uri_comps.rederection_path = config->getRoot();
         uri_comps.rederection_path = redirect_path;
         std::cout << "REDIRECTING TO: " << CGRN << uri_comps.rederection_path << NC << '\n';
         return;
@@ -230,13 +229,12 @@ void HttpRequest::parseRequestUri(const std::string &uri)
         else
             uri_comps.path_info = uri.substr(path_info_start);
     }
-    else if (uri_comps.raw_path.length() > 1 && request_type != EXECUTABLE && request_type != REDIRECT)
+    else if (uri_comps.raw_path.length() > 1 && request_type != EXECUTABLE)
         request_type = RESOURCE;
-    else if (request_type != REDIRECT)
+    else
         request_type = UNDEF;
-
-    if (request_type != REDIRECT)
-        parseRequestType();
+    
+    parseRequestType();
 
     std::vector<std::string> allowed_methods = _location->getAllowedMethods();
     if (std::find(allowed_methods.begin(), allowed_methods.end(), request_line.at("method")) == allowed_methods.end())
