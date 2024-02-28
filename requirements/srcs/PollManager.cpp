@@ -30,7 +30,7 @@ void PollManager::addSocket(std::shared_ptr<Socket> socket)
 
 void PollManager::removeSocket(int fd)
 {
-    Log::logMsg("connection removed: " + std::to_string(fd));
+    Log::logMsg("connection removed", fd);
     std::vector<t_pollfd>::iterator v_it = pfds.begin();
     std::vector<t_pollfd>::iterator v_ite = pfds.end();
     while (v_it != v_ite)
@@ -109,14 +109,14 @@ void PollManager::processEvents()
     while (RUNNING)
     {
         updatePollfd();
-        int active_events = SysCall::poll(pfds.data(), pfds.size(), 100);
+        int active_events = SysCall::poll(pfds.data(), pfds.size(), 1000);
         if (active_events == 0)
         {
             for (size_t i = 0; i < pfds.size(); ++i)
             {
                 if (auto client = std::dynamic_pointer_cast<ClientSocket>(sockets.at(pfds[i].fd)))
                 {
-                    if (shouldCloseConnection(client))
+                    if (shouldCloseConnection(client) || client->hasTimedOut())
                         removeSocket(client->getFd());
                 }
                 else
