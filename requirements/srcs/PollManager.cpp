@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:16:44 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/28 10:20:12 by pmolnar       ########   odam.nl         */
+/*   Updated: 2024/02/28 10:54:13 by pmolnar       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ void PollManager::processEvents()
 
 void PollManager::sendErrorResponse(std::shared_ptr<ClientSocket> clientSocket, statusCode errorCode, const std::string &logMessage)
 {
-    clientSocket->sendResponse(httpStatus::generateErrResponse(errorCode));
+    clientSocket->sendErrResponse(httpStatus::generateErrResponse(errorCode));
     if (!logMessage.empty())
     {
         Log::logMsg(logMessage);
@@ -193,7 +193,7 @@ void PollManager::handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSo
         }
         catch (const HttpRequest::RequestEntityTooLarge &e)
         {
-            sendErrorResponse(clientSocket, statusCode::payload_too_large, "Request ");
+            sendErrorResponse(clientSocket, statusCode::payload_too_large, "Request Entity too large");
         }
         catch (const std::exception &e)
         {
