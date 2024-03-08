@@ -131,9 +131,6 @@ std::string HttpRequest::constructPath(std::string raw_path)
     bool is_defined_location_root = _location->getRoot() != "";
     bool is_defined_location_alias = _location->getAlias() != "";
 
-    // std::cout << "is_defined_location_root: " << is_defined_location_root << '\n';
-    // std::cout << "is_defined_location_alias: " << is_defined_location_alias << '\n';
-
     if (!is_defined_location_root && is_defined_location_alias)
     {
         root = _location->getAlias();
@@ -186,7 +183,9 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     }
 
     std::cout << "pre uripath: " << uri_comps.raw_path << '\n';
-    uri_comps.raw_path = uri_comps.raw_path == "/" ? _location->getIndex() : uri_comps.raw_path;
+    if (_location->getIndex() != "")
+        uri_comps.raw_path += _location->getIndex();
+    // uri_comps.raw_path = uri_comps.raw_path == "/" ? _location->getIndex() : uri_comps.raw_path;
     std::cout << "post uripath: " << uri_comps.raw_path << '\n';
 
     uri_comps.path = constructPath(uri_comps.raw_path);
