@@ -22,7 +22,6 @@ bool ClientSocket::hasTimedOut()
 {
     auto now = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - last_activity);
-    // return elapsed.count() > SOCKET_TIMEOUT;
     if (elapsed.count() > getRequest().getServerConfig()->getTimeOut())
     {
         Log::logMsg("Connection timed out", fd);
@@ -43,8 +42,8 @@ void ClientSocket::recvRequest()
         throw ClientSocket::HungUpException();
     }
     is_request_parsed = request.parseRequest(request_buff, bytes_received);
-    if (hasTimedOut()) // TO DO CHECK TIMED OUT
-        throw HttpRequest::requestTimedOut();
+    // if (hasTimedOut()) // TO DO CHECK TIMED OUT
+    //     throw HttpRequest::requestTimedOut();
     try {
         setConnection(request.getHeaderComp("Connection"));
     }

@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:16:44 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/02/28 10:54:13 by pmolnar       ########   odam.nl         */
+/*   Updated: 2024/03/08 11:29:34 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,31 +108,37 @@ void PollManager::processEvents()
     Log::logMsg("Server is processing events");
     while (RUNNING)
     {
-        updatePollfd();
-        int active_events = SysCall::poll(pfds.data(), pfds.size(), 1000);
-        if (active_events == 0)
-        {
-            for (size_t i = 0; i < pfds.size(); ++i)
-            {
-                if (auto client = std::dynamic_pointer_cast<ClientSocket>(sockets.at(pfds[i].fd)))
-                {
-                    if (shouldCloseConnection(client) || client->hasTimedOut())
-                        removeSocket(client->getFd());
-                }
-                else
-                    continue;
-            }
+        try {
+           updatePollfd();
+           int active_events = SysCall::poll(pfds.data(), pfds.size(), 1000);
+           if (active_events == 0)
+           {
+               for (size_t i = 0; i < pfds.size(); ++i)
+               {
+                   if (auto client = std::dynamic_pointer_cast<ClientSocket>(sockets.at(pfds[i].fd)))
+                   {
+                       if (shouldCloseConnection(client) || client->hasTimedOut())
+                           removeSocket(client->getFd());
+                   }
+                   else
+                       continue;
+               }
+           }
+           else
+           {
+               for (size_t i = 0; i < pfds.size() && active_events > 0; ++i)
+               {
+                   if (pfds[i].revents != 0)
+                   {
+                       handleEvent(pfds[i].fd, pfds[i].revents);
+                       active_events--;
+                   }
+               }
+           }
         }
-        else
+        catch (const std::exception &e)
         {
-            for (size_t i = 0; i < pfds.size() && active_events > 0; ++i)
-            {
-                if (pfds[i].revents != 0)
-                {
-                    handleEvent(pfds[i].fd, pfds[i].revents);
-                    active_events--;
-                }
-            }
+            Log::logMsg("Internal server error");
         }
     }
 }
@@ -185,7 +191,7 @@ void PollManager::handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSo
         }
         catch (const ClientSocket::HungUpException &e)
         {
-            sendErrorResponse(clientSocket, httpStatus::errnoToStatusCode(errno), "Connection hung up");
+            removeSocket(clientSocket->getFd());
         }
         catch (const HttpRequest::invalidRequest &e)
         {
