@@ -42,8 +42,6 @@ void ClientSocket::recvRequest()
         throw ClientSocket::HungUpException();
     }
     is_request_parsed = request.parseRequest(request_buff, bytes_received);
-    // if (hasTimedOut()) // TO DO CHECK TIMED OUT
-    //     throw HttpRequest::requestTimedOut();
     try {
         setConnection(request.getHeaderComp("Connection"));
     }
@@ -81,7 +79,6 @@ void ClientSocket::sendResponse()
 
 void ClientSocket::sendErrResponse(std::string response)
 {
-    // std::cout << response << std::endl;
     int bytes_sent = send(fd, response.c_str(), response.size(), 0);
     if (bytes_sent < 0)
     {

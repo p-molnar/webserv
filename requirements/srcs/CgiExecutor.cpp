@@ -29,7 +29,7 @@ std::string RequestProcessor::executeCgi(const t_uri_comps &uri)
         SysCall::close(filedes[0]);
         SysCall::close(stderr_filedes[0]);
         SysCall::execve(exec_path.c_str(), NULL, cgi_env.data());
-        exit(EXIT_FAILURE);  // Ensure child process exits if execve fails
+        exit(EXIT_FAILURE);
     } 
 	else {
         SysCall::close(filedes[1]);
@@ -46,10 +46,6 @@ std::string RequestProcessor::executeCgi(const t_uri_comps &uri)
 			SysCall::close(stderr_filedes[0]);
             throw std::runtime_error("CGI Script error: " + err_output);
         }
-
-
-        // if (!err_output.empty()) {
-        // }
     }
 	SysCall::close(filedes[0]);
 	SysCall::close(stderr_filedes[0]);

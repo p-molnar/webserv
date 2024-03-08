@@ -232,11 +232,6 @@ void ServerBlock::addLocation(const std::string &locationPath, const LocationBlo
 	_locations[locationPath] = location;
 }
 
-// Config::Config() : _file_path(DEFAULT_CONFIG_PATH)
-// {
-// 	parseFile();
-// }
-
 Config::Config(const Config &obj) : _file_path(obj._file_path),
 									_servers(obj._servers)
 {
@@ -277,7 +272,6 @@ Config::Config(int argc, char *argv[])
 
 Config::~Config()
 {
-	// closeFile();
 }
 
 void Config::display()
@@ -331,7 +325,6 @@ void Config::readFile()
 		std::cout << "Error: Can not read file '" << _file_path << "'" << std::endl;
 		exit(1);
 	}
-	// std::cout << "Using config file '" << _file_path << "'" << std::endl;
 
 	while (getline(_config_file, line))
 	{
@@ -454,17 +447,9 @@ std::vector<ServerBlock> &Config::getServers()
 	return _servers;
 }
 
-// void Config::closeFile()
-// {
-// 	if (_config_file.is_open())
-// 		_config_file.close();
-// }
-
 void Config::parseFile()
 {
-	// openFile();
 	readFile();
-	// closeFile();
 }
 
 bool is_number(std::string s)
