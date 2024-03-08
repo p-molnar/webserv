@@ -65,8 +65,6 @@ std::string joinPath(std::vector<std::string> paths, std::string delimeter)
             joined_path += stripped + delimeter;
     }
 
-    // if the path is "/" or if the last character is not "/"
-    // i.e., then remove the extra "/"
     if (paths.back() == "/" || paths.back().back() != '/')
     {
         joined_path.pop_back();

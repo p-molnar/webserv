@@ -109,8 +109,6 @@ void fileHandler::serveDirectoryListing(const HttpRequest *req, HttpResponse *re
         content = RequestProcessor::listDirectoryContent(req->getUriComps());
     else
         content = fileHandler::readFileContent("srv/www/auto_index_off.html");
-    // std::string content = req->getServerLocation()->getAutoIndex() == "on" ?
-    //                       RequestProcessor::listDirectoryContent(req->getUriComps()) : "";
     res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), content);
 }
 

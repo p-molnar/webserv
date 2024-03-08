@@ -24,7 +24,6 @@ t_form_overhead FormData::parseFormOverhead(const std::string &raw_overhead)
 
 	for (std::string raw_header : raw_headers_comps)
 	{
-		// std::cout << "|" << raw_header << "|\n";
 		std::vector<std::string> header_comps = tokenize(raw_header, HEADER_SEP);
 		if (header_comps.size() != 2)
 			throw std::runtime_error("overhead header parse error");

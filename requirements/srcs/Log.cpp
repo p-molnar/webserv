@@ -8,10 +8,8 @@ const std::string Log::getMsec()
 
 	switch (msec.length())
 	{
-	case 1:
-		msec = "0" + msec;
-		// case 2:
-		// 	msec = "0" + msec;
+		case 1:
+			msec = "0" + msec;
 	}
 
 	return msec;
@@ -39,9 +37,6 @@ void Log::logMsg(std::string msg, int fd)
 	std::string log_time = Log::getTime();
 
 	std::string server_name;
-
-	// if (Config::getConfig())
-	// 	server_name = Config::getConfig()->getServerName();
 
 	if (fd == FD_UNDEF)
 	{

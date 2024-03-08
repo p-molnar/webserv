@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:16:44 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/03/08 14:33:57 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/03/08 14:50:59 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,6 @@ void PollManager::processEvents()
 
 void PollManager::sendErrorResponse(std::shared_ptr<ClientSocket> clientSocket, statusCode errorCode, const std::string &logMessage)
 {
-    std::cout << "\n2\n";
     clientSocket->sendErrResponse(httpStatus::generateErrResponse(errorCode));
     if (!logMessage.empty())
     {
@@ -216,8 +215,8 @@ void PollManager::handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSo
             if (clientSocket->hasTimedOut())
                 throw HttpRequest::requestTimedOut();
             SendSafeResponse(clientSocket);
-            // if (shouldCloseConnection(clientSocket))
-            //     removeSocket(clientSocket->getFd());
+            if (shouldCloseConnection(clientSocket))
+                removeSocket(clientSocket->getFd());
         }
         catch (const HttpRequest::requestTimedOut &e)
         {

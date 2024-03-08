@@ -131,9 +131,6 @@ std::string HttpRequest::constructPath(std::string raw_path)
     bool is_defined_location_root = _location->getRoot() != "";
     bool is_defined_location_alias = _location->getAlias() != "";
 
-    // std::cout << "is_defined_location_root: " << is_defined_location_root << '\n';
-    // std::cout << "is_defined_location_alias: " << is_defined_location_alias << '\n';
-
     if (!is_defined_location_root && is_defined_location_alias)
     {
         root = _location->getAlias();
@@ -234,12 +231,7 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
     static std::size_t clrf_pos;
     static std::size_t dbl_clrf_pos;
 
-            std::cout << "0\n";
     raw_request += std::string(raw_request_data, bytes_received);
-
-    // std::cout << CGRY << raw_request << NC << std::endl; // Todo comment out
-
-    // request line parsing
     if (request_line_parse_status == INCOMPLETE)
     {
         clrf_pos = raw_request.find(CRLF);
@@ -390,10 +382,6 @@ void HttpRequest::safeUserData()
     age = getValueFormQueryStr("age");
     height = getValueFormQueryStr("height");
     weight = getValueFormQueryStr("weight");
-    // std::cout << "name: " << CGRN << name << NC << std::endl;
-    // std::cout << "age: " << CGRN << age << NC << std::endl;
-    // std::cout << "height: " << CGRN << height << NC << std::endl;
-    // std::cout << "weight: " << CGRN << weight << NC << std::endl;
 }
 
 void HttpRequest::printParsedContent() const
@@ -412,26 +400,6 @@ void HttpRequest::printParsedContent() const
     std::cout << "request type: " << request_type << '\n';
     for (std::pair<std::string, std::string> cookie : cookies)
         std::cout << "cookie: " << cookie.first << " = " << cookie.second << "|\n";
-
-    // for (std::pair<std::string, std::string> line : request_line)
-    // {
-    //     std::cout << line.first;
-    //     std::cout << ": ";
-    //     std::cout << line.second;
-    //     std::cout << " ";
-    // }
-    // std::cout << '\n';
-
-    // for (std::pair<std::string, std::string> header : request_headers)
-    // {
-    //     std::cout << header.first;
-    //     std::cout << ": ";
-    //     std::cout << header.second;
-    //     std::cout << "\n";
-    // }
-
-    // std::cout << "\n\n";
-    // std::cout << request_message_body << '\n';
 }
 
 void HttpRequest::flushBuffers()
@@ -450,16 +418,3 @@ void HttpRequest::flushBuffers()
     uri_comps.path_info.erase();
     uri_comps.query_str.erase();
 }
-
-// bool HttpRequest::isParsed() const
-// {
-//     return (request_line_parse_status == COMPLETE &&
-//             request_headers_parse_status == COMPLETE &&
-//             (request_msg_body_parse_status == NA ||
-//              request_msg_body_parse_status == COMPLETE));
-// }
-
-// const FormData &HttpRequest::getFormDataObj() const
-// {
-//     return form_data;
-// }
