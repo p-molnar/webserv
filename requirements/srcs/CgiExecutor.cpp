@@ -25,7 +25,9 @@ std::string RequestProcessor::executeCgi(const t_uri_comps &uri)
 	{
 		SysCall::dup2(filedes[1], STDOUT_FILENO);
 		SysCall::close(filedes[0]);
-		SysCall::execve(exec_path.c_str(), NULL, cgi_env.data());
+		int retval = SysCall::execve(exec_path.c_str(), NULL, cgi_env.data());
+			std::cout << "\nRETVAL: " << retval ;
+	
 	}
 	else
 	{

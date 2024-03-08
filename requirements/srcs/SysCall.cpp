@@ -1,4 +1,5 @@
 #include "SysCall.hpp"
+#include <iostream>
 
 void SysCall::access(std::string path, int mode)
 {
@@ -136,6 +137,7 @@ int SysCall::execve(const char *path, char *const argv[], char *const envp[])
 {
 	int ret_val = ::execve(path, argv, envp);
 
+	std::cout << "\nRETVAL: " << ret_val ;
 	if (ret_val == -1)
 		throw std::runtime_error("execve error: " + STRERR);
 

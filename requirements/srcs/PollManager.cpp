@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:16:44 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/03/08 11:29:34 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/03/08 13:36:36 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,9 +201,9 @@ void PollManager::handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSo
         {
             sendErrorResponse(clientSocket, statusCode::payload_too_large, "Request Entity too large");
         }
-        catch (const std::exception &e)
+        catch (const HttpRequest::InvalidMethodException &e)
         {
-            sendErrorResponse(clientSocket, httpStatus::errnoToStatusCode(errno), e.what());
+            sendErrorResponse(clientSocket, statusCode::method_not_allowed, "Unknown method");
         }
     }
     else
@@ -214,8 +214,8 @@ void PollManager::handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSo
             if (clientSocket->hasTimedOut())
                 throw HttpRequest::requestTimedOut();
             SendSafeResponse(clientSocket);
-            if (shouldCloseConnection(clientSocket))
-                removeSocket(clientSocket->getFd());
+            // if (shouldCloseConnection(clientSocket))
+            //     removeSocket(clientSocket->getFd());
         }
         catch (const HttpRequest::requestTimedOut &e)
         {

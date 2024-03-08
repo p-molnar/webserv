@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import os
+# import os
 
 def move_up(path: str, up_count: int) ->str:
 	for i in range(up_count + 1):
