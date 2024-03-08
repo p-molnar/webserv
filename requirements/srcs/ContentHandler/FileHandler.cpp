@@ -117,9 +117,8 @@ void fileHandler::serveDirectoryListing(const HttpRequest *req, HttpResponse *re
 void fileHandler::handleExecutableRequest(const HttpRequest *req, HttpResponse *res)
 {
     res->setHeaders("Content-Type", "text/html");
-    Log::logMsg("COMING IN HERE");
     res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK),
-                              RequestProcessor::executeCgi(req->getUriComps()));
+                            RequestProcessor::executeCgi(req->getUriComps()));
 }
 
 void fileHandler::serveStaticFile(const std::string& file_path, HttpResponse *res)

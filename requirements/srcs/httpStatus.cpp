@@ -44,8 +44,6 @@ std::string httpStatus::generateErrResponse(statusCode code)
 	response += "Content-Type: text/html\r\n";
 	response += "Content-Length: " + std::to_string(body.length()) + "\r\n";
 	response += "Connection: close\r\n\r\n";
-	response += "Content-Length: " + std::to_string(body.length()) + "\r\n";
-	response += "Connection: close\r\n\r\n";
 
 	response += body;
 	std::cout << response << "\r\n\r\n";

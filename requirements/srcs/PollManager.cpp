@@ -6,7 +6,7 @@
 /*   By: tklouwer <tklouwer@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/02/26 12:16:44 by tklouwer      #+#    #+#                 */
-/*   Updated: 2024/03/08 13:36:36 by tklouwer      ########   odam.nl         */
+/*   Updated: 2024/03/08 14:33:57 by tklouwer      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ void PollManager::SendSafeResponse(std::shared_ptr<ClientSocket> clientSocket)
 {
     try
     {
+        std::cout << "\n1\n";
         clientSocket->sendResponse();
     }
     catch (const std::exception &e)
@@ -145,6 +146,7 @@ void PollManager::processEvents()
 
 void PollManager::sendErrorResponse(std::shared_ptr<ClientSocket> clientSocket, statusCode errorCode, const std::string &logMessage)
 {
+    std::cout << "\n2\n";
     clientSocket->sendErrResponse(httpStatus::generateErrResponse(errorCode));
     if (!logMessage.empty())
     {
@@ -223,11 +225,11 @@ void PollManager::handleClientSocketEvent(std::shared_ptr<ClientSocket> clientSo
         }
         catch (const std::runtime_error &e)
         {
-            Log::logMsg(e.what());
+            sendErrorResponse(clientSocket, statusCode::internal_server_error, e.what());
         }
         catch (const std::exception &e)
         {
-            Log::logMsg(e.what());
+            sendErrorResponse(clientSocket, statusCode::internal_server_error, e.what());
         }
     }
 }
