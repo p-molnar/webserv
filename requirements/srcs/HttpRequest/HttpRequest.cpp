@@ -131,8 +131,8 @@ std::string HttpRequest::constructPath(std::string raw_path)
     bool is_defined_location_root = _location->getRoot() != "";
     bool is_defined_location_alias = _location->getAlias() != "";
 
-    std::cout << "is_defined_location_root: " << is_defined_location_root << '\n';
-    std::cout << "is_defined_location_alias: " << is_defined_location_alias << '\n';
+    // std::cout << "is_defined_location_root: " << is_defined_location_root << '\n';
+    // std::cout << "is_defined_location_alias: " << is_defined_location_alias << '\n';
 
     if (!is_defined_location_root && is_defined_location_alias)
     {
@@ -143,8 +143,9 @@ std::string HttpRequest::constructPath(std::string raw_path)
     else if (!is_defined_location_root)
         root = config->getRoot();
     else if (is_defined_location_root)
-        root = _location->getRoot();
+        return _location->getRoot() + raw_path;
     std::string joined = joinPath({root, raw_path}, "/");
+    std::cout << "constructPath: " << CGRN "joined: " << joined << NC "\n";
     return joined;
 }
 
