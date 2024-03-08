@@ -103,9 +103,14 @@ std::string getContentType(const std::string &file_path)
 
 void fileHandler::serveDirectoryListing(const HttpRequest *req, HttpResponse *res)
 {
+    std::string content;
     res->setHeaders("Content-Type", "text/html");
-    std::string content = req->getServerLocation()->getAutoIndex() == "on" ?
-                          RequestProcessor::listDirectoryContent(req->getUriComps()) : "";
+    if (req->getServerLocation()->getAutoIndex() == "on")
+        content = RequestProcessor::listDirectoryContent(req->getUriComps());
+    else
+        content = fileHandler::readFileContent("srv/www/auto_index_off.html");
+    // std::string content = req->getServerLocation()->getAutoIndex() == "on" ?
+    //                       RequestProcessor::listDirectoryContent(req->getUriComps()) : "";
     res->setStatusLineAndBody(httpStatus::getStatusLine(statusCode::OK), content);
 }
 
