@@ -173,7 +173,11 @@ void HttpRequest::parseRequestUri(const std::string &uri)
 
     // apply redirect
     std::string redirect_path = _location->getReturn();
-    if (redirect_path != "")
+    // add leading slash if missing
+    if (redirect_path != "" && redirect_path[0] != '/')
+        redirect_path = "/" + redirect_path;
+    // check if redirect is needed and not already done
+    if (redirect_path != "" && redirect_path != uri_comps.raw_path)
     {
         uri_comps.rederection_path = redirect_path;
         std::cout << "REDIRECTING TO: " << CGRN << uri_comps.rederection_path << NC << '\n';
