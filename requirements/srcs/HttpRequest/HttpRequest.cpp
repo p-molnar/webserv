@@ -74,6 +74,8 @@ std::string HttpRequest::getCgiExtension(const std::string &s)
 
 void HttpRequest::parseRequestType()
 {
+    if (uri_comps.path == "srv/www")
+        uri_comps.path += "/";
     if (uri_comps.path.back() == '/')
         request_type = DIRECTORY;
     else if (!uri_comps.executable_name.empty())

@@ -14,7 +14,6 @@ void handleGetRequest(const HttpRequest *req, HttpResponse *res)
     }
     if (file_path.find(".") == std::string::npos && req->getType() == RESOURCE && !fileHandler::isDirectory(file_path))
         file_path += ".html";
-
     if (!fileHandler::isValidPath(file_path) && req->getType() != EXECUTABLE)
     {
         fileHandler::handleErrorResponse(404, req, res);
