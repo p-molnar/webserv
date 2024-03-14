@@ -96,8 +96,6 @@ FormData::FormData(const std::string &data, const std::map<std::string, std::str
 			t_form_overhead overhead = parseFormOverhead(raw_form_comps[0]);
 			std::string payload = raw_form_comps[1];
 
-			std::cout << "raw_overhead: " << overhead.raw_overhead << "\n";
-
 			for (std::pair<std::string, std::string> rh : overhead.raw_headers)
 			{
 				std::cout << rh.first << ": " << rh.second << "\n";

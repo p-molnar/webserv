@@ -52,7 +52,7 @@ void ClientSocket::recvRequest()
     Log::logMsg("request received", fd);
     if (is_request_parsed)
     {
-        request.printParsedContent();
+        // request.printParsedContent();
         request.safeUserData();
         setState(State::Writing);
     }

@@ -144,7 +144,6 @@ std::string HttpRequest::constructPath(std::string raw_path)
     else if (is_defined_location_root)
         root = _location->getRoot();
     std::string joined = joinPath({root, raw_path}, "/");
-    std::cout << "constructPath: " << CGRN "joined: " << joined << NC "\n";
     return joined;
 }
 
@@ -168,9 +167,6 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     // get the best matching location block in config
     _location = getMatchingLocation(uri_comps.raw_path);
 
-    std::cout << "raw path: " << uri_comps.raw_path << '\n';
-    std::cout << "Matching location: " << _location->getRoot() << '\n';
-
     // apply redirect
     std::string redirect_path = _location->getReturn();
     // add leading slash if missing
@@ -180,15 +176,9 @@ void HttpRequest::parseRequestUri(const std::string &uri)
     if (redirect_path != "" && redirect_path != uri_comps.raw_path)
     {
         uri_comps.rederection_path = redirect_path;
-        std::cout << "REDIRECTING TO: " << CGRN << uri_comps.rederection_path << NC << '\n';
         return;
     }
-
-    std::cout << "pre uripath: " << uri_comps.raw_path << '\n';
-    // if (_location->getIndex() != "")
-    //     uri_comps.raw_path += _location->getIndex();
     uri_comps.raw_path = uri_comps.raw_path == "/" ? _location->getIndex() : uri_comps.raw_path;
-    std::cout << "post uripath: " << uri_comps.raw_path << '\n';
 
     uri_comps.path = constructPath(uri_comps.raw_path);
 
@@ -235,7 +225,6 @@ bool HttpRequest::parseRequest(char *raw_request_data, std::size_t bytes_receive
     static std::size_t clrf_pos;
     static std::size_t dbl_clrf_pos;
 
-            std::cout << "0\n";
     raw_request += std::string(raw_request_data, bytes_received);
 
     // std::cout << CGRY << raw_request << NC << std::endl; // Todo comment out

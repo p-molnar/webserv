@@ -66,7 +66,6 @@ void PollManager::SendSafeResponse(std::shared_ptr<ClientSocket> clientSocket)
 {
     try
     {
-        std::cout << "\n1\n";
         clientSocket->sendResponse();
     }
     catch (const std::exception &e)
